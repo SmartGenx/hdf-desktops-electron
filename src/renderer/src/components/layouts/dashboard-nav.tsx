@@ -29,6 +29,7 @@ export default function DashboardNav({ items, expanded = false }: DashboardNavPr
     if (href === '/dashboard') {
       return path === href
     }
+    
     return path === href
   }
 

@@ -1,4 +1,4 @@
-import {  createHashRouter  } from 'react-router-dom'
+import { createHashRouter } from 'react-router-dom'
 import RootLayout from '../layouts/layout'
 // import ProtectedRoute from '../layouts/protected-route'
 import Home from '../pages/home/home'
@@ -18,7 +18,11 @@ export const router = createHashRouter([
         // element: <ProtectedRoute element={<Home />} />
         element: <Home />
       },
-
+      {
+        path: '/users',
+        // element: <ProtectedRoute element={<Home />} />
+        element: <Home />
+      }
     ]
   }
 ])
