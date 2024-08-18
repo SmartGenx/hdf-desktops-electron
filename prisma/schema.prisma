@@ -1,0 +1,288 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int        @id @default(autoincrement())
+  username  String
+  email     String
+  password  String
+  token     String?
+  restToken DateTime?
+  phone     String?
+  image     String?
+  isDeleted Boolean    @default(false)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  UserRole  UserRole[]
+}
+
+model Role {
+  id        Int        @id @default(autoincrement())
+  name      String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  UserRole  UserRole[]
+}
+
+model UserRole {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  roleId    Int
+  role      Role     @relation(fields: [roleId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Postion {
+  id        Int      @id @default(autoincrement())
+  name      String
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Issue     Issue[]
+}
+
+model GovernmentOffice {
+  id        Int         @id @default(autoincrement())
+  name      String
+  isDeleted Boolean     @default(false)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  Issue     Issue[]
+  Complaint Complaint[]
+  decision  Decision[]
+}
+
+model Issue {
+  id                 Int              @id @default(autoincrement())
+  name               String
+  postionId          Int
+  postion            Postion          @relation(fields: [postionId], references: [id])
+  governmentOfficeId Int
+  governmentOffice   GovernmentOffice @relation(fields: [governmentOfficeId], references: [id])
+  title              String
+  type               Int
+  invitationType     Int
+  isDeleted          Boolean          @default(false)
+  state              Boolean          @default(false)
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  IssueDetails       IssueDetails[]
+}
+
+model IssueDetails {
+  id          Int      @id @default(autoincrement())
+  issueId     Int
+  Issue       Issue    @relation(fields: [issueId], references: [id])
+  level       Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  detailsDate DateTime
+  isDeleted   Boolean  @default(false)
+  judgment    String
+  refrance    String
+  Resumed     Boolean
+}
+
+model Complaint {
+  id                 Int              @id @default(autoincrement())
+  name               String
+  refrance           String
+  governmentOfficeId Int
+  governmentOffice   GovernmentOffice @relation(fields: [governmentOfficeId], references: [id])
+  title              String
+  description        String
+  date               DateTime
+  officeOpinian      String
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  isDeleted          Boolean          @default(false)
+}
+
+model Decision {
+  id                 Int              @id @default(autoincrement())
+  decisionName       String
+  refrance           String
+  governmentOfficeId Int
+  governmentOffice   GovernmentOffice @relation(fields: [governmentOfficeId], references: [id])
+  title              String
+  description        String
+  decisionSource     String
+  nameSource         String
+  isDeleted          Boolean          @default(false)
+  attachmentPath     String
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+}
+
+model Generalization {
+  id             Int      @id @default(autoincrement())
+  title          String
+  refrance       String
+  description    String
+  attachmentPath String
+  isDeleted      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+//----------------------------------------------------------------------------------------
+model LeaveType {
+  id         Int      @id @default(autoincrement())
+  name       String
+  defaultDay Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  isDeleted       Boolean           @default(false)
+  Leaveallocation Leaveallocation[]
+  leaveDetails    leaveDetails[]
+}
+
+model Leaveallocation {
+  id          Int       @id @default(autoincrement())
+  employeeId  Int
+  leavetypeId Int
+  remaingDay  Int
+  leaveYear   Int
+  LeaveType   LeaveType @relation(fields: [leavetypeId], references: [id])
+  Employ      Employ    @relation(fields: [employeeId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  isDeleted Boolean @default(false)
+}
+
+model Attachment {
+  id         Int      @id @default(autoincrement())
+  file       String
+  emploteeId Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  isDeleted  Boolean  @default(false)
+  Employ     Employ   @relation(fields: [emploteeId], references: [id])
+}
+
+model Employ {
+  id                    Int               @id @default(autoincrement())
+  name                  String
+  reference             String
+  phone                 String
+  address               String
+  dob                   DateTime
+  education             String // هذا غير مفهوم
+  megor                 Int //enum
+  graduationDate        DateTime //هذا غير مفهوم
+  idtype                Int //enum
+  idNumber              String
+  issuerDate            DateTime
+  issuerPlace           String
+  empLeaved             String
+  empDgree              Int
+  position              String
+  salary                Float
+  firstEmployment       String
+  employmentDate        DateTime
+  currentUnit           Int
+  currentEmploymentDate DateTime
+  legalStatus           Int //enum
+  employeeStatus        Int //enum
+  detailsDate           DateTime
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  isDeleted             Boolean           @default(false)
+  leaveDetails          leaveDetails[]
+  Attachment            Attachment[]
+  Leaveallocation       Leaveallocation[]
+}
+
+model leaveDetails {
+  id          Int      @id @default(autoincrement())
+  employeeeId Int
+  leaveTypeId Int
+  dayNumber   Int
+  startDate   DateTime
+  endDate     DateTime
+  leaveNote   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  isDeleted Boolean   @default(false)
+  LeaveType LeaveType @relation(fields: [leaveTypeId], references: [id])
+  employ    Employ    @relation(fields: [employeeeId], references: [id])
+}
+
+model Book {
+  id        Int      @id @default(autoincrement())
+  name      String
+  quantity  Int
+  price     Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  isDeleted Boolean     @default(false)
+  BookOrder BookOrder[]
+}
+
+model BookOrder {
+  id          Int      @id @default(autoincrement())
+  bookId      Int
+  quantity    Int
+  customerId  Int
+  reference   String
+  description String
+  sellingDate DateTime
+  orderNumber Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isDeleted   Boolean  @default(false)
+  Book        Book     @relation(fields: [bookId], references: [id])
+  Customer    Customer @relation(fields: [customerId], references: [id])
+}
+
+model Customer {
+  id        Int         @id @default(autoincrement())
+  name      String
+  type      Int //enum
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  isDeleted Boolean     @default(false)
+  BookOrder BookOrder[]
+  license   license[]
+}
+
+model licenseType {
+  id        Int       @id @default(autoincrement())
+  name      String
+  fees      Float
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  isDeleted Boolean   @default(false)
+  license   license[]
+}
+
+model license {
+  id              Int         @id @default(autoincrement())
+  licenseTypeId   Int
+  customerId      Int
+  licenseNumber   String
+  licenseYear     Int
+  compnayPorpose  String
+  compnayLocation String
+  compnayCapital  Float
+  compnayManger   String
+  referenceNum    String
+  referenceDate   DateTime
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  isDeleted       Boolean     @default(false)
+  licenseType     licenseType @relation(fields: [licenseTypeId], references: [id])
+  Customer        Customer    @relation(fields: [customerId], references: [id])
+}
