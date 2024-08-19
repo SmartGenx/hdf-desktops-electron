@@ -1,6 +1,6 @@
 import { cn } from '@renderer/lib/utils'
 import { useEffect, useState } from 'react'
-import logo from '../../assets/images/مؤسسة التنمية الصحية 2.png'
+import logo from '../../assets/images/newlogo.svg'
 import useNavItems from '../../hooks/useNavItems'
 import useScreenSize from '../../hooks/useScreenSize'
 import SidebarToggleIcon from '../icons/sidebar-toggler-icon'

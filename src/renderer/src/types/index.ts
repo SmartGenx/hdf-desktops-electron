@@ -14,6 +14,11 @@ export type NavItem = {
   }>
 }
 
+export type loginType = {
+  email: string
+  password: string
+}
+
 export interface NavItemWithChildren extends NavItem {
   items: NavItemWithChildren[]
 }

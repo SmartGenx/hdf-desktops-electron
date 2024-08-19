@@ -6,7 +6,7 @@ import Login from '../pages/login/login'
 
 export const router = createHashRouter([
   {
-    path: '/login',
+    path: '/',
     element: <Login />
   },
   {

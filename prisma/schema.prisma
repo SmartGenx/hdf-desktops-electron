@@ -4,285 +4,235 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = "postgresql://postgres:sami2020@localhost:5432/hdf_platform?schema=public"
 }
 
 model User {
-  id        Int        @id @default(autoincrement())
-  username  String
-  email     String
-  password  String
-  token     String?
-  restToken DateTime?
-  phone     String?
-  image     String?
-  isDeleted Boolean    @default(false)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  UserRole  UserRole[]
+  id               Int       @id @default(autoincrement())
+  globalId         String    @unique
+  name             String
+  email            String    @unique
+  password         String
+  isActive         Boolean   @default(true)
+  phone            String?
+  address          String?
+  profileImage     String?
+  resetToken       String?
+  deleted          Boolean   @default(false)
+  resetTokenExpiry DateTime?
+  version          Int       @default(1) // Version field for conflict resolution
+  lastModified     DateTime  @updatedAt // Timestamp field for conflict resolution
+  roleGlobalId     String
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  role             Role      @relation(fields: [roleGlobalId], references: [globalId])
+
+  @@unique([id, globalId])
 }
 
+// Role
 model Role {
-  id        Int        @id @default(autoincrement())
-  name      String
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  UserRole  UserRole[]
+  id           Int      @id @default(autoincrement())
+  globalId     String   @unique
+  name         String   @unique
+  deleted      Boolean  @default(false)
+  version      Int      @default(1) // Version field for conflict resolution
+  lastModified DateTime @updatedAt // Timestamp field for conflict resolution
+  users        User[]
+
+  @@unique([id, globalId])
 }
 
-model UserRole {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  roleId    Int
-  role      Role     @relation(fields: [roleId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Accredited {
+  id                Int            @id @default(autoincrement())
+  globalId          String         @unique
+  squareGlobalId    String?
+  treatmentSite     String
+  doctor            String
+  state             String
+  numberOfRfid      Int
+  formNumber        Int
+  deleted           Boolean        @default(false)
+  applicantGlobalId String
+  pharmacyGlobalId  String
+  version           Int            @default(1) // Version field for conflict resolution
+  applicant         Applicant      @relation(fields: [applicantGlobalId], references: [globalId])
+  square            Square?        @relation(fields: [squareGlobalId], references: [globalId])
+  pharmacy          Pharmacy       @relation(fields: [pharmacyGlobalId], references: [globalId])
+  attachment        Attachment[]
+  dismissal         Dismissal[]
+  prescription      Prescription[]
+  lastModified      DateTime       @updatedAt // Timestamp field for conflict resolution
+
+  @@unique([id, globalId])
 }
 
-model Postion {
-  id        Int      @id @default(autoincrement())
-  name      String
-  isDeleted Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Issue     Issue[]
+model Applicant {
+  id                  Int                  @id @default(autoincrement())
+  globalId            String               @unique
+  name                String
+  age                 Int
+  dateOfBirth         DateTime
+  placeOfBirth        String
+  currentResidence    String
+  gender              String               @db.Char(1)
+  directorateGlobalId String
+  phoneNumber         String
+  submissionDate      DateTime
+  deleted             Boolean              @default(false)
+  accredited          Boolean              @default(false)
+  categoryGlobalId    String
+  state               String
+  version             Int                  @default(1) // Version field for conflict resolution
+  lastModified        DateTime             @updatedAt // Timestamp field for conflict resolution
+  Accredited          Accredited[]
+  category            Category             @relation(fields: [categoryGlobalId], references: [globalId])
+  directorate         Directorate          @relation(fields: [directorateGlobalId], references: [globalId])
+  diseasesApplicants  DiseasesApplicants[]
+
+  @@unique([id, globalId])
 }
 
-model GovernmentOffice {
-  id        Int         @id @default(autoincrement())
-  name      String
-  isDeleted Boolean     @default(false)
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  Issue     Issue[]
-  Complaint Complaint[]
-  decision  Decision[]
-}
+model Prescription {
+  id                 Int        @id @default(autoincrement())
+  globalId           String     @unique
+  prescriptionDate   DateTime
+  renewalDate        DateTime
+  attachedUrl        String
+  deleted            Boolean    @default(false)
+  accreditedGlobalId String
+  version            Int        @default(1) // Version field for conflict resolution
+  lastModified       DateTime   @updatedAt // Timestamp field for conflict resolution
+  accredited         Accredited @relation(fields: [accreditedGlobalId], references: [globalId])
 
-model Issue {
-  id                 Int              @id @default(autoincrement())
-  name               String
-  postionId          Int
-  postion            Postion          @relation(fields: [postionId], references: [id])
-  governmentOfficeId Int
-  governmentOffice   GovernmentOffice @relation(fields: [governmentOfficeId], references: [id])
-  title              String
-  type               Int
-  invitationType     Int
-  isDeleted          Boolean          @default(false)
-  state              Boolean          @default(false)
-  createdAt          DateTime         @default(now())
-  updatedAt          DateTime         @updatedAt
-  IssueDetails       IssueDetails[]
-}
-
-model IssueDetails {
-  id          Int      @id @default(autoincrement())
-  issueId     Int
-  Issue       Issue    @relation(fields: [issueId], references: [id])
-  level       Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  detailsDate DateTime
-  isDeleted   Boolean  @default(false)
-  judgment    String
-  refrance    String
-  Resumed     Boolean
-}
-
-model Complaint {
-  id                 Int              @id @default(autoincrement())
-  name               String
-  refrance           String
-  governmentOfficeId Int
-  governmentOffice   GovernmentOffice @relation(fields: [governmentOfficeId], references: [id])
-  title              String
-  description        String
-  date               DateTime
-  officeOpinian      String
-  createdAt          DateTime         @default(now())
-  updatedAt          DateTime         @updatedAt
-  isDeleted          Boolean          @default(false)
-}
-
-model Decision {
-  id                 Int              @id @default(autoincrement())
-  decisionName       String
-  refrance           String
-  governmentOfficeId Int
-  governmentOffice   GovernmentOffice @relation(fields: [governmentOfficeId], references: [id])
-  title              String
-  description        String
-  decisionSource     String
-  nameSource         String
-  isDeleted          Boolean          @default(false)
-  attachmentPath     String
-  createdAt          DateTime         @default(now())
-  updatedAt          DateTime         @updatedAt
-}
-
-model Generalization {
-  id             Int      @id @default(autoincrement())
-  title          String
-  refrance       String
-  description    String
-  attachmentPath String
-  isDeleted      Boolean  @default(false)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-}
-
-//----------------------------------------------------------------------------------------
-model LeaveType {
-  id         Int      @id @default(autoincrement())
-  name       String
-  defaultDay Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  isDeleted       Boolean           @default(false)
-  Leaveallocation Leaveallocation[]
-  leaveDetails    leaveDetails[]
-}
-
-model Leaveallocation {
-  id          Int       @id @default(autoincrement())
-  employeeId  Int
-  leavetypeId Int
-  remaingDay  Int
-  leaveYear   Int
-  LeaveType   LeaveType @relation(fields: [leavetypeId], references: [id])
-  Employ      Employ    @relation(fields: [employeeId], references: [id])
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  isDeleted Boolean @default(false)
+  @@unique([id, globalId])
 }
 
 model Attachment {
-  id         Int      @id @default(autoincrement())
-  file       String
-  emploteeId Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  isDeleted  Boolean  @default(false)
-  Employ     Employ   @relation(fields: [emploteeId], references: [id])
+  id                 Int        @id @default(autoincrement())
+  globalId           String     @unique
+  attachmentFile     String
+  type               String
+  deleted            Boolean    @default(false)
+  accreditedGlobalId String
+  version            Int        @default(1) // Version field for conflict resolution
+  lastModified       DateTime   @updatedAt // Timestamp field for conflict resolution
+  accredited         Accredited @relation(fields: [accreditedGlobalId], references: [globalId])
+
+  @@unique([id, globalId])
 }
 
-model Employ {
-  id                    Int               @id @default(autoincrement())
-  name                  String
-  reference             String
-  phone                 String
-  address               String
-  dob                   DateTime
-  education             String // هذا غير مفهوم
-  megor                 Int //enum
-  graduationDate        DateTime //هذا غير مفهوم
-  idtype                Int //enum
-  idNumber              String
-  issuerDate            DateTime
-  issuerPlace           String
-  empLeaved             String
-  empDgree              Int
-  position              String
-  salary                Float
-  firstEmployment       String
-  employmentDate        DateTime
-  currentUnit           Int
-  currentEmploymentDate DateTime
-  legalStatus           Int //enum
-  employeeStatus        Int //enum
-  detailsDate           DateTime
-  createdAt             DateTime          @default(now())
-  updatedAt             DateTime          @updatedAt
-  isDeleted             Boolean           @default(false)
-  leaveDetails          leaveDetails[]
-  Attachment            Attachment[]
-  Leaveallocation       Leaveallocation[]
+model Category {
+  id           Int         @id @default(autoincrement())
+  globalId     String      @unique
+  name         String
+  SupportRatio Int
+  deleted      Boolean     @default(false)
+  description  String
+  version      Int         @default(1) // Version field for conflict resolution
+  lastModified DateTime    @updatedAt // Timestamp field for conflict resolution
+  Applicant    Applicant[]
 }
 
-model leaveDetails {
-  id          Int      @id @default(autoincrement())
-  employeeeId Int
-  leaveTypeId Int
-  dayNumber   Int
-  startDate   DateTime
-  endDate     DateTime
-  leaveNote   String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model Directorate {
+  id                  Int         @id @default(autoincrement())
+  globalId            String      @unique
+  governorateGlobalId String
+  name                String
+  deleted             Boolean     @default(false)
+  version             Int         @default(1) // Version field for conflict resolution
+  Applicant           Applicant[]
+  Governorate         Governorate @relation(fields: [governorateGlobalId], references: [globalId])
+  lastModified        DateTime    @updatedAt // Timestamp field for conflict resolution
 
-  isDeleted Boolean   @default(false)
-  LeaveType LeaveType @relation(fields: [leaveTypeId], references: [id])
-  employ    Employ    @relation(fields: [employeeeId], references: [id])
+  @@unique([id, globalId])
 }
 
-model Book {
-  id        Int      @id @default(autoincrement())
-  name      String
-  quantity  Int
-  price     Float
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Disease {
+  id                 Int                  @id @default(autoincrement())
+  globalId           String               @unique
+  name               String
+  deleted            Boolean              @default(false)
+  description        String
+  version            Int                  @default(1) // Version field for conflict resolution
+  lastModified       DateTime             @updatedAt // Timestamp field for conflict resolution
+  DiseasesApplicants DiseasesApplicants[]
 
-  isDeleted Boolean     @default(false)
-  BookOrder BookOrder[]
+  @@unique([id, globalId])
 }
 
-model BookOrder {
-  id          Int      @id @default(autoincrement())
-  bookId      Int
-  quantity    Int
-  customerId  Int
-  reference   String
-  description String
-  sellingDate DateTime
-  orderNumber Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  isDeleted   Boolean  @default(false)
-  Book        Book     @relation(fields: [bookId], references: [id])
-  Customer    Customer @relation(fields: [customerId], references: [id])
+model DiseasesApplicants {
+  id                Int       @id @default(autoincrement())
+  globalId          String    @unique
+  diseaseGlobalId   String
+  deleted           Boolean   @default(false)
+  applicantGlobalId String
+  version           Int       @default(1) // Version field for conflict resolution
+  Applicant         Applicant @relation(fields: [applicantGlobalId], references: [globalId])
+  Disease           Disease   @relation(fields: [diseaseGlobalId], references: [globalId])
+  lastModified      DateTime  @updatedAt // Timestamp field for conflict resolution
+
+  @@unique([id, globalId])
 }
 
-model Customer {
-  id        Int         @id @default(autoincrement())
-  name      String
-  type      Int //enum
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  isDeleted Boolean     @default(false)
-  BookOrder BookOrder[]
-  license   license[]
+model Dismissal {
+  id                 Int        @id @default(autoincrement())
+  globalId           String     @unique
+  month              String
+  year               String
+  dateToDay          DateTime
+  state              String
+  totalAmount        Float
+  amountPaid         Float
+  approvedAmount     Float
+  openDismissal      Boolean    @default(false)
+  deleted            Boolean    @default(false)
+  accreditedGlobalId String
+  version            Int        @default(1) // Version field for conflict resolution
+  Accredited         Accredited @relation(fields: [accreditedGlobalId], references: [globalId])
+  lastModified       DateTime   @updatedAt // Timestamp field for conflict resolution
+
+  @@unique([id, globalId])
 }
 
-model licenseType {
-  id        Int       @id @default(autoincrement())
-  name      String
-  fees      Float
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  isDeleted Boolean   @default(false)
-  license   license[]
+model Governorate {
+  id           Int           @id @default(autoincrement())
+  globalId     String        @unique
+  name         String
+  deleted      Boolean       @default(false)
+  version      Int           @default(1) // Version field for conflict resolution
+  Directorate  Directorate[]
+  Pharmacy     Pharmacy[]
+  lastModified DateTime      @updatedAt // Timestamp field for conflict resolution
+
+  @@unique([id, globalId])
 }
 
-model license {
-  id              Int         @id @default(autoincrement())
-  licenseTypeId   Int
-  customerId      Int
-  licenseNumber   String
-  licenseYear     Int
-  compnayPorpose  String
-  compnayLocation String
-  compnayCapital  Float
-  compnayManger   String
-  referenceNum    String
-  referenceDate   DateTime
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-  isDeleted       Boolean     @default(false)
-  licenseType     licenseType @relation(fields: [licenseTypeId], references: [id])
-  Customer        Customer    @relation(fields: [customerId], references: [id])
+model Pharmacy {
+  id                  Int          @id @default(autoincrement())
+  globalId            String       @unique
+  name                String
+  location            String
+  startDispenseDate   Int
+  endispenseDate      Int
+  deleted             Boolean      @default(false)
+  governorateGlobalId String
+  Governorate         Governorate  @relation(fields: [governorateGlobalId], references: [globalId])
+  version             Int          @default(1) // Version field for conflict resolution
+  Accredited          Accredited[]
+  lastModified        DateTime     @updatedAt // Timestamp field for conflict resolution
+
+  @@unique([id, globalId])
+}
+
+model Square {
+  id           Int          @id @default(autoincrement())
+  globalId     String       @unique
+  name         String
+  deleted      Boolean      @default(false)
+  version      Int          @default(1) // Version field for conflict resolution
+  Accredited   Accredited[]
+  lastModified DateTime     @updatedAt // Timestamp field for conflict resolution
+
+  @@unique([id, globalId])
 }
