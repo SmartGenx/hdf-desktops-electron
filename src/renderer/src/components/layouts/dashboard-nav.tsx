@@ -28,9 +28,6 @@ export default function DashboardNav({ items, expanded = true, itemSetting }: Da
     if (href === '/dashboard') {
       return path === href
     }
-    if (href === '/settings') {
-      return signOut()
-    }
 
     return path === href
   }
@@ -132,7 +129,10 @@ export default function DashboardNav({ items, expanded = true, itemSetting }: Da
                           >
                             <Icon className="mx-2 h-5 w-5" />
                             {expanded && (
-                              <span className="min-w-max text-lg font-medium flex items-center justify-between w-full">
+                              <span
+                                onClick={nav.label == 'تسجيل الخروج' ? () => signOut() : () => {}}
+                                className="min-w-max text-lg font-medium flex items-center justify-between w-full"
+                              >
                                 {nav.label}
                               </span>
                             )}

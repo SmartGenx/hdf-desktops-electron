@@ -1,7 +1,7 @@
 import { createHashRouter } from 'react-router-dom'
 import RootLayout from '../layouts/layout'
 // import ProtectedRoute from '../layouts/protected-route'
-import Home from '../pages/home/home'
+import Home from '../pages/accredited/home'
 import Login from '../pages/login/login'
 import ProtectedRoute from '../layouts/protected-route'
 

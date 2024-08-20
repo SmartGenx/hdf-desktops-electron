@@ -1,6 +1,8 @@
 import { NavItem } from '../types/index'
 
+
 export default function useNavItemsSetting() {
+
   const navItems: NavItem[] = [
     {
       list: [
@@ -13,6 +15,7 @@ export default function useNavItemsSetting() {
           href: '/logout',
           icon: 'LogOut',
           label: 'تسجيل الخروج'
+
         }
       ]
     }
