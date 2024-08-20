@@ -37,12 +37,7 @@ export default function Header() {
             </div>
             {/* <ThemeToggle /> */}
             <UserNav />
-            <div>
-            <h1>احمد سالم صالح</h1>
-            <p>sami@g,ankjnkdj</p>
           </div>
-          </div>
-
         </nav>
         <div className="mb-2 px-4"></div>
       </div>

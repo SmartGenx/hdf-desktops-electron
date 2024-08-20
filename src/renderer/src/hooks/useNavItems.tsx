@@ -6,37 +6,43 @@ export default function useNavItems() {
       list: [
         {
           href: '/',
-          icon: 'category',
-          label: ' الصفحة الرئيسية'
-        },
-
+          icon: 'dashboard',
+          label: 'الصفحة الرئيسية'
+        }
+      ]
+    },
+    {
+      title: 'العاملين',
+      list: [
         {
-          href: '',
-          icon: 'idCard',
-          label: 'ادارة المستخدمين',
-          type: 'group',
-          subLinks: [
-            {
-              label: 'المستخدمين',
-              href: '/users'
-            },
-            {
-              label: 'الموطفين',
-              href: '/employees',
-              disabled: true
-            },
-            {
-              label: 'ضبط كلمة المرور',
-              href: '/reset-password',
-              disabled: true
-            }
-          ]
+          href: '/jhj',
+          icon: 'user',
+          label: 'إدارة المتقدمين'
         },
         {
-          href: '/backup',
-          icon: 'databaseBackup',
-          label: 'النسخ الاحتياطي',
-          disabled: true
+          href: '/accreditation',
+          icon: 'accredit',
+          label: 'إدارة الاعتماد'
+        }
+      ]
+    },
+    {
+      title: 'المرضى',
+      list: [
+        {
+          href: '/beneficiaries',
+          icon: 'user',
+          label: 'إدارة المستفيدين'
+        },
+        {
+          href: '/knowledge',
+          icon: 'dismiss',
+          label: 'إدارة الصرف'
+        },
+        {
+          href: '/reports',
+          icon: 'Statistics',
+          label: 'الإحصاءات والتقارير'
         }
       ]
     }

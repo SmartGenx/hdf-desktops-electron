@@ -10,11 +10,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 import { cn } from '../../lib/utils'
-import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { axiosInstance } from '../../lib/http'
-import { Eye, EyeOff } from 'lucide-react'
-import { loginType } from '../../types/index'
+import { typeRespons } from '../../types/index'
 import { useSignIn } from 'react-auth-kit'
 import Pen from '../icons/pen'
 import Lock from '../icons/lock'
@@ -42,16 +41,16 @@ export default function LoginForm() {
         email: data.email,
         password: data.password
       }
-      const response = await axiosInstance.post<loginType>('/auth/login', payload)
+      const response = await axiosInstance.post<typeRespons>('/auth/login', payload)
+      console.log('🚀 ~ onSubmit ~ response:', response.data)
 
       if (response.status === 200 || response.status === 201) {
-        const singInResult = true
-        // const singInResult = singIn({
-        //   token: response.data,
-        //   expiresIn: 10080,
-        //   tokenType: 'Beaere',
-        //   authState: response.data
-        // })
+        const singInResult = singIn({
+          token: response.data.token, 
+          expiresIn: 10080,
+          tokenType: 'Beaere',
+          authState: response.data
+        })
         if (singInResult) {
           toast({
             title: 'مرحبا مجددا',
@@ -115,7 +114,7 @@ export default function LoginForm() {
                             martial
                             label="كلمة المرور"
                             placeholder="كلمة المرور"
-                            type={showPassword ? 'text' : 'password'}
+                            type="password"
                             {...field}
                             disabled={delayedSubmitting}
                             className="bg-primary/5"

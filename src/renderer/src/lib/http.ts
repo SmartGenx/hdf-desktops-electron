@@ -3,7 +3,7 @@ import axios, { AxiosRequestConfig } from 'axios'
 // import { redirect } from 'react-router-dom';
 
 export const axiosInstance = axios.create({
-  baseURL: ''
+  baseURL: 'http://localhost:5050/api'
 })
 
 type Config = AxiosRequestConfig<unknown> | undefined

@@ -19,6 +19,16 @@ export type loginType = {
   password: string
 }
 
+export type typeRespons = {
+  token: string
+  user: User
+}
+type User = {
+  name: string
+  email: string
+  profileImage: string
+}
+
 export interface NavItemWithChildren extends NavItem {
   items: NavItemWithChildren[]
 }

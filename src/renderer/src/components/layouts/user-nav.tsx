@@ -1,6 +1,6 @@
 // import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ChevronDown } from 'lucide-react'
-import {  useIsAuthenticated, useSignOut } from 'react-auth-kit'
+import { useAuthUser, useIsAuthenticated, useSignOut } from 'react-auth-kit'
 // import { useAuthUser, useIsAuthenticated, useSignOut } from 'react-auth-kit'
 // import userIcon from '../icons/user.svg'
 import { Button } from '../ui/button'
@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '../ui/dropdown-menu'
+import { Avatar } from '../ui/avatar'
 // import { Avatar } from '../ui/avatar'
 
 export type userData = {
@@ -26,29 +27,29 @@ export type userData = {
 export default function UserNav() {
   const issAuthenticated = useIsAuthenticated()
   const signOut = useSignOut()
-  // const auth = useAuthUser()
+  const auth = useAuthUser()
 
   if (issAuthenticated()) {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild className="justify-between w-44 border">
           <Button variant="ghost" className="relative flex gap-1">
-            {/* <Avatar className=''/> */}
+            <Avatar className="" />
             {/* <img
               className="w-[35px] h-[35px]"
-              src={auth?.user?.image ?? userIcon}
-              alt={auth?.user?.name ?? 'Unknown User'}
-            />
+              src={}
+              alt={auth?.name ?? 'Unknown User'}
+            /> */}
 
-            <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">
-                {auth?.user?.name ?? 'Unknown User'}
-              </p>
-              <p className="text-xs leading-none text-muted-foreground">
-                {auth?.user?.name ?? 'Unknown User'}
-              </p>
-            </div> */}
-            <ChevronDown size={15} />
+            <div className="flex  space-y-1">
+              <div>
+                <p className="text-sm font-medium leading-none">{'Unknown User'}</p>
+                <p className="text-xs leading-none text-muted-foreground">{'Unknown User'}</p>
+              </div>
+              <div>
+                <ChevronDown size={15} />
+              </div>
+            </div>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end" forceMount>

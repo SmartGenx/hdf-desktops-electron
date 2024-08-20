@@ -2,6 +2,7 @@ import { cn } from '@renderer/lib/utils'
 import { useEffect, useState } from 'react'
 import logo from '../../assets/images/newlogo.svg'
 import useNavItems from '../../hooks/useNavItems'
+import useNavItemsSetting from '../../hooks/useNavItemsSetting'
 import useScreenSize from '../../hooks/useScreenSize'
 import SidebarToggleIcon from '../icons/sidebar-toggler-icon'
 import { Separator } from '../ui/separator'
@@ -10,6 +11,7 @@ import DashboardNav from './dashboard-nav'
 export default function Sidebar() {
   const [expanded, setExpanded] = useState(true)
   const navItems = useNavItems()
+  const navItemsSetting = useNavItemsSetting()
   const screenSize = useScreenSize()
   const width = screenSize.width
 
@@ -40,8 +42,8 @@ export default function Sidebar() {
         <Separator className="mt-6 " />
       </div>
 
-      <div className="flex-grow overflow-y-auto py-4 hide-scrollbar">
-        <DashboardNav items={navItems} expanded={expanded} />
+      <div className="flex-grow overflow-y-auto py-4 hide-scrollbar ">
+        <DashboardNav items={navItems} expanded={expanded} itemSetting={navItemsSetting} />
       </div>
     </aside>
   )

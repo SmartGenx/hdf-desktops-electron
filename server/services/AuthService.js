@@ -60,7 +60,14 @@ class AuthService {
 
       const token = jwt.sign({ userId: existingUser.id }, JWT_SECRET)
 
-      return { token, user: existingUser }
+      return {
+        token,
+        user: {
+          name: existingUser.name,
+          email: existingUser.email,
+          profileImage: existingUser.profileImage
+        }
+      }
     } catch (error) {
       console.error(error)
       throw new DatabaseError('Error deleting accreditation.', error)
@@ -142,7 +149,7 @@ class AuthService {
       throw new DatabaseError('Error deleting accreditation.', error)
     }
   }
-  
+
   async forgotPassword(email) {
     try {
       const user = await this.prisma.user.findUnique({ where: { email } })
@@ -204,6 +211,5 @@ class AuthService {
       throw new DatabaseError('Error deleting accreditation.', error)
     }
   }
-
 }
 module.exports = AuthService
