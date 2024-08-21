@@ -1,5 +1,7 @@
 import StatistCard from '@renderer/components/statistCard'
 import StatistChartCard from './statistChartCard'
+import StatistchartTowCard from './statistchartTowCard'
+import Statistsidebar from './statistsidebar'
 
 const Home = () => {
   return (
@@ -18,12 +20,14 @@ const Home = () => {
           <StatistCard title={'المرضى'} value={'20'} subtitle={'مستفيد'} icon={'house'} />
         </div>
       </div>
-      <div className="flex flex-col bg-red-500 gap-1">
-
-
+      <div className="flex  jstify-between   mt-4">
+        <div className="flex flex-col gap-2">
           <StatistChartCard />
-          <StatistChartCard />
-
+          <StatistchartTowCard />
+        </div>
+        <div>
+          <Statistsidebar />
+        </div>
       </div>
     </div>
   )
