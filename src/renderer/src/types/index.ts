@@ -18,6 +18,13 @@ export type loginType = {
   email: string
   password: string
 }
+export interface statisticCardType {
+  diseaseCount:     number;
+  GovernorateCount: number;
+  directoratecount: number;
+  squareCount:      number;
+}
+
 
 export type typeRespons = {
   token: string
