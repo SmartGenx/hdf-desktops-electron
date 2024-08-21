@@ -1,8 +1,9 @@
 import { createHashRouter } from 'react-router-dom'
 import RootLayout from '../layouts/layout'
 // import ProtectedRoute from '../layouts/protected-route'
-import Home from '../pages/accredited/home'
+import Home from '../pages/home/home'
 import Login from '../pages/login/login'
+import Applicants from '../pages/Applicants/home'
 import ProtectedRoute from '../layouts/protected-route'
 
 export const router = createHashRouter([
@@ -20,8 +21,8 @@ export const router = createHashRouter([
         // element: <Home />
       },
       {
-        path: '/backup',
-        element: <ProtectedRoute element={<Login />} />
+        path: '/applicants',
+        element: <ProtectedRoute element={<Applicants />} />
         // element: <Login />
       }
     ]

@@ -59,9 +59,10 @@ export default function DashboardNav({ items, expanded = true, itemSetting }: Da
                   <TooltipProvider delayDuration={0}>
                     <Tooltip disableHoverableContent>
                       <TooltipTrigger asChild>
-                        <div
+                        <Link
+                          to={nav.href}
                           className={cn(
-                            'group mb-1 flex items-center px-4 py-3 text-sm font-medium hover:bg-[#196CB0] hover:text-white cursor-pointer ',
+                            'group mb-1 flex items-center px-4 py-3 text-sm font-medium hover:bg-[#196CB0] hover:text-white cursor-pointer',
                             isSelected(nav.href)
                               ? 'bg-[#196CB0] text-white border-l-4 border-primary'
                               : 'transparent',
@@ -78,7 +79,7 @@ export default function DashboardNav({ items, expanded = true, itemSetting }: Da
                               {nav.label}
                             </span>
                           )}
-                        </div>
+                        </Link>
                       </TooltipTrigger>
                       {!expanded && (
                         <TooltipContent side="left">
@@ -114,9 +115,11 @@ export default function DashboardNav({ items, expanded = true, itemSetting }: Da
                     <TooltipProvider delayDuration={0}>
                       <Tooltip disableHoverableContent>
                         <TooltipTrigger asChild>
-                          <div
+                          <Link
+                          
+                            to={nav.href}
                             className={cn(
-                              'group mb-1 flex items-center px-4 py-3 text-sm font-medium hover:bg-[#196CB0] hover:text-white cursor-pointer ',
+                              'group mb-1 flex items-center px-4 py-3 text-sm font-medium hover:bg-[#196CB0] hover:text-white cursor-pointer',
                               isSelected(nav.href)
                                 ? 'bg-[#196CB0] text-white border-l-4 border-primary'
                                 : 'transparent',
@@ -125,18 +128,17 @@ export default function DashboardNav({ items, expanded = true, itemSetting }: Da
                             )}
                             onClick={(e) => {
                               if (nav.disabled) e.preventDefault()
+                              if (nav.label === 'تسجيل الخروج') signOut()
                             }}
                           >
                             <Icon className="mx-2 h-5 w-5" />
                             {expanded && (
-                              <span
-                                onClick={nav.label == 'تسجيل الخروج' ? () => signOut() : () => {}}
-                                className="min-w-max text-lg font-medium flex items-center justify-between w-full"
-                              >
+                              <span className="min-w-max text-lg font-medium flex items-center justify-between w-full">
                                 {nav.label}
                               </span>
                             )}
-                          </div>
+
+                          </Link>
                         </TooltipTrigger>
                         {!expanded && (
                           <TooltipContent side="left">

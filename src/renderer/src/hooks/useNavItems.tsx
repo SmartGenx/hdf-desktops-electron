@@ -15,7 +15,7 @@ export default function useNavItems() {
       title: 'العاملين',
       list: [
         {
-          href: '/jhj',
+          href: '/applicants',
           icon: 'user',
           label: 'إدارة المتقدمين'
         },

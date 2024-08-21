@@ -137,6 +137,19 @@ export const Icons = {
       />
     </svg>
   ),
+  filter: ({ ...props }: LucideProps) => (
+    <svg width="21" height="19" viewBox="0 0 21 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M1.63477 3.02905H8.89773" stroke="white" />
+      <path d="M1.63477 9.27905H10.9729" stroke="white" />
+      <path d="M18.2356 9.27905H20.3107" stroke="white" />
+      <path d="M13.0481 3.02905L20.3111 3.02905" stroke="white" />
+      <path d="M12.0105 15.5291L19.2735 15.5291" stroke="white" />
+      <path d="M1.63477 15.5291H4.74747" stroke="white" />
+      <ellipse cx="6.82245" cy="15.5289" rx="2.07513" ry="2.08333" stroke="white" />
+      <ellipse cx="16.1608" cy="9.27889" rx="2.07513" ry="2.08333" stroke="white" />
+      <ellipse cx="10.9728" cy="3.02889" rx="2.07513" ry="2.08333" stroke="white" />
+    </svg>
+  ),
   house: ({ ...props }: LucideProps) => (
     <svg width="43" height="34" viewBox="0 0 43 34" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M29.8652 9.59953V3.19983H31.9985V9.59953H29.8652Z" fill="#196CB0" />

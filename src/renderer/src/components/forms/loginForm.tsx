@@ -2,7 +2,7 @@
 import * as React from 'react'
 import { Button } from '../ui/button'
 import { Form, FormControl, FormField, FormItem } from '../ui/form'
-import { Input } from '../ui/input'
+import { Input } from '../../components/inputLogin'
 import { useToast } from '../ui/use-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
 // import { signIn } from "next-auth/react";
@@ -46,7 +46,7 @@ export default function LoginForm() {
 
       if (response.status === 200 || response.status === 201) {
         const singInResult = singIn({
-          token: response.data.token, 
+          token: response.data.token,
           expiresIn: 10080,
           tokenType: 'Beaere',
           authState: response.data
