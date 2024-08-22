@@ -16,13 +16,11 @@ import { SlidersHorizontal, X } from 'lucide-react'
 import { Separator } from '@radix-ui/react-separator'
 
 const FilterDrawer = () => {
-  const [selectedDateRange, setSelectedDateRange] = useState({
-    startDate: null,
-    endDate: null
-  })
+  const [date, setDate] = React.useState<Date | undefined>(new Date())
+  const [clan, setclan] = React.useState<boolean>(false)
 
   const handleDateChange = (range) => {
-    setSelectedDateRange(range)
+    // setSelectedDateRange(range)
   }
 
   return (
@@ -72,18 +70,31 @@ const FilterDrawer = () => {
               <CheckboxWithLabel label="تحديد الفترة" />
             </div>
             <div className="grid grid-cols-2 gap-2 mb-4">
-              <Button className="bg-blue-600 text-white">من</Button>
-              <Button className="bg-blue-600 text-white">إلى</Button>
+              <Button className="bg-blue-600 text-white " onClick={() => setclan(!clan)}>
+                من
+              </Button>
+              <Button className="bg-blue-600 text-white" onClick={() => setclan(!clan)}>
+                إلى
+              </Button>
             </div>
-            {/* <Calendar onDateChange={handleDateChange} selected={selectedDateRange} /> */}
+            {clan ? (
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                className="rounded-md border "
+              />
+            ) : null}
           </div>
         </div>
 
         <DrawerFooter className="flex justify-between p-4">
-          <DrawerClose asChild>
-            <Button variant="outline">إلغاء</Button>
-          </DrawerClose>
-          <Button>حفظ</Button>
+          <div className="flex justify-between">
+            <DrawerClose asChild>
+              <Button variant="outline">إلغاء</Button>
+            </DrawerClose>
+            <Button className="bg-[#196CB0]">فلتر</Button>
+          </div>
         </DrawerFooter>
       </DrawerContent>
     </Drawer>

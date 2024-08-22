@@ -1,12 +1,31 @@
 import StatistCard from '@renderer/components/statistCard'
-import React, { useState } from 'react'
 import SearchInput from '../../searchInput'
 import Boutton from '@renderer/components/Boutton'
-import FilterComponent from './filter'
 import FilterDrawer from './filter'
+import StateTable from './applicantTabel'
+import { useAuthHeader } from 'react-auth-kit'
+import { Applicants } from '@renderer/types'
+import { useQuery } from '@tanstack/react-query'
+import { getApi } from '@renderer/lib/http'
+import { Link } from 'react-router-dom'
 
 const Home = () => {
- 
+  const authToken = useAuthHeader()
+  const { isPending, error, data } = useQuery({
+    queryKey: ['applicant'],
+    queryFn: () =>
+      getApi<Applicants>(
+        '/applicant?include[directorate]=true&include[category]=true&include[diseasesApplicants]=true&page=1&pageSize=4&',
+        {
+          headers: {
+            Authorization: authToken()
+          }
+        }
+      )
+  })
+  console.log('kmgktmgkrgkrmgkmrkgrlkgm', data?.data[0])
+  if (isPending) return 'Loading...'
+  if (error) return 'An error has occurred: ' + error.message
   return (
     <div>
       <div className="grid grid-cols-4 gap-2">
@@ -29,17 +48,18 @@ const Home = () => {
         </div>
         <div className="flex gap-7">
           <SearchInput />
-          <FilterDrawer  />
+          <FilterDrawer />
           <Boutton icon="filter" title={'طباعة'} />
-          <Boutton
-            title={'اضافة متقدم '}
-            className="bg-[#92A709] hover:bg-[#5b6806] focus:ring-[#92A709]"
-          />
+          <Link to={'/FormApplicant'}>
+            <Boutton
+              title={'اضافة متقدم '}
+              className="bg-[#92A709] hover:bg-[#5b6806] focus:ring-[#92A709]"
+            />
+          </Link>
         </div>
       </div>
-      <div className="mt-5">
-
-      </div>
+      <div className="mt-5"></div>
+      <StateTable info={data.data.info || []} page={0} pageSize={''} total={''} />
     </div>
   )
 }
