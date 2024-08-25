@@ -14,6 +14,7 @@ export default function Header() {
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen)
   }
+  console.log('vndvkjnvjnkjnlvnkjvndkjvdvnbkj' + currentPath?.label)
 
   return (
     <>

@@ -19,9 +19,9 @@ import { Gender } from '../../../types/enums'
 import { cn } from '@/lib/utils'
 type Props = {
   info: ApplicantsInfo[]
-  page: number
+  page: string
   pageSize: string
-  total: string
+  total: number
 }
 export default function StateTable({ info, page, total, pageSize }: Props) {
   const navigate = useNavigate()
@@ -42,7 +42,7 @@ export default function StateTable({ info, page, total, pageSize }: Props) {
       {
         accessorKey: 'directorate.name',
         header: 'المديرية',
-        cell: ({ row }) => row.original.directorate.name
+        cell: ({ row }) => row.original.directorate?.name
       },
       {
         accessorKey: 'category.name',

@@ -39,9 +39,9 @@ export type ApplicantsInfo = {
   state: string
   version: number
   lastModified: Date
-  directorate: Directorate
+  directorate?: Directorate
   category: Category
-  diseasesApplicants: DiseasesApplicant[]
+  diseasesApplicants?: DiseasesApplicant[]
 }
 export type Category = {
   id: number

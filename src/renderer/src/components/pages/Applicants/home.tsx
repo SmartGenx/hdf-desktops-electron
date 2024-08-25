@@ -11,19 +11,27 @@ import { Link } from 'react-router-dom'
 
 const Home = () => {
   const authToken = useAuthHeader()
-  const { isPending, error, data } = useQuery({
+  const {
+    isPending,
+    error,
+    data: applicants
+  } = useQuery({
     queryKey: ['applicant'],
     queryFn: () =>
-      getApi<Applicants>(
-        '/applicant?include[directorate]=true&include[category]=true&include[diseasesApplicants]=true&page=1&pageSize=4&',
-        {
-          headers: {
-            Authorization: authToken()
-          }
+      getApi<Applicants>('/applicant', {
+        params: {
+          'include[directorate]': true,
+          'include[category]': true,
+          'include[diseasesApplicants]': true,
+          page: 1 || 11,
+          pageSize: 5 || 10
+        },
+        headers: {
+          Authorization: authToken()
         }
-      )
+      })
   })
-  console.log('kmgktmgkrgkrmgkmrkgrlkgm', data?.data[0])
+
   if (isPending) return 'Loading...'
   if (error) return 'An error has occurred: ' + error.message
   return (
@@ -59,7 +67,12 @@ const Home = () => {
         </div>
       </div>
       <div className="mt-5"></div>
-      <StateTable info={data.data.info || []} page={0} pageSize={''} total={''} />
+      <StateTable
+        info={applicants.data.info || []}
+        page={applicants.data.page || '1'}
+        pageSize={applicants.data.pageSize || '5'}
+        total={applicants.data.total || 10}
+      />
     </div>
   )
 }
