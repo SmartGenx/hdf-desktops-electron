@@ -5,6 +5,7 @@ import Home from '../pages/home/home'
 import Login from '../pages/login/login'
 import Applicants from '../pages/Applicants/home'
 import FormApplicant from '../pages/Applicants/formApplicant'
+import Accredited from '../pages/accredited/home'
 import ProtectedRoute from '../layouts/protected-route'
 
 export const router = createHashRouter([
@@ -29,6 +30,11 @@ export const router = createHashRouter([
       {
         path: '/FormApplicant',
         element: <ProtectedRoute element={<FormApplicant />} />
+        // element: <Login />
+      },
+      {
+        path: '/accredited',
+        element: <ProtectedRoute element={<Accredited />} />
         // element: <Login />
       }
     ]

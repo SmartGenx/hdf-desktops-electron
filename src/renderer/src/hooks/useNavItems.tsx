@@ -20,7 +20,7 @@ export default function useNavItems() {
           label: 'إدارة المتقدمين'
         },
         {
-          href: '/accreditation',
+          href: '/accredited',
           icon: 'accredit',
           label: 'إدارة الاعتماد'
         }
