@@ -26,24 +26,17 @@ export default function useNavItems() {
         }
       ]
     },
+
     {
-      title: 'المرضى',
+      title: 'الصرف',
       list: [
-        {
-          href: '/beneficiaries',
-          icon: 'user',
-          label: 'إدارة المستفيدين'
-        },
+
         {
           href: '/knowledge',
           icon: 'dismiss',
           label: 'إدارة الصرف'
         },
-        {
-          href: '/reports',
-          icon: 'Statistics',
-          label: 'الإحصاءات والتقارير'
-        }
+       
       ]
     }
   ]

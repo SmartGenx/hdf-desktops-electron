@@ -4,7 +4,7 @@ import Boutton from '@renderer/components/Boutton'
 import FilterDrawer from './filter'
 import StateTable from './accreditedTable'
 import { useAuthHeader } from 'react-auth-kit'
-import { Applicants } from '@renderer/types'
+import { Accrediteds } from '@renderer/types'
 import { useQuery } from '@tanstack/react-query'
 import { getApi } from '@renderer/lib/http'
 import { Link } from 'react-router-dom'
@@ -15,15 +15,14 @@ const Home = () => {
   const {
     isPending,
     error,
-    data: applicants
+    data: accredited
   } = useQuery({
-    queryKey: ['applicant'],
+    queryKey: ['accredited'],
     queryFn: () =>
-      getApi<Applicants>('/applicant', {
+      getApi<Accrediteds>('/accredited', {
         params: {
-          'include[directorate]': true,
-          'include[category]': true,
-          'include[diseasesApplicants]': true,
+          'include[applicant]': true,
+          'include[square]': true,
           page: 1 || 11,
           pageSize: 5 || 10
         },
@@ -53,15 +52,16 @@ const Home = () => {
       </div>
       <div className="flex  gap-5 mt-[85px] items-center justify-between  ">
         <div className="w-fit">
-          <h1 className="text-2xl font-medium">جدول المتقدمين</h1>
+          <h1 className="text-2xl font-medium">جدول المعتمدين</h1>
         </div>
         <div className="flex gap-7">
           <SearchInput />
           <FilterDrawer />
           <Boutton icon="filter" title={'طباعة'} />
-          <Link to={'/FormApplicant'}>
+          <Link to={'/FormAccredited'}>
             <Boutton
-              title={'اضافة متقدم '}
+            icon='addaccredited'
+              title={'اضافة معتمد '}
               className="bg-[#92A709] hover:bg-[#5b6806] focus:ring-[#92A709]"
             />
           </Link>
@@ -69,10 +69,10 @@ const Home = () => {
       </div>
       <div className="mt-5"></div>
       <AccreditedTable
-        info={applicants.data.info || []}
-        page={applicants.data.page || '1'}
-        pageSize={applicants.data.pageSize || '5'}
-        total={applicants.data.total || 10}
+        info={accredited.data.info || []}
+        page={accredited.data.page || '1'}
+        pageSize={accredited.data.pageSize || '5'}
+        total={accredited.data.total || 10}
       />
     </div>
   )

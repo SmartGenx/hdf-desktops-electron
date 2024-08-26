@@ -11,47 +11,43 @@ import {
   DropdownMenuTrigger
 } from '../../ui/dropdown-menu'
 import { HdfTable } from '../../tables/hdfTable'
-import { Applicants, ApplicantsInfo } from '../../../types/index'
+import { AccreditedInfo } from '../../../types/index'
 import { Button } from '../../ui/button'
 import { Gender } from '../../../types/enums'
 // import DeleteDialog from '@/components/delete-dialog'
 // import { Paths } from '@/enums'
 import { cn } from '@/lib/utils'
 type Props = {
-  info: ApplicantsInfo[]
+  info: AccreditedInfo[]
   page: string
   pageSize: string
   total: number
 }
 export default function AccreditedTable({ info, page, total, pageSize }: Props) {
   const navigate = useNavigate()
-  const columns = React.useMemo<ColumnDef<ApplicantsInfo>[]>(
+  const columns = React.useMemo<ColumnDef<AccreditedInfo>[]>(
     () => [
       {
-        accessorKey: 'name',
+        accessorKey: 'applicant.name',
         header: 'الأسم'
       },
       {
-        accessorKey: 'gender',
-        header: 'الجنس',
-        cell: ({ row }) => {
-          const gender = row.original.gender
-          return Gender[gender]
-        }
+        accessorKey: 'square.name',
+        header: 'المربع',
+        cell: ({ row }) => row.original.square?.name
       },
       {
-        accessorKey: 'directorate.name',
-        header: 'المديرية',
-        cell: ({ row }) => row.original.directorate?.name
+        accessorKey: 'treatmentSite',
+        header: 'موقع العلاج',
       },
       {
-        accessorKey: 'category.name',
-        header: 'الفئة',
-        cell: ({ row }) => row.original.category.name
+        accessorKey: 'doctor',
+        header: 'الدكتور المعالج',
+
       },
       {
-        accessorKey: 'phoneNumber',
-        header: 'رقم الجوال'
+        accessorKey: 'state',
+        header: 'الحالة '
       },
       {
         id: 'actions',

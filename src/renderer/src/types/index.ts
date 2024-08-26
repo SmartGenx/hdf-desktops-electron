@@ -14,11 +14,51 @@ export type NavItem = {
   }>
 }
 
+export type Square = {
+  id:           number;
+  globalId:     string;
+  name:         string;
+  deleted:      boolean;
+  version:      number;
+  lastModified: Date;
+}
+export type Accrediteds = {
+  info:     AccreditedInfo[];
+  total:    number;
+  page:     string;
+  pageSize: string;
+}
 export type Applicants = {
   info: ApplicantsInfo[]
   total: number
   page: string
   pageSize: string
+}
+export type AccreditedInfo = {
+  id:                number;
+  globalId?:          string;
+  squareGlobalId:    string;
+  treatmentSite:     string;
+  doctor:            string;
+  state:             string;
+  numberOfRfid:      number;
+  formNumber:        number;
+  deleted?:           boolean;
+  applicantGlobalId: string;
+  pharmacyGlobalId:  string;
+  version?:           number;
+  lastModified?:      Date;
+  applicant?:         ApplicantsInfo;
+  square?:            Square;
+  pharmacy?:Pharmacy
+}
+export type Pharmacy = {
+  globalId:            string;
+  name:                string;
+  location:            string;
+  startDispenseDate:   number;
+  endispenseDate:      number;
+  governorateGlobalId: string;
 }
 
 export type ApplicantsInfo = {

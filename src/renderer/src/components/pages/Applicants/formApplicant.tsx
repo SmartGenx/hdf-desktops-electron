@@ -23,19 +23,17 @@ import { axiosInstance } from '../../../lib/http'
 import { useSignIn } from 'react-auth-kit'
 
 const formSchema = z.object({
-  name: z.string().min(1, { message: 'ادخل الاسم الكامل' }),
-  age: z.string().min(1, { message: 'ادخل العمر' }),
-  dateOfBirth: z.string().min(1, { message: 'ادخل تاريخ الميلاد' }),
-  placeOfBirth: z.string().min(1, { message: 'ادخل مكان الميلاد' }),
-  currentResidence: z.string().min(1, { message: 'ادخل مكان السكن الحالي' }),
-  gender: z.string().min(1, { message: 'ادخل الجنس' }),
-  phoneNumber: z.string().min(1, { message: 'ادخل رقم الجوال' }),
-  directorateGlobalId: z.string().min(1, { message: 'ادخل المدرية' }),
-  diseaseGlobalId: z.string().min(1, { message: 'ادخل المرض' }),
-  categoryGlobalId: z.string().min(1, { message: 'ادخل فئة' }),
+  name: z.string(),
+  age: z.string(),
+  dateOfBirth: z.string(),
+  currentResidence: z.string(),
+  gender: z.string(),
+  phoneNumber: z.string(),
+  directorateGlobalId: z.string(),
+  diseaseGlobalId: z.string(),
+  categoryGlobalId: z.string(),
 
-  submissionDate: z.string().min(1, { message: 'ادخل تاريخ التقديم' }),
-  state: z.string().min(1, { message: 'ادخل الحالة' })
+  state: z.string()
 })
 
 type UserFormValue = z.infer<typeof formSchema>
@@ -158,6 +156,12 @@ export default function FormApplicant() {
 
           <div>
             <Form {...form}>
+              {process.env.NODE_ENV === 'development' && (
+            <>
+              <p>Ignore it, it just in dev mode</p>
+              <div>{JSON.stringify(form.formState.errors)}</div>
+            </>
+          )}
               <form
                 id="formId"
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -276,7 +280,7 @@ export default function FormApplicant() {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Select disabled={delayedSubmitting} {...field}>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <SelectTrigger className="">
                                   <SelectValue placeholder="اخر مديرية" />
                                 </SelectTrigger>
@@ -326,7 +330,7 @@ export default function FormApplicant() {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Select disabled={delayedSubmitting} {...field}>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <SelectTrigger className="">
                                   <SelectValue placeholder="اخر المرض" />
                                 </SelectTrigger>
@@ -349,11 +353,11 @@ export default function FormApplicant() {
                     <div className="col-span-1 ">
                       <FormField
                         control={form.control}
-                        name="diseaseGlobalId"
+                        name="categoryGlobalId"
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Select disabled={delayedSubmitting} {...field}>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <SelectTrigger className="">
                                   <SelectValue placeholder="اخر فئة" />
                                 </SelectTrigger>
@@ -380,7 +384,7 @@ export default function FormApplicant() {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Select disabled={delayedSubmitting} {...field}>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <SelectTrigger className="">
                                   <SelectValue placeholder="اخر الحالة" />
                                 </SelectTrigger>
