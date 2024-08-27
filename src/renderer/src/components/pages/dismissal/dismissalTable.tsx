@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { ColumnDef } from '@tanstack/react-table'
 // import { GevStatus, GovernmentFacility, kind_of_case } from '../../../types/enum'
-import { MoreHorizontal, MoreVertical } from 'lucide-react'
+import {  MoreVertical } from 'lucide-react'
 
 import { useNavigate } from 'react-router-dom'
 import {
@@ -11,44 +11,54 @@ import {
   DropdownMenuTrigger
 } from '../../ui/dropdown-menu'
 import { HdfTable } from '../../tables/hdfTable'
-import { AccreditedInfo } from '../../../types/index'
+import { DismissalInfo } from '../../../types/index'
 import { Button } from '../../ui/button'
-import { Gender } from '../../../types/enums'
-// import DeleteDialog from '@/components/delete-dialog'
-// import { Paths } from '@/enums'
-import { cn } from '@/lib/utils'
+
+import { Month } from '../../../types/enums'
 type Props = {
-  info: AccreditedInfo[]
+  info: DismissalInfo[]
   page: string
   pageSize: string
   total: number
 }
-export default function AccreditedTable({ info, page, total, pageSize }: Props) {
+export default function DismissalTable({ info, page, total, pageSize }: Props) {
   const navigate = useNavigate()
-  const columns = React.useMemo<ColumnDef<AccreditedInfo>[]>(
+  const columns = React.useMemo<ColumnDef<DismissalInfo>[]>(
     () => [
       {
-        accessorKey: 'applicant',
+        accessorKey: ' .',
         header: 'الأسم',
-        cell: ({ row }) => row.original.applicant?.name
+        cell: ({ row }) => row.original.Accredited?.applicant?.name
       },
       {
-        accessorKey: 'square.name',
-        header: 'المربع',
-        cell: ({ row }) => row.original.square?.name
+        accessorKey: '',
+        header: 'اسم الصيدلية',
+        cell: ({ row }) => row.original.Accredited?.pharmacy?.name
       },
       {
-        accessorKey: 'treatmentSite',
-        header: 'موقع العلاج',
+        accessorKey: '',
+        header: 'الشهر',
+        cell: ({ row }) => {
+          const numMonth = row.original.month // Extract the month value from the row
+          return Month[+numMonth]
+        }
       },
       {
-        accessorKey: 'doctor',
-        header: 'الدكتور المعالج',
-
+        accessorKey: 'dateToDay',
+        header: 'تاريخ الصرف',
+        cell: ({ row }) => {
+          const date = new Date(row.original.dateToDay)
+          return new Intl.DateTimeFormat('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+          }).format(date)
+        }
       },
       {
-        accessorKey: 'state',
-        header: 'الحالة '
+        accessorKey: '',
+        header: 'رقم RFD ',
+        cell: ({ row }) => row.original.Accredited?.numberOfRfid
       },
       {
         id: 'actions',

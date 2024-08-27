@@ -19,11 +19,10 @@ import * as z from 'zod'
 import { cn } from '../../../lib/utils'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { axiosInstance, getApi, postApi } from '../../../lib/http'
+import {  getApi, postApi } from '../../../lib/http'
 import { useAuthHeader, useSignIn } from 'react-auth-kit'
-import { Pen } from 'lucide-react'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { Pharmacy, Square, AccreditedInfo } from '@renderer/types'
+import { Pharmacy, Square } from '@renderer/types'
 import FileUploader from '@renderer/components/fileUploader'
 
 const formSchema = z.object({
@@ -43,7 +42,7 @@ const formSchema = z.object({
 
 type AccreditedFormValue = z.infer<typeof formSchema>
 
-export default function FormAccredited() {
+export default function FormDismissal() {
   const signIn = useSignIn()
   const { toast } = useToast()
   const navigate = useNavigate()
@@ -105,63 +104,63 @@ export default function FormAccredited() {
     setRfid(newRfid)
     form.setValue('numberOfRfid', newRfid) // Update the form's value if using a form library like React Hook Form
   }
-  const { mutate } = useMutation({
-    // mutationKey: ['AccreditedInfo'],
-    mutationFn: (datas: AccreditedFormValue) => {
-      const formData = new FormData()
+  // const { mutate } = useMutation({
+  //   // mutationKey: ['AccreditedInfo'],
+  //   mutationFn: (datas: AccreditedFormValue) => {
+  //     const formData = new FormData()
 
-      // Append each form field to the FormData object
-      formData.append('squareGlobalId', datas.squareGlobalId)
-      formData.append('treatmentSite', datas.treatmentSite)
-      formData.append('doctor', datas.doctor)
-      formData.append('state', datas.state)
-      formData.append('numberOfRfid', datas.numberOfRfid)
-      formData.append('formNumber', datas.formNumber)
-      formData.append('applicantGlobalId', datas.applicantGlobalId)
-      formData.append('pharmacyGlobalId', datas.pharmacyGlobalId)
-      formData.append('type', datas.type)
-      formData.append('prescriptionDate', datas.prescriptionDate)
+  //     // Append each form field to the FormData object
+  //     formData.append('squareGlobalId', datas.squareGlobalId)
+  //     formData.append('treatmentSite', datas.treatmentSite)
+  //     formData.append('doctor', datas.doctor)
+  //     formData.append('state', datas.state)
+  //     formData.append('numberOfRfid', datas.numberOfRfid)
+  //     formData.append('formNumber', datas.formNumber)
+  //     formData.append('applicantGlobalId', datas.applicantGlobalId)
+  //     formData.append('pharmacyGlobalId', datas.pharmacyGlobalId)
+  //     formData.append('type', datas.type)
+  //     formData.append('prescriptionDate', datas.prescriptionDate)
 
-      // Append files
-      formData.append('atch', datas.atch)
-      formData.append('pt', datas.pt)
-      console.log('🚀 ~ onSubmit ~ formData:', datas)
-      // console.log('🚀 ~ onSubmit ~ formData:', formData.get("d)
+  //     // Append files
+  //     formData.append('atch', datas.atch)
+  //     formData.append('pt', datas.pt)
+  //     console.log('🚀 ~ onSubmit ~ formData:', datas)
+  //     // console.log('🚀 ~ onSubmit ~ formData:', formData.get("d)
 
-      // Return the API call to be executed
-      return postApi('/accredited', formData, {
-        headers: {
-          Authorization: `${authToken()}`,
-          'Content-Type': 'multipart/form-data' // Ensure this header is correct for file uploads
-        }
-      })
-    },
-    onSuccess: (data, variables, context) => {
-      toast({
-        title: 'تمت العملية',
-        description: 'تمت الاضافة بنجاح',
-        variant: 'success'
-      })
-    },
-    onError: (error, variables, context) => {
-      toast({
-        title: 'لم تتم العملية',
-        description: error.message,
-        variant: 'destructive'
-      })
-    }
-  })
+  //     // Return the API call to be executed
+  //     return postApi('/accredited', formData, {
+  //       headers: {
+  //         Authorization: `${authToken()}`,
+  //         'Content-Type': 'multipart/form-data' // Ensure this header is correct for file uploads
+  //       }
+  //     })
+  //   },
+  //   onSuccess: (data, variables, context) => {
+  //     toast({
+  //       title: 'تمت العملية',
+  //       description: 'تمت الاضافة بنجاح',
+  //       variant: 'success'
+  //     })
+  //   },
+  //   onError: (error, variables, context) => {
+  //     toast({
+  //       title: 'لم تتم العملية',
+  //       description: error.message,
+  //       variant: 'destructive'
+  //     })
+  //   }
+  // })
 
   const onSubmit = async (data: AccreditedFormValue) => {
     console.log('🚀 ~ onSubmit ~ data:yty ty ty ty t yty ')
-    mutate(data)
+    // mutate(data)
   }
 
   return (
     <>
       <div className="flex flex-col gap-6 ">
         <div className="">
-          <h1 className="text-2xl font-bold"> بيانات المعتمد</h1>
+          <h1 className="text-2xl font-bold"> بيانات الصرف</h1>
         </div>
         <div className="flex justify-between">
           <div>
@@ -179,7 +178,7 @@ export default function FormAccredited() {
         <div className="flex  flex-col justify-center px-6 gap-16 bg-white rounded-[8px] pb-20">
           <div className="border-[#DADADA80]/50 border-b-2 ">
             <div className="w-fit border-[#196CB0] border-b-2 pb-4 pt-2">
-              <h1 className="text-xl font-bold  text-[#196CB0]   "> بيانات المعتمد </h1>
+              <h1 className="text-xl font-bold  text-[#196CB0]   "> بيانات الصرف</h1>
             </div>
           </div>
 

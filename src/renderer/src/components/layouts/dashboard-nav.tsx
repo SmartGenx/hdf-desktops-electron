@@ -94,7 +94,7 @@ export default function DashboardNav({ items, expanded = true, itemSetting }: Da
             <Separator className="mt-6 " />
           </div>
         ))}
-        <div className="mt-28">
+        <div className="mt-10">
           {itemSetting.map((item, index) => (
             <div key={index}>
               {item.title && (
@@ -116,7 +116,7 @@ export default function DashboardNav({ items, expanded = true, itemSetting }: Da
                       <Tooltip disableHoverableContent>
                         <TooltipTrigger asChild>
                           <Link
-                          
+
                             to={nav.href}
                             className={cn(
                               'group mb-1 flex items-center px-4 py-3 text-sm font-medium hover:bg-[#196CB0] hover:text-white cursor-pointer',

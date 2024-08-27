@@ -12,17 +12,19 @@ export default function useNavItems() {
       ]
     },
     {
-      title: 'العاملين',
+      title: 'المرضى',
       list: [
         {
           href: '/applicants',
           icon: 'user',
-          label: 'إدارة المتقدمين'
+          label: 'إدارة المتقدمين',
+          disabled: false
         },
         {
           href: '/accredited',
           icon: 'accredit',
-          label: 'إدارة الاعتماد'
+          label: 'إدارة الاعتماد',
+          disabled: false
         }
       ]
     },
@@ -32,11 +34,44 @@ export default function useNavItems() {
       list: [
 
         {
-          href: '/knowledge',
+          href: '/dismissal',
           icon: 'dismiss',
-          label: 'إدارة الصرف'
+          label: 'إدارة الصرف',
+          disabled: false
         },
-       
+
+      ]
+    },
+    {
+      title: 'التقارير ',
+      list: [
+
+        {
+          href: '/knowledge',
+          icon: 'report',
+          label: 'التقارير ',
+          disabled: true
+        },
+
+      ]
+    },
+    {
+      title: 'الأعدادات ',
+      list: [
+
+        {
+          href: '/knowledge',
+          icon: 'settings',
+          label: 'إدارة المستخدمين ',
+          disabled: true
+        },
+        {
+          href: '/knowledge',
+          icon: 'report',
+          label: 'تهيئة النظام',
+          disabled: true
+        },
+
       ]
     }
   ]

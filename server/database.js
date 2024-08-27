@@ -22,11 +22,7 @@ const bcrypt = require('bcryptjs')
 const fs = require('fs').promises
 const AWS = require('aws-sdk')
 const path = require('path')
-const {
-  uploadFileToS3,
-  checkFileInS3,
-  downloadFileFromS3
-} = require('../server/middleware/upload') // Ensure you have an AttachmentController
+const { uploadFileToS3, checkFileInS3, downloadFileFromS3 } = require('../server/middleware/upload') // Ensure you have an AttachmentController
 
 const dotenv = require('dotenv')
 

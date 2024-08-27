@@ -28,7 +28,7 @@ rootRouter.use('/accredited', accreditedRouter) //done
 rootRouter.use('/dismissal', dismissalRouter) //done
 rootRouter.use('/diseasesApplicants', diseasesApplicantsRouter)
 rootRouter.use('/disease', diseaseRouter) //done
-rootRouter.use('/prescription', prescriptionRouter) //done
+rootRouter.use('/prescription', prescriptionRouter) //
 rootRouter.use('/attachment', attachmentRouter)
 rootRouter.use('/role', roleRouter)
 rootRouter.use('/statistics', statisticsRouter)

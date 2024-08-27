@@ -2,27 +2,25 @@ import StatistCard from '@renderer/components/statistCard'
 import SearchInput from '../../searchInput'
 import Boutton from '@renderer/components/Boutton'
 import FilterDrawer from './filter'
-import StateTable from './accreditedTable'
 import { useAuthHeader } from 'react-auth-kit'
-import { Accrediteds } from '@renderer/types'
+import { Dismissales } from '@renderer/types'
 import { useQuery } from '@tanstack/react-query'
 import { getApi } from '@renderer/lib/http'
 import { Link } from 'react-router-dom'
-import AccreditedTable from './accreditedTable'
+import DismissalTable from './dismissalTable'
 
-const Home = () => {
+const Dismissal = () => {
   const authToken = useAuthHeader()
   const {
     isPending,
     error,
     data: accredited
   } = useQuery({
-    queryKey: ['gfgffhfh'],
+    queryKey: ['accredited'],
     queryFn: () =>
-      getApi<Accrediteds>('/accredited', {
+      getApi<Dismissales>('/dismissal', {
         params: {
-          'include[applicant]': true,
-          'include[square]': true,
+          'include[Accredited][include]': 'pharmacy-applicant',
           page: 1 || 11,
           pageSize: 5 || 10
         },
@@ -52,23 +50,23 @@ const Home = () => {
       </div>
       <div className="flex  gap-5 mt-[85px] items-center justify-between  ">
         <div className="w-fit">
-          <h1 className="text-2xl font-medium">جدول المعتمدين</h1>
+          <h1 className="text-2xl font-medium">جدول متابعة الصرف</h1>
         </div>
         <div className="flex gap-7">
           <SearchInput />
           <FilterDrawer />
-          <Boutton icon="filter" title={'طباعة'} />
-          <Link to={'/FormAccredited'}>
+
+          <Link to={'/formDismissal'}>
             <Boutton
-            icon='addaccredited'
-              title={'اضافة معتمد '}
+              icon="addaccredited"
+              title={'صرف دواء'}
               className="bg-[#92A709] hover:bg-[#5b6806] focus:ring-[#92A709]"
             />
           </Link>
         </div>
       </div>
       <div className="mt-5"></div>
-      <AccreditedTable
+      <DismissalTable
         info={accredited.data.info || []}
         page={accredited.data.page || '1'}
         pageSize={accredited.data.pageSize || '5'}
@@ -78,4 +76,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default Dismissal
