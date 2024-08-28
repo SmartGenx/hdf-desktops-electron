@@ -21,7 +21,7 @@ import {
   SelectValue
 } from '@renderer/components/ui/select'
 import { useAuthHeader } from 'react-auth-kit'
-import { AccreditedInfo } from '@renderer/types'
+import { AccreditedInfo, Square } from '@renderer/types'
 import { useQuery } from '@tanstack/react-query'
 import { getApi } from '@renderer/lib/http'
 
@@ -34,6 +34,15 @@ const FilterDrawer = () => {
     queryKey: ['Accredited'],
     queryFn: () =>
       getApi<AccreditedInfo[]>('/accredited', {
+        headers: {
+          Authorization: authToken()
+        }
+      })
+  })
+  const { data: squares } = useQuery({
+    queryKey: ['square'],
+    queryFn: () =>
+      getApi<Square[]>('/square', {
         headers: {
           Authorization: authToken()
         }
@@ -79,18 +88,19 @@ const FilterDrawer = () => {
                 </SelectContent>
               </Select>
             </div>
+
             <div className="w-[279.35px]  border-b-[1px] border-[#F0F1F5]  pb-5">
-              <label className="pr-4 font-bold text-[#414141] ">حسب الدكتور</label>
+              <label className="pr-4 font-bold text-[#414141] ">حسب الموقع</label>
               <Select>
                 <SelectTrigger className="">
-                  <SelectValue placeholder="اختر الدكتور" />
+                  <SelectValue placeholder="اختر الموقع" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>الدكاتره</SelectLabel>
+                    <SelectLabel>الموقع</SelectLabel>
                     {Accrediteds?.data.map((statuse) => (
-                      <SelectItem key={statuse.doctor} value={statuse.doctor}>
-                        {statuse.doctor}
+                      <SelectItem key={statuse.treatmentSite} value={statuse.treatmentSite}>
+                        {statuse.treatmentSite}
                       </SelectItem>
                     ))}
                   </SelectGroup>
@@ -98,17 +108,17 @@ const FilterDrawer = () => {
               </Select>
             </div>
             <div className="w-[279.35px]  border-b-[1px] border-[#F0F1F5]  pb-5">
-              <label className="pr-4 font-bold text-[#414141] ">حسب الدكتور</label>
+              <label className="pr-4 font-bold text-[#414141] ">حسب الحالة</label>
               <Select>
                 <SelectTrigger className="">
-                  <SelectValue placeholder="اختر الدكتور" />
+                  <SelectValue placeholder="اختر الحالة" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>الدكاتره</SelectLabel>
+                    <SelectLabel>الحالات</SelectLabel>
                     {Accrediteds?.data.map((statuse) => (
-                      <SelectItem key={statuse.doctor} value={statuse.doctor}>
-                        {statuse.doctor}
+                      <SelectItem key={statuse.state} value={statuse.state}>
+                        {statuse.state}
                       </SelectItem>
                     ))}
                   </SelectGroup>
@@ -116,14 +126,22 @@ const FilterDrawer = () => {
               </Select>
             </div>
           </div>
+          <label className="text-black font-bold pr-6">حسب المربعات</label>
+          <div className="grid grid-cols-3 px-7 ">
+            {squares?.data.map((square) => (
+              <div key={square.name} className="col-span-1 mt-3">
+                <CheckboxWithLabel label={square.name} />
+              </div>
+            ))}
+          </div>
         </form>
 
         <DrawerFooter className="flex justify-between p-4">
           <div className="flex justify-between">
+            <Button className="bg-[#196CB0]">فلتر</Button>
             <DrawerClose asChild>
               <Button variant="outline">إلغاء</Button>
             </DrawerClose>
-            <Button className="bg-[#196CB0]">فلتر</Button>
           </div>
         </DrawerFooter>
       </DrawerContent>

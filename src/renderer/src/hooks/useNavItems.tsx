@@ -66,10 +66,10 @@ export default function useNavItems() {
           disabled: true
         },
         {
-          href: '/knowledge',
+          href: '/Initialization',
           icon: 'report',
           label: 'تهيئة النظام',
-          disabled: true
+          disabled: false
         },
 
       ]
