@@ -12,7 +12,7 @@ const RootLayout = () => {
         </div>
         <div className="flex flex-auto flex-col overflow-y-auto">
           <Header />
-          <main className="p-6 bg-[#f3f4f8] ">
+          <main className="p-6 bg-[#f5f7fb] ">
             <Outlet />
             <Toaster />
           </main>

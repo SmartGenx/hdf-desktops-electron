@@ -50,9 +50,12 @@ const FilterDrawer = () => {
               <CheckboxWithLabel label="المهرة" />
               <CheckboxWithLabel label="أبين" />
               <CheckboxWithLabel label="عدن" />
+              <CheckboxWithLabel label="المهرة" />
+              <CheckboxWithLabel label="أبين" />
+              <CheckboxWithLabel label="عدن" />
             </div>
           </div>
-
+          <div className="w-full h-[1px] bg-[#F0F1F5]"></div>
           <div className="mb-6">
             <h3 className="text-sm font-medium mb-2">حسب المربعات</h3>
             <div className="grid grid-cols-3 gap-2">
@@ -62,10 +65,13 @@ const FilterDrawer = () => {
               <CheckboxWithLabel label="متوب" />
               <CheckboxWithLabel label="غصمي" />
               <CheckboxWithLabel label="الضالع" />
+              <CheckboxWithLabel label="متوب" />
+              <CheckboxWithLabel label="غصمي" />
+              <CheckboxWithLabel label="الضالع" />
             </div>
           </div>
-
-          <div className="mb-6">
+          <div className="w-full h-[1px] bg-[#F0F1F5]"></div>
+          <div className="mb-6 mt-3">
             <div className="flex items-center mb-4">
               <CheckboxWithLabel label="تحديد الفترة" />
             </div>

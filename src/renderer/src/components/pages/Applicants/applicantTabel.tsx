@@ -3,7 +3,7 @@ import { ColumnDef } from '@tanstack/react-table'
 // import { GevStatus, GovernmentFacility, kind_of_case } from '../../../types/enum'
 import { MoreHorizontal, MoreVertical } from 'lucide-react'
 
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +17,7 @@ import { Gender } from '../../../types/enums'
 // import DeleteDialog from '@/components/delete-dialog'
 // import { Paths } from '@/enums'
 import { cn } from '@/lib/utils'
+import DeleteDialog from '@renderer/components/ui/delete-dailog'
 type Props = {
   info: ApplicantsInfo[]
   page: string
@@ -70,18 +71,14 @@ export default function StateTable({ info, page, total, pageSize }: Props) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="h-17 -mt-[70px] ml-7 min-w-[84.51px] p-0">
               <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                {/* <DeleteDialog
-                  url={`/Organization/${row.original?.id}`}
-                  revalidatePath={Paths.localOrg}
-                /> */}
-                تعديل
+                <Link to={`/UpdateApplicant/${row.original.globalId}`}>تعديل</Link>
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                {/* <DeleteDialog
-                  url={`/Organization/${row.original?.id}`}
-                  revalidatePath={Paths.localOrg}
-                /> */}
-                حذف
+                <DeleteDialog
+                  url={`/applicant/${row.original?.globalId}`}
+                  keys={['applicant']}
+                  path={'applicants'}
+                />
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

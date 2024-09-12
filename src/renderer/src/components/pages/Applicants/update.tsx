@@ -18,11 +18,11 @@ import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 import { cn } from '../../../lib/utils'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { axiosInstance, postApi } from '../../../lib/http'
+import { useNavigate, useParams } from 'react-router-dom'
+import { axiosInstance, postApi, putApi } from '../../../lib/http'
 import { useAuthHeader, useSignIn } from 'react-auth-kit'
 import { MoveRight } from 'lucide-react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 const formSchema = z.object({
   name: z.string(),
@@ -40,6 +40,25 @@ const formSchema = z.object({
 })
 
 type UserFormValue = z.infer<typeof formSchema>
+export type ApplicantResponse = {
+  id: number
+  globalId: string
+  name: string
+  age: number
+  dateOfBirth: Date
+  placeOfBirth: string
+  currentResidence: string
+  gender: string
+  directorateGlobalId: string
+  phoneNumber: string
+  submissionDate: Date
+  deleted: boolean
+  accredited: boolean
+  categoryGlobalId: string
+  state: string
+  version: number
+  lastModified: Date
+}
 export type Category = {
   id: number
   globalId: string
@@ -77,7 +96,8 @@ export type Disease = {
   version: number
   lastModified: Date
 }
-export default function FormApplicant() {
+export default function UpdateApplicant() {
+  const { id } = useParams<{ id: string }>()
   const [category, setCategory] = useState<Category[]>([])
   const [directorates, setDirectorates] = useState<Governorate[]>([])
   const [disease, setDisease] = useState<Disease[]>([])
@@ -141,11 +161,49 @@ export default function FormApplicant() {
     fetchDisease()
   }, [])
 
+  const fetchAgencyData = async () => {
+    const response = await axiosInstance.get<ApplicantResponse>(`/applicant/${id}`, {
+      headers: {
+        Authorization: `${authToken()}`
+      }
+    })
+    return response.data
+  }
+  const {
+    data: applicantData,
+    error: applicantError,
+    isLoading: applicantIsLoading
+  } = useQuery({
+    queryKey: ['applicant', id],
+    queryFn: fetchAgencyData,
+    enabled: !!id
+  })
+
+  console.log('asdsdas', applicantData.d)
+  React.useEffect(() => {
+    if (applicantData) {
+      form.reset({
+        name: applicantData.name,
+        age: String(applicantData.age),
+        dateOfBirth: new Date(applicantData.dateOfBirth).toISOString().split('T')[0],
+        placeOfBirth: applicantData.placeOfBirth,
+        currentResidence: applicantData.currentResidence,
+        gender: applicantData.gender,
+        directorateGlobalId: applicantData.directorateGlobalId,
+        phoneNumber: applicantData.phoneNumber,
+        submissionDate: new Date(applicantData.submissionDate).toISOString().split('T')[0],
+        diseaseGlobalId: applicantData.directorateGlobalId,
+        categoryGlobalId: applicantData.categoryGlobalId,
+        state: applicantData.state
+      })
+    }
+  }, [applicantData])
+
   const { mutate } = useMutation({
     mutationKey: ['AddApplicant'],
     mutationFn: (data: UserFormValue) =>
-      postApi(
-        '/applicant',
+      putApi(
+        `/applicant/${id}`,
         {
           name: data.name,
           age: +data.age,
@@ -203,18 +261,6 @@ export default function FormApplicant() {
               <MoveRight className="" />
 
               <h1 className="-translate-y-1 mr-2 font-bold">رجوع</h1>
-            </Button>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              className="w-[120px] border-2 border-[#196CB0] text-[#196CB0]"
-              onClick={() => navigate('/applicants')}
-            >
-              الغاء
-            </Button>
-            <Button form="formId" type="submit" variant={'keep'} className="w-[120px]">
-              حفظ
             </Button>
           </div>
         </div>
@@ -368,7 +414,15 @@ export default function FormApplicant() {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <Select
+                                onValueChange={field.onChange}
+                                value={
+                                  field.value
+                                    ? String(field.value)
+                                    : String(applicantData?.directorateGlobalId)
+                                }
+                                defaultValue={field.value}
+                              >
                                 <SelectTrigger className="">
                                   <SelectValue placeholder="اخر مديرية" />
                                 </SelectTrigger>
@@ -424,7 +478,15 @@ export default function FormApplicant() {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <Select
+                                onValueChange={field.onChange}
+                                value={
+                                  field.value
+                                    ? String(field.value)
+                                    : String(applicantData?.directorateGlobalId)
+                                }
+                                defaultValue={field.value}
+                              >
                                 <SelectTrigger className="">
                                   <SelectValue placeholder="اختر المرض" />
                                 </SelectTrigger>
@@ -454,7 +516,15 @@ export default function FormApplicant() {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <Select
+                                onValueChange={field.onChange}
+                                value={
+                                  field.value
+                                    ? String(field.value)
+                                    : String(applicantData?.categoryGlobalId)
+                                }
+                                defaultValue={field.value}
+                              >
                                 <SelectTrigger className="">
                                   <SelectValue placeholder="اختر فئة" />
                                 </SelectTrigger>
@@ -483,7 +553,13 @@ export default function FormApplicant() {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <Select
+                                onValueChange={field.onChange}
+                                value={
+                                  field.value ? String(field.value) : String(applicantData?.state)
+                                }
+                                defaultValue={field.value}
+                              >
                                 <SelectTrigger className="">
                                   <SelectValue placeholder="اخر الحالة" />
                                 </SelectTrigger>
@@ -551,8 +627,8 @@ export default function FormApplicant() {
                     </div>
                   </div>
                 </div>
-                <Button type="submit" variant={'keep'} className="w-[120px]">
-                  حفظ
+                <Button type="submit" className="w-[120px] bg-[#196CB0]">
+                  تعديل
                 </Button>
               </form>
             </Form>

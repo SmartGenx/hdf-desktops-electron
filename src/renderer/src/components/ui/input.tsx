@@ -47,7 +47,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
           <fieldset
             className={cn(
-              'pointer-events-none visible absolute inset-0 mt-[-8px] rounded-lg border group-focus-within:border group-focus-within:!border-secondary peer-placeholder-shown:invisible',
+              'pointer-events-none visible absolute inset-0  mt-[-8px] rounded-lg border group-focus-within:border group-focus-within:!border-secondary peer-placeholder-shown:invisible',
               isInvalid ? 'border-red-500' : 'border-[rgba(137, 137, 137, 0.5)]'
             )}
           >
