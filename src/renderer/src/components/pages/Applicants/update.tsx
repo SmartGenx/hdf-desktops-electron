@@ -19,10 +19,11 @@ import * as z from 'zod'
 import { cn } from '../../../lib/utils'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { axiosInstance, postApi, putApi } from '../../../lib/http'
+import { axiosInstance, getApi, postApi, putApi } from '../../../lib/http'
 import { useAuthHeader, useSignIn } from 'react-auth-kit'
 import { MoveRight } from 'lucide-react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { ApplicantsInfo, ApplicantsInfoResp } from '@renderer/types'
 
 const formSchema = z.object({
   name: z.string(),
@@ -169,35 +170,47 @@ export default function UpdateApplicant() {
     })
     return response.data
   }
+
   const {
-    data: applicantData,
-    error: applicantError,
-    isLoading: applicantIsLoading
+    isPending,
+    error,
+    data: applicants
   } = useQuery({
-    queryKey: ['applicant', id],
-    queryFn: fetchAgencyData,
-    enabled: !!id
+    queryKey: ['applicant'],
+    queryFn: () =>
+      getApi<ApplicantsInfoResp[]>(`/applicant`, {
+        params: {
+          'include[directorate]': true,
+          'include[category]': true,
+          'include[diseasesApplicants]': true,
+          globalId: id
+        },
+        headers: {
+          Authorization: authToken()
+        }
+      })
   })
 
-  console.log('asdsdas', applicantData.d)
+  console.log('applicants', applicants?.data)
+  console.log('applicant name', applicants?.data[0].name)
   React.useEffect(() => {
-    if (applicantData) {
+    if (applicants?.data) {
       form.reset({
-        name: applicantData.name,
-        age: String(applicantData.age),
-        dateOfBirth: new Date(applicantData.dateOfBirth).toISOString().split('T')[0],
-        placeOfBirth: applicantData.placeOfBirth,
-        currentResidence: applicantData.currentResidence,
-        gender: applicantData.gender,
-        directorateGlobalId: applicantData.directorateGlobalId,
-        phoneNumber: applicantData.phoneNumber,
-        submissionDate: new Date(applicantData.submissionDate).toISOString().split('T')[0],
-        diseaseGlobalId: applicantData.directorateGlobalId,
-        categoryGlobalId: applicantData.categoryGlobalId,
-        state: applicantData.state
+        name: applicants?.data[0].name,
+        age: String(applicants?.data[0].age),
+        dateOfBirth: new Date(applicants?.data[0].dateOfBirth).toISOString().split('T')[0],
+        placeOfBirth: applicants?.data[0].placeOfBirth,
+        currentResidence: applicants?.data[0].currentResidence,
+        gender: applicants?.data[0].gender,
+        directorateGlobalId: applicants?.data[0].directorateGlobalId,
+        phoneNumber: applicants?.data[0].phoneNumber,
+        submissionDate: new Date(applicants?.data[0].submissionDate).toISOString().split('T')[0],
+        diseaseGlobalId: applicants?.data[0].diseasesApplicants[0].diseaseGlobalId,
+        categoryGlobalId: applicants?.data[0].categoryGlobalId,
+        state: applicants?.data[0].state
       })
     }
-  }, [applicantData])
+  }, [])
 
   const { mutate } = useMutation({
     mutationKey: ['AddApplicant'],
@@ -244,7 +257,7 @@ export default function UpdateApplicant() {
   const onSubmit = async (data: UserFormValue) => {
     mutate(data)
   }
-
+  if (isPending) return <div>loading...</div>
   return (
     <>
       <div className="flex flex-col gap-6 ">
@@ -419,7 +432,7 @@ export default function UpdateApplicant() {
                                 value={
                                   field.value
                                     ? String(field.value)
-                                    : String(applicantData?.directorateGlobalId)
+                                    : String(applicants?.data[0].directorateGlobalId)
                                 }
                                 defaultValue={field.value}
                               >
@@ -483,7 +496,9 @@ export default function UpdateApplicant() {
                                 value={
                                   field.value
                                     ? String(field.value)
-                                    : String(applicantData?.directorateGlobalId)
+                                    : String(
+                                        applicants?.data[0].diseasesApplicants[0].diseaseGlobalId
+                                      )
                                 }
                                 defaultValue={field.value}
                               >
@@ -521,7 +536,7 @@ export default function UpdateApplicant() {
                                 value={
                                   field.value
                                     ? String(field.value)
-                                    : String(applicantData?.categoryGlobalId)
+                                    : String(applicants?.data[0].categoryGlobalId)
                                 }
                                 defaultValue={field.value}
                               >
@@ -556,7 +571,9 @@ export default function UpdateApplicant() {
                               <Select
                                 onValueChange={field.onChange}
                                 value={
-                                  field.value ? String(field.value) : String(applicantData?.state)
+                                  field.value
+                                    ? String(field.value)
+                                    : String(applicants?.data[0].state)
                                 }
                                 defaultValue={field.value}
                               >

@@ -46,6 +46,26 @@ export type Square = {
   version: number
   lastModified: Date
 }
+export type applicantType = {
+  id: number
+  globalId: string
+  name: string
+  age: number
+  dateOfBirth: Date
+  placeOfBirth: string
+  currentResidence: string
+  gender: string
+  directorateGlobalId: string
+  phoneNumber: string
+  submissionDate: Date
+  deleted: boolean
+  accredited: boolean
+  categoryGlobalId: string
+  state: string
+  version: number
+  lastModified: Date
+}
+
 export type Accrediteds = {
   info: AccreditedInfo[]
   total: number
@@ -58,7 +78,6 @@ export type Applicants = {
   page: string
   pageSize: string
 }
-
 
 export type AccreditedInfo = {
   id: number
@@ -108,6 +127,35 @@ export type ApplicantsInfo = {
   directorate?: Directorate
   category: Category
   diseasesApplicants?: DiseasesApplicant[]
+}
+export type ApplicantsInfoResp = {
+  id: number
+  globalId: string
+  name: string
+  age: number
+  dateOfBirth: Date
+  placeOfBirth: string
+  currentResidence: string
+  gender: string
+  directorateGlobalId: string
+  phoneNumber: string
+  submissionDate: Date
+  deleted: boolean
+  accredited: boolean
+  categoryGlobalId: string
+  state: string
+  version: number
+  lastModified: Date
+  diseasesApplicants: DiseasesApplicantInfo[]
+}
+export interface DiseasesApplicantInfo {
+  id: number
+  globalId: string
+  diseaseGlobalId: string
+  deleted: boolean
+  applicantGlobalId: string
+  version: number
+  lastModified: Date
 }
 export type Category = {
   id: number
@@ -162,6 +210,39 @@ type User = {
   profileImage: string
 }
 
+export interface AccreditedInfos {
+  id: number
+  globalId: string
+  squareGlobalId: string
+  treatmentSite: string
+  doctor: string
+  state: string
+  numberOfRfid: number
+  formNumber: number
+  deleted: boolean
+  applicantGlobalId: string
+  pharmacyGlobalId: string
+  version: number
+  lastModified: Date
+  prescription: Prescription[]
+}
+export interface Prescription {
+  id: number
+  globalId: string
+  prescriptionDate: Date
+  renewalDate: Date
+  attachedUrl: string
+  deleted: boolean
+  accreditedGlobalId: string
+  version: number
+  lastModified: Date
+}
+export interface Accredited {
+  info: AccreditedInfos[]
+  total: number
+  page: string
+  pageSize: string
+}
 export interface NavItemWithChildren extends NavItem {
   items: NavItemWithChildren[]
 }
