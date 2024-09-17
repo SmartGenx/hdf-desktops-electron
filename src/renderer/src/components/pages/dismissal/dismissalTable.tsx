@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { ColumnDef } from '@tanstack/react-table'
 // import { GevStatus, GovernmentFacility, kind_of_case } from '../../../types/enum'
-import {  MoreVertical } from 'lucide-react'
+import { MoreVertical } from 'lucide-react'
 
 import { useNavigate } from 'react-router-dom'
 import {
