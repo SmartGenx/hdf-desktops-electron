@@ -23,6 +23,7 @@ async function ensureProfileDirExists(profileDir) {
 async function ExpressApp() {
   try {
     await databaseService.switchDatabaseBasedOnConnectivity()
+    await databaseService.user()
 
     const expressApp = express()
     expressApp.use(cors())

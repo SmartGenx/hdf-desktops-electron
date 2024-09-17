@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://postgres:sami2020@localhost:5432/hdf_platform?schema=public"
+  url      = "postgresql://postgres:123@localhost:5432/hdf_platform?schema=public"
 }
 
 model User {

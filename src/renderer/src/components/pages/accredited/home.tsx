@@ -17,7 +17,7 @@ const Home = () => {
     error,
     data: accredited
   } = useQuery({
-    queryKey: ['gfgffhfh'],
+    queryKey: ['accredited'],
     queryFn: () =>
       getApi<Accrediteds>('/accredited', {
         params: {
@@ -60,7 +60,7 @@ const Home = () => {
           <Boutton icon="filter" title={'طباعة'} />
           <Link to={'/FormAccredited'}>
             <Boutton
-            icon='addaccredited'
+              icon="addaccredited"
               title={'اضافة معتمد '}
               className="bg-[#92A709] hover:bg-[#5b6806] focus:ring-[#92A709]"
             />

@@ -17,6 +17,7 @@ import { Gender } from '../../../types/enums'
 // import DeleteDialog from '@/components/delete-dialog'
 // import { Paths } from '@/enums'
 import { cn } from '@/lib/utils'
+import DeleteDialog from '@renderer/components/ui/delete-dailog'
 type Props = {
   info: AccreditedInfo[]
   page: string
@@ -39,12 +40,11 @@ export default function AccreditedTable({ info, page, total, pageSize }: Props) 
       },
       {
         accessorKey: 'treatmentSite',
-        header: 'موقع العلاج',
+        header: 'موقع العلاج'
       },
       {
         accessorKey: 'doctor',
-        header: 'الدكتور المعالج',
-
+        header: 'الدكتور المعالج'
       },
       {
         accessorKey: 'state',
@@ -74,11 +74,11 @@ export default function AccreditedTable({ info, page, total, pageSize }: Props) 
                 تعديل
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                {/* <DeleteDialog
-                  url={`/Organization/${row.original?.id}`}
-                  revalidatePath={Paths.localOrg}
-                /> */}
-                حذف
+                <DeleteDialog
+                  url={`/accredited/${row.original?.globalId}`}
+                  keys={['accredited']}
+                  path={'accredited'}
+                />
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

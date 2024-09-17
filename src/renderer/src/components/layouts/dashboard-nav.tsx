@@ -62,10 +62,8 @@ export default function DashboardNav({ items, expanded = true, itemSetting }: Da
                         <Link
                           to={nav.href}
                           className={cn(
-                            'group mb-1 flex items-center px-4 py-3 text-sm font-medium hover:bg-[#196CB0] hover:text-white cursor-pointer',
-                            isSelected(nav.href)
-                              ? 'bg-[#196CB0] text-white border-l-4 border-primary'
-                              : 'transparent',
+                            'group mb-1 flex items-center px-4 py-2 rounded-lg mx-4 text-sm font-medium hover:bg-[#5483aa] hover:text-white cursor-pointer',
+                            isSelected(nav.href) ? 'bg-[#e5f0ff] text-[#196CB0] ' : 'transparent',
                             !expanded && 'justify-center',
                             nav.disabled && 'cursor-not-allowed opacity-80'
                           )}
@@ -116,7 +114,6 @@ export default function DashboardNav({ items, expanded = true, itemSetting }: Da
                       <Tooltip disableHoverableContent>
                         <TooltipTrigger asChild>
                           <Link
-
                             to={nav.href}
                             className={cn(
                               'group mb-1 flex items-center px-4 py-3 text-sm font-medium hover:bg-[#196CB0] hover:text-white cursor-pointer',
@@ -137,7 +134,6 @@ export default function DashboardNav({ items, expanded = true, itemSetting }: Da
                                 {nav.label}
                               </span>
                             )}
-
                           </Link>
                         </TooltipTrigger>
                         {!expanded && (

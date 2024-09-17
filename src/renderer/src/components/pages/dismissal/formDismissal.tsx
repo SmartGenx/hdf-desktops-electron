@@ -1,4 +1,3 @@
-'use client'
 import * as React from 'react'
 import { Button } from '../../ui/button'
 import { Form, FormControl, FormField, FormItem } from '../../ui/form'
@@ -19,25 +18,19 @@ import * as z from 'zod'
 import { cn } from '../../../lib/utils'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import {  getApi, postApi } from '../../../lib/http'
+import { axiosInstance, getApi, postApi } from '../../../lib/http'
 import { useAuthHeader, useSignIn } from 'react-auth-kit'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { Pharmacy, Square } from '@renderer/types'
+import { Accredited, Pharmacy, Square } from '@renderer/types'
 import FileUploader from '@renderer/components/fileUploader'
+import Pdf from '@renderer/components/icons/pdf'
 
 const formSchema = z.object({
-  squareGlobalId: z.string(),
-  treatmentSite: z.string(),
-  doctor: z.string(),
-  state: z.string(),
-  numberOfRfid: z.string(),
-  formNumber: z.string(),
-  applicantGlobalId: z.string(),
-  pharmacyGlobalId: z.string(),
-  type: z.string(),
-  prescriptionDate: z.string(),
-  atch: z.instanceof(File),
-  pt: z.instanceof(File)
+  totalAmount: z.string(),
+  amountPaid: z.string(),
+  approvedAmount: z.string(),
+  accreditedGlobalId: z.string(),
+  pharmacyGlobalId: z.string()
 })
 
 type AccreditedFormValue = z.infer<typeof formSchema>
@@ -45,36 +38,21 @@ type AccreditedFormValue = z.infer<typeof formSchema>
 export default function FormDismissal() {
   const signIn = useSignIn()
   const { toast } = useToast()
+  const { setValue } = useForm()
   const navigate = useNavigate()
   const form = useForm<AccreditedFormValue>({
     resolver: zodResolver(formSchema)
   })
-  const [Rfid, setRfid] = useState('')
-  const [statuses, setstatuse] = useState<{ id: string; label: string }[]>([
-    { id: 'مستمر', label: 'مستمر' },
-    { id: 'موقف', label: 'موقف' }
+  const [approvedAmounts, setApprovedAmounts] = useState<number>(0)
+  const [totalAmounts, setTotalAmounts] = useState<number>(0)
 
-    // Add more options as needed
-  ])
+  const approvedPercentage = approvedAmounts / 100
+  const discountAmount = totalAmounts * approvedPercentage
+  const priceTotal = totalAmounts - discountAmount
+
+  const [pharmacy, setPharmacy] = useState<Pharmacy[]>([])
   const authToken = useAuthHeader()
-  const { data: Pharmacys } = useQuery({
-    queryKey: ['Pharmacy'],
-    queryFn: () =>
-      getApi<Pharmacy[]>('/pharmacy', {
-        headers: {
-          Authorization: authToken()
-        }
-      })
-  })
-  const { data: squares } = useQuery({
-    queryKey: ['square'],
-    queryFn: () =>
-      getApi<Square[]>('/square', {
-        headers: {
-          Authorization: authToken()
-        }
-      })
-  })
+
   const { data: applicant } = useQuery({
     queryKey: ['applicant'],
     queryFn: () =>
@@ -97,63 +75,85 @@ export default function FormDismissal() {
 
     // Add more options as needed
   ])
+
   const [delayedSubmitting, setDelayedSubmitting] = useState(form.formState.isSubmitting)
-  const generateRfid = () => {
-    // Example function to generate a random RFID number
-    const newRfid = Math.floor(100000000 + Math.random() * 900000000).toString()
-    setRfid(newRfid)
-    form.setValue('numberOfRfid', newRfid) // Update the form's value if using a form library like React Hook Form
+
+  const [numberOfRfid, setNumberOfRfid] = useState('')
+  const [number, setNumber] = useState<Accredited[]>([])
+
+  const generateRfid = async () => {
+    try {
+      const response = await axiosInstance.get(
+        `/accredited?page=1&pageSize=4&include[prescription]=true&numberOfRfid=${numberOfRfid}`,
+        {
+          headers: {
+            Authorization: `${authToken()}`
+          }
+        }
+      )
+
+      // Handle the response as necessary
+      console.log('Data fetched:', response.data)
+      setNumber(response.data)
+    } catch (error) {
+      console.error('Error fetching RFID data:', error)
+    }
   }
-  // const { mutate } = useMutation({
-  //   // mutationKey: ['AccreditedInfo'],
-  //   mutationFn: (datas: AccreditedFormValue) => {
-  //     const formData = new FormData()
+  React.useEffect(() => {
+    form.setValue('amountPaid', priceTotal.toFixed(2))
+    form.setValue('accreditedGlobalId', number?.info?.[0]?.globalId ?? 'No URL available')
+    const fetchPharmacyDirectorate = async () => {
+      try {
+        const response = await axiosInstance.get('/pharmacy', {
+          headers: {
+            Authorization: `${authToken()}`
+          }
+        })
+        setPharmacy(response.data)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      }
+    }
 
-  //     // Append each form field to the FormData object
-  //     formData.append('squareGlobalId', datas.squareGlobalId)
-  //     formData.append('treatmentSite', datas.treatmentSite)
-  //     formData.append('doctor', datas.doctor)
-  //     formData.append('state', datas.state)
-  //     formData.append('numberOfRfid', datas.numberOfRfid)
-  //     formData.append('formNumber', datas.formNumber)
-  //     formData.append('applicantGlobalId', datas.applicantGlobalId)
-  //     formData.append('pharmacyGlobalId', datas.pharmacyGlobalId)
-  //     formData.append('type', datas.type)
-  //     formData.append('prescriptionDate', datas.prescriptionDate)
+    fetchPharmacyDirectorate()
+  }, [priceTotal, setValue])
 
-  //     // Append files
-  //     formData.append('atch', datas.atch)
-  //     formData.append('pt', datas.pt)
-  //     console.log('🚀 ~ onSubmit ~ formData:', datas)
-  //     // console.log('🚀 ~ onSubmit ~ formData:', formData.get("d)
-
-  //     // Return the API call to be executed
-  //     return postApi('/accredited', formData, {
-  //       headers: {
-  //         Authorization: `${authToken()}`,
-  //         'Content-Type': 'multipart/form-data' // Ensure this header is correct for file uploads
-  //       }
-  //     })
-  //   },
-  //   onSuccess: (data, variables, context) => {
-  //     toast({
-  //       title: 'تمت العملية',
-  //       description: 'تمت الاضافة بنجاح',
-  //       variant: 'success'
-  //     })
-  //   },
-  //   onError: (error, variables, context) => {
-  //     toast({
-  //       title: 'لم تتم العملية',
-  //       description: error.message,
-  //       variant: 'destructive'
-  //     })
-  //   }
-  // })
+  const { mutate } = useMutation({
+    // mutationKey: ['AccreditedInfo'],
+    mutationFn: (datas: AccreditedFormValue) =>
+      postApi(
+        '/dismissal',
+        {
+          totalAmount: +datas.totalAmount,
+          approvedAmount: +datas.approvedAmount,
+          amountPaid: +datas.amountPaid,
+          accreditedGlobalId: datas.accreditedGlobalId,
+          pharmacyGlobalId: datas.pharmacyGlobalId
+        },
+        {
+          headers: {
+            Authorization: `${authToken()}`
+          }
+        }
+      ),
+    onSuccess: (data, variables, context) => {
+      toast({
+        title: 'تمت العملية',
+        description: 'تمت الاضافة بنجاح',
+        variant: 'success'
+      })
+    },
+    onError: (error, variables, context) => {
+      toast({
+        title: 'لم تتم العملية',
+        description: error.message,
+        variant: 'destructive'
+      })
+    }
+  })
 
   const onSubmit = async (data: AccreditedFormValue) => {
-    console.log('🚀 ~ onSubmit ~ data:yty ty ty ty t yty ')
-    // mutate(data)
+    mutate(data)
   }
 
   return (
@@ -199,68 +199,15 @@ export default function FormDismissal() {
               >
                 <div className="  flex flex-col gap-6 ">
                   <div className="grid grid-cols-3 gap-2">
-                    <div className="col-span-1">
-                      <FormField
-                        control={form.control}
-                        name="doctor"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input
-                                label=" اسم الدكتور"
-                                placeholder="اسم الدكتور  "
-                                type="text"
-                                {...field}
-                                disabled={delayedSubmitting}
-                                className="text-right bg-[#EFF1F9]/50 rounded-[8px]"
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className="col-span-1">
-                      <FormField
-                        control={form.control}
-                        name="treatmentSite"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input
-                                label="اسم المركز الصحي"
-                                placeholder="اسم المركز الصحي"
-                                type="text"
-                                {...field}
-                                disabled={delayedSubmitting}
-                                className="text-right bg-primary/5"
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
                     <div className="col-span-1 flex gap-2">
                       <div className="grid grid-cols-5 gap-2">
-                        <div className="col-span-4">
-                          <FormField
-                            control={form.control}
-                            name="numberOfRfid"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormControl>
-                                  <Input
-                                    readOnly
-                                    label="رقم بطاقة الصرف"
-                                    placeholder="ادخل رقم بطاقة الصرف"
-                                    type="number"
-                                    {...field}
-                                    disabled={delayedSubmitting}
-                                    className="text-right bg-primary/5"
-                                  />
-                                </FormControl>
-                              </FormItem>
-                            )}
+                        <div className="col-span-3">
+                          <input
+                            type="text"
+                            value={numberOfRfid}
+                            onChange={(e) => setNumberOfRfid(e.target.value)}
+                            placeholder="Enter RFID number"
+                            className="w-full p-2 border rounded"
                           />
                         </div>
                         <div className="col-span-1">
@@ -270,59 +217,10 @@ export default function FormDismissal() {
                             onClick={generateRfid}
                             type="button"
                           >
-                            توليد رقم
+                            مسح البطاقة
                           </Button>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="col-span-1">
-                      <FormField
-                        control={form.control}
-                        name="formNumber"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input
-                                label="رقم الاستمارة"
-                                placeholder="ادخل رقم الاستمارة"
-                                type="text"
-                                {...field}
-                                disabled={delayedSubmitting}
-                                className="text-right bg-primary/5"
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className="col-span-1 ">
-                      <FormField
-                        control={form.control}
-                        name="state"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <SelectTrigger className="">
-                                  <SelectValue placeholder="اختر الحالة" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectGroup>
-                                    <SelectLabel>الحالات</SelectLabel>
-                                    {statuses.map((statuse) => (
-                                      <SelectItem key={statuse.id} value={statuse.id}>
-                                        {statuse.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectGroup>
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
                     </div>
                     <div className="col-span-1">
                       <FormField
@@ -338,8 +236,8 @@ export default function FormDismissal() {
                                 <SelectContent>
                                   <SelectGroup>
                                     <SelectLabel>الحالات</SelectLabel>
-                                    {Pharmacys?.data.map((pharmacy) => (
-                                      <SelectItem key={pharmacy.globalId} value={pharmacy.name}>
+                                    {pharmacy.map((pharmacy) => (
+                                      <SelectItem key={pharmacy.globalId} value={pharmacy.globalId}>
                                         {pharmacy.name}
                                       </SelectItem>
                                     ))}
@@ -351,171 +249,90 @@ export default function FormDismissal() {
                         )}
                       />
                     </div>
+                    <div className="col-span-1">
+                      <FormField
+                        control={form.control}
+                        name="totalAmount"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input
+                                label="اجمالي المبلغ"
+                                placeholder="اجمالي المبلغ"
+                                type="text"
+                                onChange={(e) => {
+                                  const value = Number(e.target.value)
+                                  setTotalAmounts(value)
+                                  field.onChange(e)
+                                }}
+                                disabled={delayedSubmitting}
+                                className="text-right bg-primary/5"
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   </div>
-
                   <div className="grid grid-cols-3 gap-2">
-                    <div className="col-span-1 ">
+                    <div className="col-span-1">
                       <FormField
                         control={form.control}
-                        name="squareGlobalId"
+                        name="amountPaid"
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <SelectTrigger className="">
-                                  <SelectValue placeholder="اخر المربع" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectGroup>
-                                    <SelectLabel>الامراض</SelectLabel>
-                                    {squares?.data.map((square) => (
-                                      <SelectItem key={square.globalId} value={square.globalId}>
-                                        {square.name}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectGroup>
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className="col-span-1 ">
-                      <FormField
-                        control={form.control}
-                        name="prescriptionDate"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <FormField
-                                control={form.control}
-                                name="prescriptionDate"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormControl>
-                                      <Input
-                                        label="تاريخ الوصفة"
-                                        placeholder="ادخل تاريخ الوصفة"
-                                        type="date"
-                                        {...field}
-                                        disabled={delayedSubmitting}
-                                        className="text-right bg-primary/5"
-                                      />
-                                    </FormControl>
-                                  </FormItem>
-                                )}
+                              <Input
+                                label="المبلغ المطلوب"
+                                placeholder="المبلغ المطلوب"
+                                type="text"
+                                {...field}
+                                disabled={true}
+                                className="text-right bg-primary/5"
                               />
                             </FormControl>
                           </FormItem>
                         )}
                       />
                     </div>
-                    <div className="col-span-1 ">
+                    <div className="col-span-1">
                       <FormField
                         control={form.control}
-                        name="applicantGlobalId"
+                        name="approvedAmount"
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <SelectTrigger className="">
-                                  <SelectValue placeholder="اخر المتقدم" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectGroup>
-                                    <SelectLabel>المتقدمين</SelectLabel>
-                                    {Array.isArray(applicant?.data) &&
-                                      applicant.data.map((applican) => (
-                                        <SelectItem
-                                          key={applican.globalId}
-                                          value={applican.globalId}
-                                        >
-                                          {applican.name}
-                                        </SelectItem>
-                                      ))}
-                                  </SelectGroup>
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2 mt-3">
-                    <div className="col-span-1 ">
-                      <FormField
-                        control={form.control}
-                        name="type"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <SelectTrigger className="">
-                                  <SelectValue placeholder="اخر نوع الهوية" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectGroup>
-                                    <SelectLabel>الهويات</SelectLabel>
-                                    {type.map((applicant) => (
-                                      <SelectItem key={applicant.type} value={applicant.type}>
-                                        {applicant.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectGroup>
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className="col-span-1 ">
-                      <FormField
-                        control={form.control}
-                        name="pt"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <FileUploader
-                                title=" ارفق الهوية الشخصية"
-                                setValue={form.setValue}
-                                inputId="pt"
-                                onChange={async (files) => {
-                                  try {
-                                    if (!files?.[0]) return
-                                    field.onChange(files[0])
-                                  } catch (error) {
-                                    JSON.stringify(error)
-                                  }
+                              <Input
+                                label="نسبة الدعم"
+                                placeholder="نسبة الدعم"
+                                type="text"
+                                onChange={(e) => {
+                                  const value = Number(e.target.value)
+                                  setApprovedAmounts(value)
+                                  field.onChange(e)
                                 }}
+                                disabled={delayedSubmitting}
+                                className="text-right bg-primary/5"
                               />
                             </FormControl>
                           </FormItem>
                         )}
                       />
                     </div>
-
-                    <div className="col-span-1 ">
+                    <div className="col-span-1">
                       <FormField
                         control={form.control}
-                        name="atch"
+                        name="accreditedGlobalId"
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <FileUploader
-                                title="ارفق الوصفة الطبية"
-                                setValue={form.setValue}
-                                inputId="atch"
-                                onChange={async (files) => {
-                                  try {
-                                    if (!files?.[0]) return
-                                    field.onChange(files[0])
-                                  } catch (error) {
-                                    JSON.stringify(error)
-                                  }
-                                }}
+                              <Input
+                                label="المعتمد"
+                                placeholder="المعتمد"
+                                type="text"
+                                {...field}
+                                disabled={delayedSubmitting}
+                                className="text-right bg-primary/5"
                               />
                             </FormControl>
                           </FormItem>
@@ -524,6 +341,27 @@ export default function FormDismissal() {
                     </div>
                   </div>
                 </div>
+                {/*  */}
+                <div className="flex justify-start gap-4  h-40 ">
+                  <a
+                    href={number?.info?.[0]?.prescription?.[0]?.attachedUrl ?? 'No URL available'}
+                    target="_blank"
+                    className="ml-14"
+                    rel="noopener noreferrer"
+                  >
+                    <h1 className="mb-5 text-[#8B8D97]">عرض البيانات الشخصية</h1>
+                    <Pdf />
+                  </a>
+                  <a
+                    href={number?.info?.[0]?.prescription?.[0]?.attachedUrl ?? 'No URL available'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <h1 className="mb-5 text-[#8B8D97]">عرض ملف الوصفة الطبية</h1>
+                    <Pdf />
+                  </a>
+                </div>
+                {/*  */}
                 <div className="flex justify-end gap-4 ">
                   <Button type="submit" variant={'keep'} className="w-[120px]">
                     حفظ

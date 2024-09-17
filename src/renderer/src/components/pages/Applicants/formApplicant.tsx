@@ -19,106 +19,172 @@ import * as z from 'zod'
 import { cn } from '../../../lib/utils'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { axiosInstance } from '../../../lib/http'
-import { useSignIn } from 'react-auth-kit'
+import { axiosInstance, postApi } from '../../../lib/http'
+import { useAuthHeader, useSignIn } from 'react-auth-kit'
+import { MoveRight } from 'lucide-react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 const formSchema = z.object({
   name: z.string(),
   age: z.string(),
   dateOfBirth: z.string(),
+  placeOfBirth: z.string(),
   currentResidence: z.string(),
   gender: z.string(),
-  phoneNumber: z.string(),
   directorateGlobalId: z.string(),
+  phoneNumber: z.string(),
+  submissionDate: z.string(),
   diseaseGlobalId: z.string(),
   categoryGlobalId: z.string(),
-
   state: z.string()
 })
 
 type UserFormValue = z.infer<typeof formSchema>
-
+export type Category = {
+  id: number
+  globalId: string
+  name: string
+  SupportRatio: number
+  deleted: boolean
+  description: string
+  version: number
+  lastModified: Date
+}
+export type GovernorateInfo = {
+  id: number
+  globalId: string
+  name: string
+  deleted: boolean
+  version: number
+  lastModified: Date
+}
+export type Governorate = {
+  id: number
+  globalId: string
+  governorateGlobalId?: string
+  name: string
+  deleted: boolean
+  version: number
+  lastModified: Date
+  Governorate?: GovernorateInfo
+}
+export type Disease = {
+  id: number
+  globalId: string
+  name: string
+  deleted: boolean
+  description: string
+  version: number
+  lastModified: Date
+}
 export default function FormApplicant() {
+  const [category, setCategory] = useState<Category[]>([])
+  const [directorates, setDirectorates] = useState<Governorate[]>([])
+  const [disease, setDisease] = useState<Disease[]>([])
+  const authToken = useAuthHeader()
   const signIn = useSignIn()
   const { toast } = useToast()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const form = useForm<UserFormValue>({
     resolver: zodResolver(formSchema)
   })
-  const [directorates, setDirectorates] = useState([
-    { value: 'directorate1', label: 'مدرية 1' },
-    { value: 'directorate2', label: 'مدرية 2' },
-    { value: 'directorate3', label: 'مدرية 3' }
-    // Add more options as needed
-  ])
-  const [diseases, setDiseases] = useState([
-    { value: 'directorate1', label: 'مرض 1' },
-    { value: 'directorate2', label: 'مرض 2' },
-    { value: 'directorate3', label: 'مرض 3' }
-    // Add more options as needed
-  ])
-  const [category, setCategory] = useState([
-    { value: 'directorate1', label: 'فئة 1' },
-    { value: 'directorate2', label: 'فئة 2' },
-    { value: 'directorate3', label: 'فئة 3' }
-    // Add more options as needed
-  ])
+
   const [states, setStates] = useState([
-    { value: '1', label: 'نشط' },
-    { value: '2', label: 'غير نشط' }
+    { value: 'active', label: 'نشط' },
+    { value: 'not active', label: 'غير نشط' }
 
     // Add more options as needed
   ])
   const [delayedSubmitting, setDelayedSubmitting] = useState(form.formState.isSubmitting)
 
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axiosInstance.get('/category', {
+          headers: {
+            Authorization: `${authToken()}`
+          }
+        })
+        setCategory(response.data)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      }
+    }
+    const fetchDirectorate = async () => {
+      try {
+        const response = await axiosInstance.get('/directorate', {
+          headers: {
+            Authorization: `${authToken()}`
+          }
+        })
+        setDirectorates(response.data)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      }
+    }
+    const fetchDisease = async () => {
+      try {
+        const response = await axiosInstance.get('/disease', {
+          headers: {
+            Authorization: `${authToken()}`
+          }
+        })
+        setDisease(response.data)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      }
+    }
+
+    fetchData()
+    fetchDirectorate()
+    fetchDisease()
+  }, [])
+
+  const { mutate } = useMutation({
+    mutationKey: ['AddApplicant'],
+    mutationFn: (data: UserFormValue) =>
+      postApi(
+        '/applicant',
+        {
+          name: data.name,
+          age: +data.age,
+          dateOfBirth: new Date(data.dateOfBirth).toISOString(),
+          placeOfBirth: data.placeOfBirth,
+          currentResidence: data.currentResidence,
+          gender: data.gender,
+          directorateGlobalId: data.directorateGlobalId,
+          phoneNumber: data.phoneNumber,
+          submissionDate: new Date(data.submissionDate).toISOString(),
+          diseaseGlobalId: data.diseaseGlobalId,
+          categoryGlobalId: data.categoryGlobalId,
+          state: data.state
+        },
+        {
+          headers: {
+            Authorization: `${authToken()}`
+          }
+        }
+      ),
+    onSuccess: () => {
+      toast({
+        title: 'اشعار',
+        variant: 'success',
+        description: 'تمت الاضافة بنجاح'
+      })
+      queryClient.invalidateQueries({ queryKey: ['applicant'] })
+      navigate('/applicants')
+    },
+    onError: (error) => {
+      toast({
+        title: 'لم تتم العملية',
+        description: error.message,
+        variant: 'destructive'
+      })
+    }
+  })
   const onSubmit = async (data: UserFormValue) => {
-    console.log("🚀 ~ onSubmit ~ data:yty ty ty ty t yty ")
-
-    // try {
-    //   const payload = {
-    //     name: data.name,
-    //     age: data.age,
-    //     dateOfBirth: data.dateOfBirth,
-    //     placeOfBirth: data.placeOfBirth,
-    //     currentResidence: data.currentResidence,
-    //     gender: data.gender,
-    //     directorateGlobalId: data.directorateGlobalId,
-    //     phoneNumber: data.phoneNumber,
-    //     submissionDate: data.submissionDate,
-    //     diseaseGlobalId: data.diseaseGlobalId,
-    //     categoryGlobalId: data.categoryGlobalId,
-    //     state: data.state
-    //   }
-    //   console.log('🚀 ~ onSubmit ~ payload:', payload)
-
-    //   const response = await axiosInstance.post('/applicant', payload)
-
-    //   if (response.status === 200 || response.status === 201) {
-    //     const signInResult = signIn({
-    //       token: response.data.token,
-    //       expiresIn: 10080,
-    //       tokenType: 'Bearer',
-    //       authState: response.data
-    //     })
-    //     if (signInResult) {
-    //       toast({
-    //         title: 'مرحبا مجددا',
-    //         description: 'تم تسجيل الدخول بنجاح',
-    //         variant: 'success'
-    //       })
-    //       navigate('/')
-    //     } else {
-    //       toast({
-    //         title: 'حصل خطا ما',
-    //         description: 'حاول تسجيل الدخول مجددا',
-    //         variant: 'destructive'
-    //       })
-    //     }
-    //   }
-    // } catch (error) {
-    //   console.error('Error occurred:', error)
-    //   return JSON.stringify(error)
-    // }
+    mutate(data)
   }
 
   return (
@@ -131,14 +197,20 @@ export default function FormApplicant() {
           <div>
             <Button
               variant={'outline'}
-              className="w-[120px]"
+              className="w-[120px] border-2 border-black flex justify-center items-center"
               onClick={() => navigate('/applicants')}
             >
-              رجوع
+              <MoveRight className="" />
+
+              <h1 className="-translate-y-1 mr-2 font-bold">رجوع</h1>
             </Button>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" className="w-[120px]" onClick={() => navigate('/applicants')}>
+            <Button
+              variant="outline"
+              className="w-[120px] border-2 border-[#196CB0] text-[#196CB0]"
+              onClick={() => navigate('/applicants')}
+            >
               الغاء
             </Button>
             <Button form="formId" type="submit" variant={'keep'} className="w-[120px]">
@@ -157,11 +229,11 @@ export default function FormApplicant() {
           <div>
             <Form {...form}>
               {process.env.NODE_ENV === 'development' && (
-            <>
-              <p>Ignore it, it just in dev mode</p>
-              <div>{JSON.stringify(form.formState.errors)}</div>
-            </>
-          )}
+                <>
+                  <p>Ignore it, it just in dev mode</p>
+                  <div>{JSON.stringify(form.formState.errors)}</div>
+                </>
+              )}
               <form
                 id="formId"
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -172,6 +244,9 @@ export default function FormApplicant() {
                 <div className="  flex flex-col gap-6 ">
                   <div className="grid grid-cols-6 gap-2">
                     <div className="col-span-2">
+                      <label htmlFor="" className="text-[#A2A1A8]">
+                        الاسم الكامل
+                      </label>
                       <FormField
                         control={form.control}
                         name="name"
@@ -192,6 +267,9 @@ export default function FormApplicant() {
                       />
                     </div>
                     <div className="col-span-1">
+                      <label htmlFor="" className="text-[#A2A1A8]">
+                        الجنس
+                      </label>
                       <FormField
                         control={form.control}
                         name="gender"
@@ -201,7 +279,7 @@ export default function FormApplicant() {
                               <Input
                                 label="الجنس"
                                 placeholder="ادخل الجنس"
-                                type="number"
+                                type="text"
                                 {...field}
                                 disabled={delayedSubmitting}
                                 className="text-right bg-primary/5"
@@ -212,6 +290,9 @@ export default function FormApplicant() {
                       />
                     </div>
                     <div className="col-span-1">
+                      <label htmlFor="" className="text-[#A2A1A8]">
+                        العمر
+                      </label>
                       <FormField
                         control={form.control}
                         name="age"
@@ -221,7 +302,7 @@ export default function FormApplicant() {
                               <Input
                                 label=" العمر"
                                 placeholder="ادخل العمر"
-                                type="number"
+                                type="Text"
                                 {...field}
                                 disabled={delayedSubmitting}
                                 className="text-right bg-primary/5"
@@ -231,7 +312,8 @@ export default function FormApplicant() {
                         )}
                       />
                     </div>
-                    <div className="col-span-2">
+                    <div className="col-span-2 translate-y-6">
+                      <label htmlFor="" className="text-[#A2A1A8] "></label>
                       <FormField
                         control={form.control}
                         name="dateOfBirth"
@@ -244,7 +326,7 @@ export default function FormApplicant() {
                                 type="date"
                                 {...field}
                                 disabled={delayedSubmitting}
-                                className="text-right bg-primary/5"
+                                className="text-right bg-primary/5 "
                               />
                             </FormControl>
                           </FormItem>
@@ -254,6 +336,9 @@ export default function FormApplicant() {
                   </div>
                   <div className="grid grid-cols-3 gap-2">
                     <div className="col-span-1">
+                      <label htmlFor="" className="text-[#A2A1A8]">
+                        رقم الجوال
+                      </label>
                       <FormField
                         control={form.control}
                         name="phoneNumber"
@@ -274,13 +359,16 @@ export default function FormApplicant() {
                       />
                     </div>
                     <div className="col-span-1 ">
+                      <label htmlFor="" className="text-[#A2A1A8]">
+                        مديرية
+                      </label>
                       <FormField
                         control={form.control}
                         name="directorateGlobalId"
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <SelectTrigger className="">
                                   <SelectValue placeholder="اخر مديرية" />
                                 </SelectTrigger>
@@ -288,8 +376,8 @@ export default function FormApplicant() {
                                   <SelectGroup>
                                     <SelectLabel>المديريات</SelectLabel>
                                     {directorates.map((directorate) => (
-                                      <SelectItem key={directorate.value} value={directorate.value}>
-                                        {directorate.label}
+                                      <SelectItem key={directorate.id} value={directorate.globalId}>
+                                        {directorate.name}
                                       </SelectItem>
                                     ))}
                                   </SelectGroup>
@@ -301,6 +389,9 @@ export default function FormApplicant() {
                       />
                     </div>
                     <div className="col-span-1">
+                      <label htmlFor="" className="text-[#A2A1A8]">
+                        السكن الحالي
+                      </label>
                       <FormField
                         control={form.control}
                         name="currentResidence"
@@ -324,22 +415,25 @@ export default function FormApplicant() {
 
                   <div className="grid grid-cols-3 gap-2">
                     <div className="col-span-1 ">
+                      <label htmlFor="" className="text-[#A2A1A8]">
+                        الأمراض
+                      </label>
                       <FormField
                         control={form.control}
                         name="diseaseGlobalId"
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <SelectTrigger className="">
-                                  <SelectValue placeholder="اخر المرض" />
+                                  <SelectValue placeholder="اختر المرض" />
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectGroup>
                                     <SelectLabel>الامراض</SelectLabel>
-                                    {diseases.map((disease) => (
-                                      <SelectItem key={disease.value} value={disease.value}>
-                                        {disease.label}
+                                    {disease.map((diseases) => (
+                                      <SelectItem key={diseases.id} value={diseases.globalId}>
+                                        {diseases.name}
                                       </SelectItem>
                                     ))}
                                   </SelectGroup>
@@ -351,22 +445,24 @@ export default function FormApplicant() {
                       />
                     </div>
                     <div className="col-span-1 ">
+                      <label htmlFor="" className="text-[#A2A1A8]">
+                        الفئة
+                      </label>
                       <FormField
                         control={form.control}
                         name="categoryGlobalId"
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <SelectTrigger className="">
-                                  <SelectValue placeholder="اخر فئة" />
+                                  <SelectValue placeholder="اختر فئة" />
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectGroup>
-                                    <SelectLabel>الفئات</SelectLabel>
                                     {category.map((category) => (
-                                      <SelectItem key={category.value} value={category.value}>
-                                        {category.label}
+                                      <SelectItem key={category.id} value={category.globalId}>
+                                        {category.name}
                                       </SelectItem>
                                     ))}
                                   </SelectGroup>
@@ -378,13 +474,16 @@ export default function FormApplicant() {
                       />
                     </div>
                     <div className="col-span-1 ">
+                      <label htmlFor="" className="text-[#A2A1A8]">
+                        الحالة
+                      </label>
                       <FormField
                         control={form.control}
                         name="state"
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <SelectTrigger className="">
                                   <SelectValue placeholder="اخر الحالة" />
                                 </SelectTrigger>
@@ -405,31 +504,45 @@ export default function FormApplicant() {
                       />
                     </div>
                   </div>
+
                   <div className="grid grid-cols-3 gap-2">
-                    <div className="col-span-1 ">
+                    <div className="col-span-1">
+                      <label htmlFor="" className="text-[#A2A1A8]">
+                        مكان الولادة
+                      </label>
                       <FormField
                         control={form.control}
-                        name="diseaseGlobalId"
+                        name="placeOfBirth"
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <FormField
-                                control={form.control}
-                                name="currentResidence"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormControl>
-                                      <Input
-                                        label="تاريخ التقديم"
-                                        placeholder="ادخل تاريخ التقديم"
-                                        type="date"
-                                        {...field}
-                                        disabled={delayedSubmitting}
-                                        className="text-right bg-primary/5"
-                                      />
-                                    </FormControl>
-                                  </FormItem>
-                                )}
+                              <Input
+                                label="مكان الولادة"
+                                placeholder="ادخل مكان الولادة"
+                                type="text"
+                                {...field}
+                                disabled={delayedSubmitting}
+                                className="text-right bg-[#EFF1F9]/50 rounded-[8px]"
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="col-span-1 translate-y-[1.55rem]">
+                      <FormField
+                        control={form.control}
+                        name="submissionDate"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input
+                                label="تاريخ الميلاد"
+                                placeholder="ادخل تاريخ الميلاد"
+                                type="date"
+                                {...field}
+                                disabled={delayedSubmitting}
+                                className="text-right bg-primary/5 "
                               />
                             </FormControl>
                           </FormItem>
@@ -438,9 +551,9 @@ export default function FormApplicant() {
                     </div>
                   </div>
                 </div>
-                <Button  type="submit" variant={'keep'} className="w-[120px]">
-              حفظ
-            </Button>
+                <Button type="submit" variant={'keep'} className="w-[120px]">
+                  حفظ
+                </Button>
               </form>
             </Form>
           </div>
