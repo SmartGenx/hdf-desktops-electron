@@ -11,6 +11,7 @@ import Dismissal from '../pages/dismissal/home'
 import Initialization from '../pages/Initialization/Initialization'
 import FormDismissal from '../pages/dismissal/formDismissal'
 import ProtectedRoute from '../layouts/protected-route'
+import UpdateApplicant from '../pages/Applicants/update'
 
 export const router = createHashRouter([
   {
@@ -34,6 +35,11 @@ export const router = createHashRouter([
       {
         path: '/FormApplicant',
         element: <ProtectedRoute element={<FormApplicant />} />
+        // element: <Login />
+      },
+      {
+        path: '/UpdateApplicant/:id',
+        element: <ProtectedRoute element={<UpdateApplicant />} />
         // element: <Login />
       },
       {

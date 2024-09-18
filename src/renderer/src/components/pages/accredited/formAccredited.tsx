@@ -22,23 +22,23 @@ import { useNavigate } from 'react-router-dom'
 import { axiosInstance, getApi, postApi } from '../../../lib/http'
 import { useAuthHeader, useSignIn } from 'react-auth-kit'
 import { Pen } from 'lucide-react'
-import { useMutation, useQuery } from '@tanstack/react-query'
-import { Pharmacy, Square, AccreditedInfo } from '@renderer/types'
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
+import { Pharmacy, Square, AccreditedInfo, applicantType } from '@renderer/types'
 import FileUploader from '@renderer/components/fileUploader'
 
 const formSchema = z.object({
   squareGlobalId: z.string(),
   treatmentSite: z.string(),
   doctor: z.string(),
-  state: z.string(),
   numberOfRfid: z.string(),
   formNumber: z.string(),
   applicantGlobalId: z.string(),
   pharmacyGlobalId: z.string(),
-  type: z.string(),
-  prescriptionDate: z.string(),
   atch: z.instanceof(File),
-  pt: z.instanceof(File)
+  pt: z.instanceof(File),
+  prescriptionDate: z.string(),
+  type: z.string(),
+  state: z.string()
 })
 
 type AccreditedFormValue = z.infer<typeof formSchema>
@@ -47,70 +47,84 @@ export default function FormAccredited() {
   const signIn = useSignIn()
   const { toast } = useToast()
   const navigate = useNavigate()
+  const authToken = useAuthHeader()
+  const queryClient = useQueryClient()
+  const [square, setSquare] = useState<Square[]>([])
+  const [pharmacy, setPharmacy] = useState<Pharmacy[]>([])
+  const [applicantType, setApplicantType] = useState<applicantType[]>([])
   const form = useForm<AccreditedFormValue>({
     resolver: zodResolver(formSchema)
   })
   const [Rfid, setRfid] = useState('')
-  const [statuses, setstatuse] = useState<{ id: string; label: string }[]>([
-    { id: 'مستمر', label: 'مستمر' },
-    { id: 'موقف', label: 'موقف' }
+  const [statuses, setstatuse] = useState<{ label: string; name: string }[]>([
+    { label: 'مستمر', name: 'مستمر' },
+    { label: 'موقف', name: 'موقف' }
 
     // Add more options as needed
   ])
-  const authToken = useAuthHeader()
-  const { data: Pharmacys } = useQuery({
-    queryKey: ['Pharmacy'],
-    queryFn: () =>
-      getApi<Pharmacy[]>('/pharmacy', {
-        headers: {
-          Authorization: authToken()
-        }
-      })
-  })
-  const { data: squares } = useQuery({
-    queryKey: ['square'],
-    queryFn: () =>
-      getApi<Square[]>('/square', {
-        headers: {
-          Authorization: authToken()
-        }
-      })
-  })
-  const { data: applicant } = useQuery({
-    queryKey: ['applicant'],
-    queryFn: () =>
-      getApi<Square[]>('/applicant', {
-        headers: {
-          Authorization: authToken()
-        }
-      })
-  })
+
+  React.useEffect(() => {
+    const fetchSetSquareData = async () => {
+      try {
+        const response = await axiosInstance.get('/square', {
+          headers: {
+            Authorization: `${authToken()}`
+          }
+        })
+        setSquare(response.data)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      }
+    }
+    const fetchPharmacyDirectorate = async () => {
+      try {
+        const response = await axiosInstance.get('/pharmacy', {
+          headers: {
+            Authorization: `${authToken()}`
+          }
+        })
+        setPharmacy(response.data)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      }
+    }
+    const fetchApplicantType = async () => {
+      try {
+        const response = await axiosInstance.get('/applicant', {
+          headers: {
+            Authorization: `${authToken()}`
+          }
+        })
+        setApplicantType(response.data)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      }
+    }
+
+    fetchSetSquareData()
+    fetchPharmacyDirectorate()
+    fetchApplicantType()
+  }, [])
 
   const [type, settype] = useState([
-    { type: 'جواز', label: ' جواز' },
-    { type: 'بطاقة', label: ' بطاقة' }
+    { id: 1, label: ' جواز' },
+    { id: 2, label: ' بطاقة' }
 
     // Add more options as needed
   ])
-  const [states, setStates] = useState([
-    { value: '1', label: 'نشط' },
-    { value: '2', label: 'غير نشط' }
 
-    // Add more options as needed
-  ])
   const [delayedSubmitting, setDelayedSubmitting] = useState(form.formState.isSubmitting)
+
   const generateRfid = () => {
-    // Example function to generate a random RFID number
     const newRfid = Math.floor(100000000 + Math.random() * 900000000).toString()
     setRfid(newRfid)
-    form.setValue('numberOfRfid', newRfid) // Update the form's value if using a form library like React Hook Form
+    form.setValue('numberOfRfid', newRfid)
   }
   const { mutate } = useMutation({
-    // mutationKey: ['AccreditedInfo'],
+    mutationKey: ['AddAccredited'],
     mutationFn: (datas: AccreditedFormValue) => {
       const formData = new FormData()
 
-      // Append each form field to the FormData object
       formData.append('squareGlobalId', datas.squareGlobalId)
       formData.append('treatmentSite', datas.treatmentSite)
       formData.append('doctor', datas.doctor)
@@ -120,19 +134,19 @@ export default function FormAccredited() {
       formData.append('applicantGlobalId', datas.applicantGlobalId)
       formData.append('pharmacyGlobalId', datas.pharmacyGlobalId)
       formData.append('type', datas.type)
-      formData.append('prescriptionDate', datas.prescriptionDate)
-
-      // Append files
-      formData.append('atch', datas.atch)
-      formData.append('pt', datas.pt)
-      console.log('🚀 ~ onSubmit ~ formData:', datas)
-      // console.log('🚀 ~ onSubmit ~ formData:', formData.get("d)
+      formData.append('prescriptionDate', new Date(datas.prescriptionDate).toISOString())
+      if (datas.atch) {
+        formData.append('atch', datas.atch)
+      }
+      if (datas.pt) {
+        formData.append('pt', datas.pt)
+      }
 
       // Return the API call to be executed
       return postApi('/accredited', formData, {
         headers: {
           Authorization: `${authToken()}`,
-          'Content-Type': 'multipart/form-data' // Ensure this header is correct for file uploads
+          'Content-Type': 'multipart/form-data'
         }
       })
     },
@@ -142,6 +156,8 @@ export default function FormAccredited() {
         description: 'تمت الاضافة بنجاح',
         variant: 'success'
       })
+      queryClient.invalidateQueries({ queryKey: ['accredited'] })
+      navigate('/accredited')
     },
     onError: (error, variables, context) => {
       toast({
@@ -153,7 +169,7 @@ export default function FormAccredited() {
   })
 
   const onSubmit = async (data: AccreditedFormValue) => {
-    console.log('🚀 ~ onSubmit ~ data:yty ty ty ty t yty ')
+    // console.log(data)
     mutate(data)
   }
 
@@ -254,8 +270,9 @@ export default function FormAccredited() {
                                     readOnly
                                     label="رقم بطاقة الصرف"
                                     placeholder="ادخل رقم بطاقة الصرف"
-                                    type="number"
+                                    type="text"
                                     {...field}
+                                    value={field.value} // Ensure the value comes from the field
                                     disabled={delayedSubmitting}
                                     className="text-right bg-primary/5"
                                   />
@@ -313,8 +330,8 @@ export default function FormAccredited() {
                                   <SelectGroup>
                                     <SelectLabel>الحالات</SelectLabel>
                                     {statuses.map((statuse) => (
-                                      <SelectItem key={statuse.id} value={statuse.id}>
-                                        {statuse.label}
+                                      <SelectItem key={statuse.label} value={String(statuse.label)}>
+                                        {statuse.name}
                                       </SelectItem>
                                     ))}
                                   </SelectGroup>
@@ -339,8 +356,8 @@ export default function FormAccredited() {
                                 <SelectContent>
                                   <SelectGroup>
                                     <SelectLabel>الحالات</SelectLabel>
-                                    {Pharmacys?.data.map((pharmacy) => (
-                                      <SelectItem key={pharmacy.globalId} value={pharmacy.name}>
+                                    {pharmacy.map((pharmacy) => (
+                                      <SelectItem key={pharmacy.globalId} value={pharmacy.globalId}>
                                         {pharmacy.name}
                                       </SelectItem>
                                     ))}
@@ -369,7 +386,7 @@ export default function FormAccredited() {
                                 <SelectContent>
                                   <SelectGroup>
                                     <SelectLabel>الامراض</SelectLabel>
-                                    {squares?.data.map((square) => (
+                                    {square?.map((square) => (
                                       <SelectItem key={square.globalId} value={square.globalId}>
                                         {square.name}
                                       </SelectItem>
@@ -389,23 +406,13 @@ export default function FormAccredited() {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <FormField
-                                control={form.control}
-                                name="prescriptionDate"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormControl>
-                                      <Input
-                                        label="تاريخ الوصفة"
-                                        placeholder="ادخل تاريخ الوصفة"
-                                        type="date"
-                                        {...field}
-                                        disabled={delayedSubmitting}
-                                        className="text-right bg-primary/5"
-                                      />
-                                    </FormControl>
-                                  </FormItem>
-                                )}
+                              <Input
+                                label="تاريخ الوصفة"
+                                placeholder="ادخل تاريخ الوصفة"
+                                type="date"
+                                {...field}
+                                disabled={delayedSubmitting}
+                                className="text-right bg-primary/5"
                               />
                             </FormControl>
                           </FormItem>
@@ -426,15 +433,14 @@ export default function FormAccredited() {
                                 <SelectContent>
                                   <SelectGroup>
                                     <SelectLabel>المتقدمين</SelectLabel>
-                                    {Array.isArray(applicant?.data) &&
-                                      applicant.data.map((applican) => (
-                                        <SelectItem
-                                          key={applican.globalId}
-                                          value={applican.globalId}
-                                        >
-                                          {applican.name}
-                                        </SelectItem>
-                                      ))}
+                                    {applicantType?.map((applicant) => (
+                                      <SelectItem
+                                        key={applicant.globalId}
+                                        value={applicant.globalId}
+                                      >
+                                        {applicant.name}
+                                      </SelectItem>
+                                    ))}
                                   </SelectGroup>
                                 </SelectContent>
                               </Select>
@@ -460,7 +466,7 @@ export default function FormAccredited() {
                                   <SelectGroup>
                                     <SelectLabel>الهويات</SelectLabel>
                                     {type.map((applicant) => (
-                                      <SelectItem key={applicant.type} value={applicant.type}>
+                                      <SelectItem key={applicant.id} value={String(applicant.id)}>
                                         {applicant.label}
                                       </SelectItem>
                                     ))}

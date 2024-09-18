@@ -16,7 +16,7 @@ const Dismissal = () => {
     error,
     data: accredited
   } = useQuery({
-    queryKey: ['accredited'],
+    queryKey: ['dismissal'],
     queryFn: () =>
       getApi<Dismissales>('/dismissal', {
         params: {
