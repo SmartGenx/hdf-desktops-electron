@@ -19,6 +19,36 @@ export type Dismissales = {
   page: string
   pageSize: string
 }
+export type ApplicantByDirectorateViewModel = {
+  name: string
+  gender: string
+  disease: string
+  directorate: string
+  phoneNumber: string
+  state: string
+  totalAmount: number
+  supportRatio: string
+  approvedAmount: number
+}
+export type AllAccreditedsForPdf = {
+  name: string
+  disease: string
+  directorate: string
+  phoneNumber: string
+  orescriptionDate: Date
+  renewalDate: Date
+  days: number
+  Months: number
+  state: string
+}
+export type applicantsReportCategory = {
+  name: string
+  disease: string
+  directorate: string
+  phoneNumber: string
+  submissionDate: Date
+  category: string
+}
 export type DismissalInfo = {
   id: number
   globalId: string

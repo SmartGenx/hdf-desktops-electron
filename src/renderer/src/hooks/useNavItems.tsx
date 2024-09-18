@@ -32,33 +32,28 @@ export default function useNavItems() {
     {
       title: 'الصرف',
       list: [
-
         {
           href: '/dismissal',
           icon: 'dismiss',
           label: 'إدارة الصرف',
           disabled: false
-        },
-
+        }
       ]
     },
     {
       title: 'التقارير ',
       list: [
-
         {
-          href: '/knowledge',
+          href: '/Reports',
           icon: 'report',
           label: 'التقارير ',
-          disabled: true
-        },
-
+          disabled: false
+        }
       ]
     },
     {
       title: 'الأعدادات ',
       list: [
-
         {
           href: '/knowledge',
           icon: 'settings',
@@ -70,8 +65,7 @@ export default function useNavItems() {
           icon: 'report',
           label: 'تهيئة النظام',
           disabled: false
-        },
-
+        }
       ]
     }
   ]
