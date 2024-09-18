@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '../../ui/select'
+import { Alert, AlertDescription, AlertTitle } from '../../ui/alert'
 import { useToast } from '../../ui/use-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -20,17 +21,18 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { axiosInstance, getApi, postApi } from '../../../lib/http'
 import { useAuthHeader, useSignIn } from 'react-auth-kit'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Accredited, Pharmacy, Square } from '@renderer/types'
-import FileUploader from '@renderer/components/fileUploader'
 import Pdf from '@renderer/components/icons/pdf'
+import { AlertCircle } from 'lucide-react'
 
 const formSchema = z.object({
   totalAmount: z.string(),
   amountPaid: z.string(),
   approvedAmount: z.string(),
   accreditedGlobalId: z.string(),
-  pharmacyGlobalId: z.string()
+  pharmacyGlobalId: z.string(),
+  state: z.string()
 })
 
 type AccreditedFormValue = z.infer<typeof formSchema>
@@ -40,17 +42,49 @@ export default function FormDismissal() {
   const { toast } = useToast()
   const { setValue } = useForm()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const form = useForm<AccreditedFormValue>({
     resolver: zodResolver(formSchema)
   })
   const [approvedAmounts, setApprovedAmounts] = useState<number>(0)
   const [totalAmounts, setTotalAmounts] = useState<number>(0)
+  const [totalPrice, setTotalPrice] = useState<number>(0)
 
-  const approvedPercentage = approvedAmounts / 100
-  const discountAmount = totalAmounts * approvedPercentage
-  const priceTotal = totalAmounts - discountAmount
+  React.useEffect(() => {
+    let computedPrice = 0
+
+    if (totalAmounts > 50000) {
+      const excessAmount = totalAmounts - 50000
+      const approvedPercentage = (50000 * approvedAmounts) / 100
+      const reducedAmount = 50000 - approvedPercentage
+      computedPrice = reducedAmount + excessAmount
+    } else {
+      computedPrice = totalAmounts - (totalAmounts * approvedAmounts) / 100
+    }
+
+    setTotalPrice(computedPrice)
+  }, [totalAmounts, approvedAmounts])
 
   const [pharmacy, setPharmacy] = useState<Pharmacy[]>([])
+  const [selectedPharmacy, setSelectedPharmacy] = useState<Pharmacy | null>(null)
+  const [showAlert, setShowAlert] = useState<boolean>(false)
+  //
+  const handlePharmacySelection = (globalId: string) => {
+    const selected = pharmacy.find((p) => p.globalId === globalId)
+    if (selected) {
+      const today = new Date()
+      const currentDate = today.getDate()
+
+      if (selected.startDispenseDate < currentDate && selected.endispenseDate > currentDate) {
+        setShowAlert(false)
+      } else {
+        setShowAlert(true)
+      }
+
+      setSelectedPharmacy(selected)
+    }
+  }
+  //
   const authToken = useAuthHeader()
 
   const { data: applicant } = useQuery({
@@ -62,19 +96,6 @@ export default function FormDismissal() {
         }
       })
   })
-
-  const [type, settype] = useState([
-    { type: 'جواز', label: ' جواز' },
-    { type: 'بطاقة', label: ' بطاقة' }
-
-    // Add more options as needed
-  ])
-  const [states, setStates] = useState([
-    { value: '1', label: 'نشط' },
-    { value: '2', label: 'غير نشط' }
-
-    // Add more options as needed
-  ])
 
   const [delayedSubmitting, setDelayedSubmitting] = useState(form.formState.isSubmitting)
 
@@ -99,8 +120,13 @@ export default function FormDismissal() {
       console.error('Error fetching RFID data:', error)
     }
   }
+  const name =
+    applicant?.data?.[0]?.globalId === number?.info?.[0]?.applicantGlobalId
+      ? applicant?.data?.[0]?.name
+      : null
+
   React.useEffect(() => {
-    form.setValue('amountPaid', priceTotal.toFixed(2))
+    form.setValue('amountPaid', String(totalPrice))
     form.setValue('accreditedGlobalId', number?.info?.[0]?.globalId ?? 'No URL available')
     const fetchPharmacyDirectorate = async () => {
       try {
@@ -116,8 +142,9 @@ export default function FormDismissal() {
     }
 
     fetchPharmacyDirectorate()
-  }, [priceTotal, setValue])
+  }, [number?.info?.[0]?.globalId, totalPrice, setValue])
 
+  console.log('sdasdasd', number?.info?.[0]?.pharmacyGlobalId ?? 'No URL available')
   const { mutate } = useMutation({
     // mutationKey: ['AccreditedInfo'],
     mutationFn: (datas: AccreditedFormValue) =>
@@ -128,7 +155,8 @@ export default function FormDismissal() {
           approvedAmount: +datas.approvedAmount,
           amountPaid: +datas.amountPaid,
           accreditedGlobalId: datas.accreditedGlobalId,
-          pharmacyGlobalId: datas.pharmacyGlobalId
+          pharmacyGlobalId: datas.pharmacyGlobalId,
+          state: datas.state
         },
         {
           headers: {
@@ -142,6 +170,8 @@ export default function FormDismissal() {
         description: 'تمت الاضافة بنجاح',
         variant: 'success'
       })
+      queryClient.invalidateQueries({ queryKey: ['dismissal'] })
+      navigate('/dismissal')
     },
     onError: (error, variables, context) => {
       toast({
@@ -182,6 +212,25 @@ export default function FormDismissal() {
             </div>
           </div>
 
+          {showAlert && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>
+                الصيدلية لا تستغني حاليًا. يرجى اختيار صيدلية مختلفة.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {/* <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>{showAlert ? 'Error' : 'Notice'}</AlertTitle>
+            <AlertDescription>
+              {showAlert
+                ? 'The pharmacy is not currently dispensing. Please select a different pharmacy.'
+                : 'The pharmacy is currently dispensing. You can proceed.'}
+            </AlertDescription>
+          </Alert> */}
           <div>
             <Form {...form}>
               {process.env.NODE_ENV === 'development' && (
@@ -229,7 +278,18 @@ export default function FormDismissal() {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <Select
+                                onValueChange={(value) => {
+                                  field.onChange(value)
+                                  handlePharmacySelection(value) // Check the pharmacy dates
+                                }}
+                                value={
+                                  field.value
+                                    ? String(field.value)
+                                    : String(number?.info?.[0]?.pharmacyGlobalId)
+                                }
+                                defaultValue={field.value}
+                              >
                                 <SelectTrigger className="">
                                   <SelectValue placeholder="اختر الصيدلية" />
                                 </SelectTrigger>
@@ -320,19 +380,29 @@ export default function FormDismissal() {
                       />
                     </div>
                     <div className="col-span-1">
+                      <Input
+                        className="h-10 p-0 rounded-xl text-sm"
+                        placeholder="المعنمد"
+                        value={name || ''}
+                        disabled
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="col-span-1">
                       <FormField
                         control={form.control}
-                        name="accreditedGlobalId"
+                        name="state"
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
                               <Input
-                                label="المعتمد"
-                                placeholder="المعتمد"
+                                label=" الحاله"
+                                placeholder="الحاله  "
                                 type="text"
                                 {...field}
                                 disabled={delayedSubmitting}
-                                className="text-right bg-primary/5"
+                                className="text-right bg-[#EFF1F9]/50 rounded-[8px]"
                               />
                             </FormControl>
                           </FormItem>
