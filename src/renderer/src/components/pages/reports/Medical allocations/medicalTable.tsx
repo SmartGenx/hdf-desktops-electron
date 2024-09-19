@@ -14,7 +14,6 @@ import { HdfTable } from '../../../tables/hdfTable'
 import { ApplicantByDirectorateViewModel } from '../../../../types/index'
 import { Button } from '../../../ui/button'
 
-import { Month } from '../../../../types/enums'
 type Props = {
   data: ApplicantByDirectorateViewModel[]
 }
