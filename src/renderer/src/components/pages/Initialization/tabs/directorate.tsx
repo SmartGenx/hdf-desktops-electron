@@ -7,7 +7,15 @@ import { Button } from '@renderer/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@renderer/components/ui/form'
 import { Input } from '@renderer/components/ui/input'
 import CategoryTabel from '../_components/DirectorateTabel'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@renderer/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue
+} from '@renderer/components/ui/select'
 const formSchema = z.object({
   username: z.string().min(2).max(50)
 })
@@ -28,11 +36,7 @@ export default function Directorate() {
     console.log(values)
   }
 
-  const governorates = [
-    'القاهرة',
-    'الجيزة',
-    'الاسكندرية',
-  ]
+  const governorates = ['القاهرة', 'الجيزة', 'الاسكندرية']
   return (
     <div className="space-y-3">
       <Form {...form}>
@@ -88,7 +92,7 @@ export default function Directorate() {
           </Button>
         </form>
       </Form>
-      <CategoryTabel info={[]} page="2" pageSize="5" total={5} />
+      <CategoryTabel info={[]} page="2" total={5} />
     </div>
   )
 }

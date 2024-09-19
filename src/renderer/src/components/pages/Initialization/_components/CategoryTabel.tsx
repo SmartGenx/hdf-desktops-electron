@@ -1,8 +1,6 @@
 import * as React from 'react'
 import { ColumnDef } from '@tanstack/react-table'
-
 import { Category } from '@renderer/types'
-
 import { HdfTable } from '@renderer/components/tables/hdfTable'
 import DeleteDialog from './delete-dailog'
 import EditDialog from './edit-dailog'
@@ -10,10 +8,9 @@ import EditCategoryForm from './edit-forms/EditCategoryForm'
 type Props = {
   info: Category[]
   page: string
-  pageSize: string
   total: number
 }
-export default function CategoryTabel({ info, page, pageSize, total }: Props) {
+export default function CategoryTabel({ info, page, total }: Props) {
   const columns = React.useMemo<ColumnDef<Category>[]>(
     () => [
       {
@@ -37,9 +34,7 @@ export default function CategoryTabel({ info, page, pageSize, total }: Props) {
 
         cell: ({ row }) => (
           <div className="flex w-fit">
-            <EditDialog
-              content={<EditCategoryForm id={row.original.globalId} />}
-            />
+            <EditDialog content={<EditCategoryForm id={row.original.globalId} />} />
             <DeleteDialog
               url={`/category/${row.original?.globalId}`}
               keys={['category']}

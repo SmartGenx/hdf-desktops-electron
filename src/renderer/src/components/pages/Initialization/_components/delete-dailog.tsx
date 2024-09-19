@@ -1,10 +1,19 @@
-
 import { useAuthHeader } from 'react-auth-kit'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Trash, Trash2 } from 'lucide-react'
+import { Trash2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@renderer/components/ui/alert-dialog'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '@renderer/components/ui/alert-dialog'
 import { useToast } from '@renderer/components/ui/use-toast'
 import { deleteApi } from '@renderer/lib/http'
 
@@ -72,7 +81,7 @@ export default function DeleteDialog({ url, disabled = false, keys, path }: Dele
         }`}
         disabled={disabled}
       >
-        <Trash2 className='text-[#475467]' size={15} />
+        <Trash2 className="text-[#475467]" size={15} />
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader className="*:text-right">

@@ -4,16 +4,10 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import { Button } from '@renderer/components/ui/button'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage
-} from '@renderer/components/ui/form'
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@renderer/components/ui/form'
 import { Input } from '@renderer/components/ui/input'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import {  Governorate as GovernorateType } from '@renderer/types'
+import { Governorate as GovernorateType } from '@renderer/types'
 import { useAuthHeader } from 'react-auth-kit'
 import { getApi, postApi } from '@renderer/lib/http'
 import GovernorateTabel from '../_components/GovernorateTabel'
@@ -28,10 +22,9 @@ export default function Governorate() {
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    
+    resolver: zodResolver(formSchema)
   })
-  const { data: governorates ,refetch} = useQuery({
+  const { data: governorates, refetch } = useQuery({
     queryKey: ['governorate'],
     queryFn: () =>
       getApi<GovernorateType[]>('/governorate', {
@@ -40,17 +33,16 @@ export default function Governorate() {
         }
       })
   })
-  const { mutate ,} = useMutation({
+  const { mutate } = useMutation({
     mutationKey: ['addGovernorate'],
     mutationFn: (values: z.infer<typeof formSchema>) => {
       // Return the API call to be executed
       return postApi(
         '/governorate',
-        {...values},
+        { ...values },
         {
           headers: {
-            Authorization: `${authToken()}`,
-            
+            Authorization: `${authToken()}`
           }
         }
       )
@@ -75,38 +67,37 @@ export default function Governorate() {
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
     mutate(values)
-
   }
   return (
-    <div className='space-y-3'>
+    <div className="space-y-3">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex justify-between gap-x-2">
-          <div className='grid w-full grid-cols-1 gap-x-2'>
+          <div className="grid w-full grid-cols-1 gap-x-2">
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
-                <FormItem >
-                  <FormControl >
+                <FormItem>
+                  <FormControl>
                     <Input
                       label="إضافة محافظة"
                       placeholder="إضافة محافظة"
                       type="text"
                       {...field}
-                      className='w-full'
+                      className="w-full"
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            
-            
           </div>
-          <Button variant={'Hdf'} type="submit">إضافة</Button>
+          <Button variant={'Hdf'} type="submit">
+            إضافة
+          </Button>
         </form>
       </Form>
-      <GovernorateTabel info={governorates?.data||[]} page='2' pageSize='5' total={5}/>
+      <GovernorateTabel info={governorates?.data || []} page="2" total={5} />
     </div>
   )
 }
