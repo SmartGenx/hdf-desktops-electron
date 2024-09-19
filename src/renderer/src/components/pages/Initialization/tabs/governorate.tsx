@@ -4,44 +4,49 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import { Button } from '@renderer/components/ui/button'
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@renderer/components/ui/form'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage
+} from '@renderer/components/ui/form'
 import { Input } from '@renderer/components/ui/input'
-import CategoryTabel from '../_components/CategoryTabel'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Category as CategoryType } from '@renderer/types'
-import { getApi, postApi } from '@renderer/lib/http'
+import {  Governorate as GovernorateType } from '@renderer/types'
 import { useAuthHeader } from 'react-auth-kit'
+import { getApi, postApi } from '@renderer/lib/http'
+import GovernorateTabel from '../_components/GovernorateTabel'
 import { toast } from '@renderer/components/ui/use-toast'
 const formSchema = z.object({
-  name: z.string(),
-  SupportRatio: z.string(),
-  description: z.string()
+  name: z.string()
 })
 
-export default function Category() {
+export default function Governorate() {
   const authToken = useAuthHeader()
   const queryClient = useQueryClient()
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema)
+    resolver: zodResolver(formSchema),
+    
   })
-  const { data: category,refetch } = useQuery({
-    queryKey: ['category'],
+  const { data: governorates ,refetch} = useQuery({
+    queryKey: ['governorate'],
     queryFn: () =>
-      getApi<CategoryType[]>('/category', {
+      getApi<GovernorateType[]>('/governorate', {
         headers: {
           Authorization: authToken()
         }
       })
   })
   const { mutate ,} = useMutation({
-    mutationKey: ['addCategory'],
+    mutationKey: ['addGovernorate'],
     mutationFn: (values: z.infer<typeof formSchema>) => {
       // Return the API call to be executed
       return postApi(
-        '/category',
-        { ...values, SupportRatio: +values.SupportRatio },
+        '/governorate',
+        {...values},
         {
           headers: {
             Authorization: `${authToken()}`,
@@ -72,61 +77,36 @@ export default function Category() {
     mutate(values)
 
   }
- 
   return (
-    <div className="space-y-3">
+    <div className='space-y-3'>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex justify-between gap-x-2">
-          <div className="grid grid-cols-7 gap-x-2">
+          <div className='grid w-full grid-cols-1 gap-x-2'>
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
-                <FormItem className="col-span-2">
-                  <FormControl>
-                    <Input label="اسم الفئة" placeholder="اسم الفئة" type="text" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem className="col-span-4">
-                  <FormControl>
-                    <Input label="الوصف" placeholder="الوصف" type="text" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="SupportRatio"
-              render={({ field }) => (
-                <FormItem className="col-span-1">
-                  <FormControl>
+                <FormItem >
+                  <FormControl >
                     <Input
-                      label="النسبة"
-                      placeholder="النسبة"
-                      type="number"
+                      label="إضافة محافظة"
+                      placeholder="إضافة محافظة"
+                      type="text"
                       {...field}
-                      value={Number(field.value)}
+                      className='w-full'
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            
+            
           </div>
-          <Button variant={'Hdf'} type="submit">
-            إضافة
-          </Button>
+          <Button variant={'Hdf'} type="submit">إضافة</Button>
         </form>
       </Form>
-      <CategoryTabel info={category?.data || []} page="2" pageSize="5" total={5} />
+      <GovernorateTabel info={governorates?.data||[]} page='2' pageSize='5' total={5}/>
     </div>
   )
 }
