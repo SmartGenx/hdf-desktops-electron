@@ -68,7 +68,7 @@ export function HdfTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow
                 key={headerGroup.id}
-                className={cn('px text-nowrap  text-sm font-medium bg-[#E5F0FF]', {
+                className={cn('px text-nowrap  text-sm font-medium  hover:bg-[#E5F0FF] bg-[#E5F0FF]', {
                   'bg-primary/5': lightHeader
                 })}
               >

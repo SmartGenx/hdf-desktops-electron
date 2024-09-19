@@ -9,6 +9,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
+        "Hdf-outline": 'px-[17px] py-[16px] w-[125px] rounded-[7px] h-[36px] text-[#3C3C3C] text-[14px] font-medium border border-[#3C3C3C]',
+        Hdf: 'px-[17px] py-[16px] w-[125px] rounded-[7px] h-[36px] text-[#ffffff] text-[14px] font-medium bg-[#196CB0]',
         default: 'bg-primary text-primary-foreground hover:bg-primary/90',
         destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
         outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
@@ -17,6 +19,7 @@ const buttonVariants = cva(
         link: 'text-primary underline-offset-4 hover:underline'
       },
       size: {
+        Hdf:"px-[17px] py-[16px] w-[125px] rounded-[7px] h-[36px]",
         default: 'h-10 px-4 py-2',
         sm: 'h-9 rounded-md px-3',
         lg: 'h-11 rounded-md px-8',
