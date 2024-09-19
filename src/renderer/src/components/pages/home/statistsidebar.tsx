@@ -1,4 +1,3 @@
-import React from 'react'
 import { Bar } from 'react-chartjs-2'
 import {
   Chart as ChartJS,
@@ -60,14 +59,14 @@ const options = {
 
 const Statistsidebar = () => {
   return (
-    <div className="flex w-[750px] justify-end  ">
-      <Card className="bg-blue-900 text-white p-6 rounded-lg shadow-lg w-80">
+    <div className="flex w-full">
+      <Card className="bg-blue-900 text-white p-6 rounded-lg shadow-lg w-[350px] h-[755px]">
         <CardHeader>
           <CardTitle className="text-lg font-bold mb-4">عدد المستفيدين حسب المربعات</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-4xl font-semibold mb-4">480,872</div>
-          <div className="  ">
+          <div className="">
             <Bar data={barData} options={options} width={400} height={300} />
           </div>
           <div>

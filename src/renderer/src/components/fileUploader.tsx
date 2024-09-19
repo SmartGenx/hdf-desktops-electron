@@ -25,6 +25,7 @@ export default function FileUploader({
     let files = null;
     if (event.target.files)
       if (event.target.files[0] != null) {
+        // @ts-ignore
         files = event?.target?.files;
         setIsError(true);
       }
@@ -33,11 +34,13 @@ export default function FileUploader({
         Array.from(files).map((file) => {
           setUploadedFiles((prevUploadedFiles) => [
             ...prevUploadedFiles,
+            // @ts-ignore
             file.name,
           ]);
         });
       } else {
         // if (files && files[0] && files[0].name)
+        // @ts-ignore
         setUploadedFiles([files[0].name]);
       }
       setIsError(false);

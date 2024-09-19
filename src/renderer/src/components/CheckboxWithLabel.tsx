@@ -1,4 +1,3 @@
-import React from 'react'
 import { Checkbox } from './ui/checkbox' // Adjust the import to your Checkbox component
 type prop={
   label:string

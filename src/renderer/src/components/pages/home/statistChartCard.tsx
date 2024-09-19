@@ -11,7 +11,6 @@ import {
   Tooltip,
   Legend
 } from 'chart.js'
-import { string } from 'zod'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 

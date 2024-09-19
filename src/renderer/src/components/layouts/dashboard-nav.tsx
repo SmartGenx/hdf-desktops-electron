@@ -5,8 +5,6 @@ import {
   TooltipTrigger
 } from '@renderer/components/ui/tooltip'
 import { cn } from '@renderer/lib/utils'
-import { ChevronDown, ChevronUp } from 'lucide-react'
-import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Icons } from '../icons/icons'
 import { NavItem } from '@renderer/types'

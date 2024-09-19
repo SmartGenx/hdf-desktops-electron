@@ -61,7 +61,7 @@ export default function WaitingTable({ data }: Props) {
           </div>
         ),
 
-        cell: ({ row }) => (
+        cell: () => (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">

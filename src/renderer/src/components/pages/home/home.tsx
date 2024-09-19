@@ -42,7 +42,7 @@ const Home = () => {
           <StatistCard title={'المرضى'} value={40} subtitle={'مستفيد'} icon={'house'} />
         </div>
       </div>
-      <div className="flex  jstify-between   mt-4">
+      <div className="flex gap-2 mt-4 w-full ">
         <div className="flex flex-col gap-2">
           <StatistChartCard />
           <StatistchartTowCard />

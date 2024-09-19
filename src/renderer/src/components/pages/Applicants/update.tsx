@@ -19,11 +19,11 @@ import * as z from 'zod'
 import { cn } from '../../../lib/utils'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { axiosInstance, getApi, postApi, putApi } from '../../../lib/http'
-import { useAuthHeader, useSignIn } from 'react-auth-kit'
+import { axiosInstance, getApi, putApi } from '../../../lib/http'
+import { useAuthHeader } from 'react-auth-kit'
 import { MoveRight } from 'lucide-react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { ApplicantsInfo, ApplicantsInfoResp } from '@renderer/types'
+import { ApplicantsInfoResp } from '@renderer/types'
 
 const formSchema = z.object({
   name: z.string(),
@@ -103,7 +103,6 @@ export default function UpdateApplicant() {
   const [directorates, setDirectorates] = useState<Governorate[]>([])
   const [disease, setDisease] = useState<Disease[]>([])
   const authToken = useAuthHeader()
-  const signIn = useSignIn()
   const { toast } = useToast()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -111,13 +110,13 @@ export default function UpdateApplicant() {
     resolver: zodResolver(formSchema)
   })
 
-  const [states, setStates] = useState([
+  const [states, _setStates] = useState([
     { value: 'active', label: 'نشط' },
     { value: 'not active', label: 'غير نشط' }
 
     // Add more options as needed
   ])
-  const [delayedSubmitting, setDelayedSubmitting] = useState(form.formState.isSubmitting)
+  const [delayedSubmitting, _setDelayedSubmitting] = useState(form.formState.isSubmitting)
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -162,18 +161,17 @@ export default function UpdateApplicant() {
     fetchDisease()
   }, [])
 
-  const fetchAgencyData = async () => {
-    const response = await axiosInstance.get<ApplicantResponse>(`/applicant/${id}`, {
-      headers: {
-        Authorization: `${authToken()}`
-      }
-    })
-    return response.data
-  }
+  // const fetchAgencyData = async () => {
+  //   const response = await axiosInstance.get<ApplicantResponse>(`/applicant/${id}`, {
+  //     headers: {
+  //       Authorization: `${authToken()}`
+  //     }
+  //   })
+  //   return response.data
+  // }
 
   const {
     isPending,
-    error,
     data: applicants
   } = useQuery({
     queryKey: ['applicant'],

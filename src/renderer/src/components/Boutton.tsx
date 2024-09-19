@@ -1,4 +1,3 @@
-import React from 'react'
 import { Button } from './ui/button' // Assuming you have a Button component in your ShadCN setup
 // import { Filter } from 'lucide-react' // Importing the filter icon
 import { Icons } from '@renderer/components/icons/icons'

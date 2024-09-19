@@ -1,8 +1,5 @@
-// import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ChevronDown } from 'lucide-react'
-import { useAuthUser, useIsAuthenticated, useSignOut } from 'react-auth-kit'
-// import { useAuthUser, useIsAuthenticated, useSignOut } from 'react-auth-kit'
-// import userIcon from '../icons/user.svg'
+import { useIsAuthenticated, useSignOut } from 'react-auth-kit'
 import { Button } from '../ui/button'
 import {
   DropdownMenu,
@@ -27,7 +24,6 @@ export type userData = {
 export default function UserNav() {
   const issAuthenticated = useIsAuthenticated()
   const signOut = useSignOut()
-  const auth = useAuthUser()
 
   if (issAuthenticated()) {
     return (

@@ -1,9 +1,7 @@
 import * as React from 'react'
 import { ColumnDef } from '@tanstack/react-table'
-// import { GevStatus, GovernmentFacility, kind_of_case } from '../../../types/enum'
-import { MoreHorizontal, MoreVertical } from 'lucide-react'
-
-import { Link, useNavigate } from 'react-router-dom'
+import { MoreVertical } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,12 +9,9 @@ import {
   DropdownMenuTrigger
 } from '../../ui/dropdown-menu'
 import { HdfTable } from '../../tables/hdfTable'
-import { Applicants, ApplicantsInfo } from '../../../types/index'
+import { ApplicantsInfo } from '../../../types/index'
 import { Button } from '../../ui/button'
 import { Gender } from '../../../types/enums'
-// import DeleteDialog from '@/components/delete-dialog'
-// import { Paths } from '@/enums'
-import { cn } from '@/lib/utils'
 import DeleteDialog from '@renderer/components/ui/delete-dailog'
 type Props = {
   info: ApplicantsInfo[]
@@ -24,8 +19,7 @@ type Props = {
   pageSize: string
   total: number
 }
-export default function StateTable({ info, page, total, pageSize }: Props) {
-  const navigate = useNavigate()
+export default function StateTable({ info, page, total }: Props) {
   const columns = React.useMemo<ColumnDef<ApplicantsInfo>[]>(
     () => [
       {

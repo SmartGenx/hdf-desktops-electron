@@ -12,7 +12,6 @@ import Initialization from '../pages/Initialization/Initialization'
 import FormDismissal from '../pages/dismissal/formDismissal'
 import ProtectedRoute from '../layouts/protected-route'
 import UpdateApplicant from '../pages/Applicants/update'
-import MedicalAllocationsIndex from '../pages/reports/Medical allocations'
 import ReportIndex from '../pages/reports'
 
 export const router = createHashRouter([

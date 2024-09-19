@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { ColumnDef } from '@tanstack/react-table'
-// import { GevStatus, GovernmentFacility, kind_of_case } from '../../../types/enum'
 import { MoreVertical } from 'lucide-react'
 
 import {
@@ -79,7 +78,7 @@ export default function FollowReceiptTable({ data }: Props) {
           </div>
         ),
 
-        cell: ({ row }) => (
+        cell: () => (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">

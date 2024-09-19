@@ -1,5 +1,4 @@
-import React, { useState } from 'react'
-import { Checkbox } from '../../ui/checkbox' // Replace with your actual checkbox component if using ShadCN
+import React from 'react'
 import { Button } from '../../ui/button' // Replace with your actual button component
 import { Calendar } from '../../ui/calendar' // Replace with your actual calendar component
 import {
@@ -19,9 +18,6 @@ const FilterDrawer = () => {
   const [date, setDate] = React.useState<Date | undefined>(new Date())
   const [clan, setclan] = React.useState<boolean>(false)
 
-  const handleDateChange = (range) => {
-    // setSelectedDateRange(range)
-  }
 
   return (
     <Drawer direction="left">

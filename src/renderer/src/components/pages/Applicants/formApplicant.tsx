@@ -20,7 +20,7 @@ import { cn } from '../../../lib/utils'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { axiosInstance, postApi } from '../../../lib/http'
-import { useAuthHeader, useSignIn } from 'react-auth-kit'
+import { useAuthHeader } from 'react-auth-kit'
 import { MoveRight } from 'lucide-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
@@ -82,7 +82,6 @@ export default function FormApplicant() {
   const [directorates, setDirectorates] = useState<Governorate[]>([])
   const [disease, setDisease] = useState<Disease[]>([])
   const authToken = useAuthHeader()
-  const signIn = useSignIn()
   const { toast } = useToast()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -90,13 +89,13 @@ export default function FormApplicant() {
     resolver: zodResolver(formSchema)
   })
 
-  const [states, setStates] = useState([
+  const [states, _setStates] = useState([
     { value: 'active', label: 'نشط' },
     { value: 'not active', label: 'غير نشط' }
 
     // Add more options as needed
   ])
-  const [delayedSubmitting, setDelayedSubmitting] = useState(form.formState.isSubmitting)
+  const [delayedSubmitting, _setDelayedSubmitting] = useState(form.formState.isSubmitting)
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -213,7 +212,7 @@ export default function FormApplicant() {
             >
               الغاء
             </Button>
-            <Button form="formId" type="submit" variant={'keep'} className="w-[120px]">
+            <Button form="formId" type="submit" className="w-[120px]">
               حفظ
             </Button>
           </div>
@@ -551,7 +550,7 @@ export default function FormApplicant() {
                     </div>
                   </div>
                 </div>
-                <Button type="submit" variant={'keep'} className="w-[120px]">
+                <Button type="submit"  className="w-[120px]">
                   حفظ
                 </Button>
               </form>
