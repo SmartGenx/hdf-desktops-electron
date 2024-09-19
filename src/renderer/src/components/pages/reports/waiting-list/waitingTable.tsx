@@ -3,7 +3,6 @@ import { ColumnDef } from '@tanstack/react-table'
 // import { GevStatus, GovernmentFacility, kind_of_case } from '../../../types/enum'
 import { MoreVertical } from 'lucide-react'
 
-import { useNavigate } from 'react-router-dom'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,12 +13,10 @@ import { HdfTable } from '../../../tables/hdfTable'
 import { applicantsReportCategory } from '../../../../types/index'
 import { Button } from '../../../ui/button'
 
-import { Month } from '../../../../types/enums'
 type Props = {
   data: applicantsReportCategory[]
 }
 export default function WaitingTable({ data }: Props) {
-  const navigate = useNavigate()
   const columns = React.useMemo<ColumnDef<applicantsReportCategory>[]>(
     () => [
       {
@@ -99,6 +96,7 @@ export default function WaitingTable({ data }: Props) {
       data={data}
       page={String(5)}
       total={Number(5)}
+
       // onRowClick={(_, { original }) => {
       //   navigate(`/state-affairs/info/${}`)
       // }}

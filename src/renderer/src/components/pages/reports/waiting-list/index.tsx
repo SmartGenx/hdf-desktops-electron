@@ -1,16 +1,18 @@
 import Boutton from '@renderer/components/Boutton'
 import SearchInput from '@renderer/components/searchInput'
-import React from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useRef } from 'react'
+import { Link } from 'react-router-dom'
 import FilterDrawer from './filter'
 import { useAuthHeader } from 'react-auth-kit'
 import { useQuery } from '@tanstack/react-query'
 import { applicantsReportCategory } from '@renderer/types'
 import { getApi } from '@renderer/lib/http'
 import WaitingTable from './waitingTable'
+import ReactToPrint from 'react-to-print'
+import ComponentToPrint from './ComponentToPrint'
+import { Printer } from 'lucide-react'
 
 export default function WaitingList() {
-  const navigate = useNavigate()
   const authToken = useAuthHeader()
   const {
     isPending,
@@ -26,7 +28,8 @@ export default function WaitingList() {
       })
   })
 
-  console.log('applicantsReportCategory', applicantsReportCategory?.data)
+  const componentRef = useRef<HTMLTableElement>(null)
+
   if (isPending) return 'Loading...'
   if (error) return 'An error has occurred: ' + error.message
   return (
@@ -38,13 +41,20 @@ export default function WaitingList() {
         <div className="flex gap-2">
           <SearchInput />
           <FilterDrawer />
-          <Link to={'/formDismissal'}>
-            <Boutton
-              icon="print"
-              title={'طباعة'}
-              className="bg-[#196CB0] hover:bg-[#2d5372] focus:ring-[#2d5372]"
-            />
-          </Link>
+
+          <ReactToPrint
+            trigger={() => (
+              <button className="bg-[#196CB0] flex items-center text-white rounded-lg hover:bg-[#2d5372] px-3 focus:ring-[#2d5372]">
+                <Printer className="ml-2" size={20} />
+                طباعة
+              </button>
+            )}
+            content={() => componentRef.current}
+          />
+          <div className="hidden">
+            <ComponentToPrint ref={componentRef} data={applicantsReportCategory?.data} />
+          </div>
+
           <Link to={'/formDismissal'}>
             <Boutton
               icon="addaccredited"

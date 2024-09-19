@@ -3,7 +3,6 @@ import { ColumnDef } from '@tanstack/react-table'
 // import { GevStatus, GovernmentFacility, kind_of_case } from '../../../types/enum'
 import { MoreVertical } from 'lucide-react'
 
-import { useNavigate } from 'react-router-dom'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,12 +13,10 @@ import { HdfTable } from '../../../tables/hdfTable'
 import { AllAccreditedsForPdf } from '../../../../types/index'
 import { Button } from '../../../ui/button'
 
-import { Month } from '../../../../types/enums'
 type Props = {
   data: AllAccreditedsForPdf[]
 }
 export default function FollowReceiptTable({ data }: Props) {
-  const navigate = useNavigate()
   const columns = React.useMemo<ColumnDef<AllAccreditedsForPdf>[]>(
     () => [
       {
@@ -44,7 +41,7 @@ export default function FollowReceiptTable({ data }: Props) {
       },
       {
         accessorKey: '',
-        header: 'تاريخ التشخصي',
+        header: 'تاريخ التشخيص',
         cell: ({ row }) => {
           const date = new Date(row.original.orescriptionDate).toISOString().split('T')[0]
           return date

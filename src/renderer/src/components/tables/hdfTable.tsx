@@ -26,6 +26,7 @@ export function HdfTable<TData, TValue>({
   total,
   page,
   shadow = true,
+
   containerClaasName
 }: DataTableProps<TData, TValue>) {
   const [isLargeScreen, setIsLargeScreen] = useState(false)
@@ -141,9 +142,3 @@ export function HdfTable<TData, TValue>({
     </div>
   )
 }
-
-
-
-
-
-
