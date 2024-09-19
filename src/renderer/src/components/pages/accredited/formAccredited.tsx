@@ -19,11 +19,10 @@ import * as z from 'zod'
 import { cn } from '../../../lib/utils'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { axiosInstance, getApi, postApi } from '../../../lib/http'
-import { useAuthHeader, useSignIn } from 'react-auth-kit'
-import { Pen } from 'lucide-react'
-import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
-import { Pharmacy, Square, AccreditedInfo, applicantType } from '@renderer/types'
+import { axiosInstance, postApi } from '../../../lib/http'
+import { useAuthHeader } from 'react-auth-kit'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Pharmacy, Square, applicantType } from '@renderer/types'
 import FileUploader from '@renderer/components/fileUploader'
 
 const formSchema = z.object({
@@ -44,7 +43,6 @@ const formSchema = z.object({
 type AccreditedFormValue = z.infer<typeof formSchema>
 
 export default function FormAccredited() {
-  const signIn = useSignIn()
   const { toast } = useToast()
   const navigate = useNavigate()
   const authToken = useAuthHeader()
@@ -55,8 +53,8 @@ export default function FormAccredited() {
   const form = useForm<AccreditedFormValue>({
     resolver: zodResolver(formSchema)
   })
-  const [Rfid, setRfid] = useState('')
-  const [statuses, setstatuse] = useState<{ label: string; name: string }[]>([
+  const [_Rfid, setRfid] = useState('')
+  const [statuses, _setstatuse] = useState<{ label: string; name: string }[]>([
     { label: 'مستمر', name: 'مستمر' },
     { label: 'موقف', name: 'موقف' }
 
@@ -106,14 +104,14 @@ export default function FormAccredited() {
     fetchApplicantType()
   }, [])
 
-  const [type, settype] = useState([
+  const [type, _settype] = useState([
     { id: 1, label: ' جواز' },
     { id: 2, label: ' بطاقة' }
 
     // Add more options as needed
   ])
 
-  const [delayedSubmitting, setDelayedSubmitting] = useState(form.formState.isSubmitting)
+  const [delayedSubmitting, _setDelayedSubmitting] = useState(form.formState.isSubmitting)
 
   const generateRfid = () => {
     const newRfid = Math.floor(100000000 + Math.random() * 900000000).toString()
@@ -150,7 +148,7 @@ export default function FormAccredited() {
         }
       })
     },
-    onSuccess: (data, variables, context) => {
+    onSuccess: () => {
       toast({
         title: 'تمت العملية',
         description: 'تمت الاضافة بنجاح',
@@ -159,7 +157,7 @@ export default function FormAccredited() {
       queryClient.invalidateQueries({ queryKey: ['accredited'] })
       navigate('/accredited')
     },
-    onError: (error, variables, context) => {
+    onError: (error) => {
       toast({
         title: 'لم تتم العملية',
         description: error.message,
@@ -283,7 +281,7 @@ export default function FormAccredited() {
                         </div>
                         <div className="col-span-1">
                           <Button
-                            variant="keep"
+                            // variant="keep"
                             className="w-[104px] h-[42px] bg-[#196CB0]"
                             onClick={generateRfid}
                             type="button"
@@ -532,7 +530,7 @@ export default function FormAccredited() {
                   </div>
                 </div>
                 <div className="flex justify-end gap-4 ">
-                  <Button type="submit" variant={'keep'} className="w-[120px]">
+                  <Button type="submit"  className="w-[120px]">
                     حفظ
                   </Button>
                   <Button

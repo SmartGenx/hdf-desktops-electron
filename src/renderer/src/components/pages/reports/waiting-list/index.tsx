@@ -1,7 +1,6 @@
 import Boutton from '@renderer/components/Boutton'
 import SearchInput from '@renderer/components/searchInput'
-import React from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import FilterDrawer from './filter'
 import { useAuthHeader } from 'react-auth-kit'
 import { useQuery } from '@tanstack/react-query'
@@ -10,7 +9,6 @@ import { getApi } from '@renderer/lib/http'
 import WaitingTable from './waitingTable'
 
 export default function WaitingList() {
-  const navigate = useNavigate()
   const authToken = useAuthHeader()
   const {
     isPending,

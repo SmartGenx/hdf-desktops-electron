@@ -1,10 +1,5 @@
-import dynamic from 'next/dynamic'
 import { useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs'
-// import OrgProfile from "../org-profile";
-// import MainInfo from "./(sub-tabs)/main-info";
-// import Structure from "./(sub-tabs)/structure";
-// import AttachmentTab from "./(sub-tabs)/attachment";
 import { InfoIcon } from 'lucide-react'
 import Home from '../Applicants/home'
 

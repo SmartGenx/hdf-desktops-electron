@@ -3,7 +3,6 @@ import { ColumnDef } from '@tanstack/react-table'
 // import { GevStatus, GovernmentFacility, kind_of_case } from '../../../types/enum'
 import { MoreVertical } from 'lucide-react'
 
-import { useNavigate } from 'react-router-dom'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,12 +13,10 @@ import { HdfTable } from '../../../tables/hdfTable'
 import { applicantsReportCategory } from '../../../../types/index'
 import { Button } from '../../../ui/button'
 
-import { Month } from '../../../../types/enums'
 type Props = {
   data: applicantsReportCategory[]
 }
 export default function WaitingTable({ data }: Props) {
-  const navigate = useNavigate()
   const columns = React.useMemo<ColumnDef<applicantsReportCategory>[]>(
     () => [
       {
@@ -64,7 +61,7 @@ export default function WaitingTable({ data }: Props) {
           </div>
         ),
 
-        cell: ({ row }) => (
+        cell: () => (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">

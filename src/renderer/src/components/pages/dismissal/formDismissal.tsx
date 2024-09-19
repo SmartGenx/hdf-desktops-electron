@@ -20,7 +20,7 @@ import { cn } from '../../../lib/utils'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { axiosInstance, getApi, postApi } from '../../../lib/http'
-import { useAuthHeader, useSignIn } from 'react-auth-kit'
+import { useAuthHeader } from 'react-auth-kit'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Accredited, Pharmacy, Square } from '@renderer/types'
 import Pdf from '@renderer/components/icons/pdf'
@@ -38,7 +38,7 @@ const formSchema = z.object({
 type AccreditedFormValue = z.infer<typeof formSchema>
 
 export default function FormDismissal() {
-  const signIn = useSignIn()
+  // const signIn = useSignIn()
   const { toast } = useToast()
   const { setValue } = useForm()
   const navigate = useNavigate()
@@ -66,7 +66,7 @@ export default function FormDismissal() {
   }, [totalAmounts, approvedAmounts])
 
   const [pharmacy, setPharmacy] = useState<Pharmacy[]>([])
-  const [selectedPharmacy, setSelectedPharmacy] = useState<Pharmacy | null>(null)
+  const [_selectedPharmacy, setSelectedPharmacy] = useState<Pharmacy | null>(null)
   const [showAlert, setShowAlert] = useState<boolean>(false)
   //
   const handlePharmacySelection = (globalId: string) => {
@@ -97,10 +97,10 @@ export default function FormDismissal() {
       })
   })
 
-  const [delayedSubmitting, setDelayedSubmitting] = useState(form.formState.isSubmitting)
+  const [delayedSubmitting, _setDelayedSubmitting] = useState(form.formState.isSubmitting)
 
   const [numberOfRfid, setNumberOfRfid] = useState('')
-  const [number, setNumber] = useState<Accredited[]>([])
+  const [number, setNumber] = useState<Accredited>()
 
   const generateRfid = async () => {
     try {
@@ -164,7 +164,7 @@ export default function FormDismissal() {
           }
         }
       ),
-    onSuccess: (data, variables, context) => {
+    onSuccess: () => {
       toast({
         title: 'تمت العملية',
         description: 'تمت الاضافة بنجاح',
@@ -173,7 +173,7 @@ export default function FormDismissal() {
       queryClient.invalidateQueries({ queryKey: ['dismissal'] })
       navigate('/dismissal')
     },
-    onError: (error, variables, context) => {
+    onError: (error) => {
       toast({
         title: 'لم تتم العملية',
         description: error.message,
@@ -261,7 +261,6 @@ export default function FormDismissal() {
                         </div>
                         <div className="col-span-1">
                           <Button
-                            variant="keep"
                             className="w-[104px] h-[42px] bg-[#196CB0]"
                             onClick={generateRfid}
                             type="button"
@@ -433,7 +432,7 @@ export default function FormDismissal() {
                 </div>
                 {/*  */}
                 <div className="flex justify-end gap-4 ">
-                  <Button type="submit" variant={'keep'} className="w-[120px]">
+                  <Button type="submit" className="w-[120px]">
                     حفظ
                   </Button>
                   <Button

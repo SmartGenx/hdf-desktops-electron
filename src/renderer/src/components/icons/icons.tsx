@@ -26,12 +26,10 @@ import {
   IdCard,
   Image,
   Laptop,
-  LayoutDashboardIcon,
   LineChart,
   Loader2,
   LockKeyhole,
   LogIn,
-  LogOut,
   LucideIcon,
   LucideProps,
   MonitorCheck,
@@ -62,7 +60,6 @@ import {
   UserX2Icon,
   X
 } from 'lucide-react'
-import DashboardNav from '../layouts/dashboard-nav'
 
 export type Icon = LucideIcon
 
@@ -165,7 +162,7 @@ export const Icons = {
       />
     </svg>
   ),
-  report: ({ ...props }: LucideProps) => (
+  report: () => (
     <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         d="M17.8164 15.459H17.5039V3.27148C17.5039 3.02284 17.4051 2.78439 17.2293 2.60857C17.0535 2.43276 16.815 2.33398 16.5664 2.33398H12.1914C11.9428 2.33398 11.7043 2.43276 11.5285 2.60857C11.3527 2.78439 11.2539 3.02284 11.2539 3.27148V6.08398H7.81641C7.56777 6.08398 7.32931 6.18276 7.15349 6.35857C6.97768 6.53439 6.87891 6.77284 6.87891 7.02148V9.83398H4.06641C3.81777 9.83398 3.57931 9.93276 3.40349 10.1086C3.22768 10.2844 3.12891 10.5228 3.12891 10.7715V15.459H2.81641C2.56777 15.459 2.32931 15.5578 2.15349 15.7336C1.97768 15.9094 1.87891 16.1478 1.87891 16.3965C1.87891 16.6451 1.97768 16.8836 2.15349 17.0594C2.32931 17.2352 2.56777 17.334 2.81641 17.334H17.8164C18.065 17.334 18.3035 17.2352 18.4793 17.0594C18.6551 16.8836 18.7539 16.6451 18.7539 16.3965C18.7539 16.1478 18.6551 15.9094 18.4793 15.7336C18.3035 15.5578 18.065 15.459 17.8164 15.459ZM13.1289 4.20898H15.6289V15.459H13.1289V4.20898ZM8.75391 7.95898H11.2539V15.459H8.75391V7.95898ZM5.00391 11.709H6.87891V15.459H5.00391V11.709Z"
@@ -173,7 +170,7 @@ export const Icons = {
       />
     </svg>
   ),
-  addaccredited: ({ ...props }: LucideProps) => (
+  addaccredited: () => (
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         d="M7.50002 18.3334H12.5C16.6667 18.3334 18.3334 16.6667 18.3334 12.5001V7.50008C18.3334 3.33341 16.6667 1.66675 12.5 1.66675H7.50002C3.33335 1.66675 1.66669 3.33341 1.66669 7.50008V12.5001C1.66669 16.6667 3.33335 18.3334 7.50002 18.3334Z"
@@ -212,7 +209,7 @@ export const Icons = {
       />
     </svg>
   ),
-  filter: ({ ...props }: LucideProps) => (
+  filter: () => (
     <svg width="21" height="19" viewBox="0 0 21 19" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M1.63477 3.02905H8.89773" stroke="white" />
       <path d="M1.63477 9.27905H10.9729" stroke="white" />
@@ -225,7 +222,7 @@ export const Icons = {
       <ellipse cx="10.9728" cy="3.02889" rx="2.07513" ry="2.08333" stroke="white" />
     </svg>
   ),
-  house: ({ ...props }: LucideProps) => (
+  house: () => (
     <svg width="43" height="34" viewBox="0 0 43 34" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M29.8652 9.59953V3.19983H31.9985V9.59953H29.8652Z" fill="#196CB0" />
       <path d="M27.7324 5.33307H34.1321V7.4663H27.7324V5.33307Z" fill="#196CB0" />
@@ -237,7 +234,7 @@ export const Icons = {
       <path d="M38.3984 10.6662V5.33307H40.5317V10.6662H38.3984Z" fill="#196CB0" />
     </svg>
   ),
-  hospital: ({ ...props }: LucideProps) => (
+  hospital: () => (
     <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         d="M25.5547 2.2222V0H27.7769V2.2222C27.7769 2.83584 28.2743 3.3333 28.888 3.3333H35.5546C36.7819 3.3333 37.7768 4.32821 37.7768 5.5555V19.9998C37.7768 20.6135 37.2794 21.1109 36.6657 21.1109C36.052 21.1109 35.5546 20.6135 35.5546 19.9998V5.5555H28.888C27.047 5.5555 25.5547 4.06313 25.5547 2.2222Z"

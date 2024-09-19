@@ -1,16 +1,14 @@
 import Boutton from '@renderer/components/Boutton'
 import SearchInput from '@renderer/components/searchInput'
-import React from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import FilterDrawer from './filter'
 import { useAuthHeader } from 'react-auth-kit'
 import { useQuery } from '@tanstack/react-query'
 import { getApi } from '@renderer/lib/http'
-import { AllAccreditedsForPdf, ApplicantByDirectorateViewModel } from '@renderer/types'
+import { AllAccreditedsForPdf } from '@renderer/types'
 import FollowReceiptTable from './Follow-recipes'
 
 export default function FollowTheRecipes() {
-  const navigate = useNavigate()
   const authToken = useAuthHeader()
   const {
     isPending,
