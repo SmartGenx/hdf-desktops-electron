@@ -10,6 +10,7 @@ import WaitingTable from './waitingTable'
 import ReactToPrint from 'react-to-print'
 import ComponentToPrint from './ComponentToPrint'
 import { Printer } from 'lucide-react'
+import { useRef } from 'react'
 
 export default function WaitingList() {
   const authToken = useAuthHeader()

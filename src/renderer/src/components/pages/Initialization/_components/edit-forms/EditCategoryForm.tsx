@@ -1,18 +1,15 @@
-'use client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-
 import { Button } from '@renderer/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@renderer/components/ui/form'
 import { Input } from '@renderer/components/ui/input'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Category as CategoryType } from '@renderer/types'
 import { getApi, putApi } from '@renderer/lib/http'
 import { useAuthHeader } from 'react-auth-kit'
 import { toast } from '@renderer/components/ui/use-toast'
 import { AlertDialogAction, AlertDialogCancel } from '@renderer/components/ui/alert-dialog'
-import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 const formSchema = z.object({
   name: z.string(),
@@ -24,8 +21,7 @@ interface Props {
 }
 export default function EditCategoryForm({ id }: Props) {
   const authToken = useAuthHeader()
-  const queryClient = useQueryClient()
-  const { data: category,isSuccess: isCategorySuccess } = useQuery({
+  const { data: category, isSuccess: isCategorySuccess } = useQuery({
     queryKey: ['category', id],
     queryFn: async () =>
       await getApi<CategoryType>(`/category/${id}`, {
@@ -47,17 +43,14 @@ export default function EditCategoryForm({ id }: Props) {
   useEffect(() => {
     if (isCategorySuccess) {
       form.reset({
-        name:category.data.name,
-        description:category.data.description,
-        SupportRatio:category.data.SupportRatio?.toString()
+        name: category.data.name,
+        description: category.data.description,
+        SupportRatio: category.data.SupportRatio?.toString()
       })
     }
-  
-    
   }, [category])
-  
-  
-  const { mutate,error,isSuccess, isError } = useMutation({
+
+  const { mutate } = useMutation({
     mutationKey: ['editCategory'],
     mutationFn: (values: z.infer<typeof formSchema>) => {
       // Return the API call to be executed
@@ -84,17 +77,13 @@ export default function EditCategoryForm({ id }: Props) {
         description: error.message,
         variant: 'destructive'
       })
-    },
-    
-    
+    }
   })
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
     mutate(values)
   }
-  
 
-  
   return (
     <div className="space-y-3">
       <Form {...form}>

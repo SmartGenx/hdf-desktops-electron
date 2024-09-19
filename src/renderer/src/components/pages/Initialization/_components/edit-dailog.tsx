@@ -1,24 +1,19 @@
-
-import { useAuthHeader } from 'react-auth-kit'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Edit2, Trash, Trash2 } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
-import { useEffect } from 'react'
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@renderer/components/ui/alert-dialog'
-import { useToast } from '@renderer/components/ui/use-toast'
-import { deleteApi } from '@renderer/lib/http'
+import { Edit2 } from 'lucide-react'
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '@renderer/components/ui/alert-dialog'
 
 interface DeleteDialogProps {
   disabled?: boolean
-  
-  content:React.ReactNode
+
+  content: React.ReactNode
 }
 
-export default function EditDialog({  disabled = false,content }: DeleteDialogProps) {
- 
-
-  
-
+export default function EditDialog({ disabled = false, content }: DeleteDialogProps) {
   return (
     <AlertDialog>
       <AlertDialogTrigger
@@ -27,14 +22,13 @@ export default function EditDialog({  disabled = false,content }: DeleteDialogPr
         }`}
         disabled={disabled}
       >
-        <Edit2 className='text-[#475467]' size={15} />
+        <Edit2 className="text-[#475467]" size={15} />
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader className="*:text-right">
           <AlertDialogTitle>{'تعديل'}</AlertDialogTitle>
           {content}
         </AlertDialogHeader>
-        
       </AlertDialogContent>
     </AlertDialog>
   )

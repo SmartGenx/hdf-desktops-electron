@@ -10,6 +10,7 @@ import MedicalTable from './medicalTable'
 import ReactToPrint from 'react-to-print'
 import { Printer } from 'lucide-react'
 import ComponentToPrint from './ComponentToPrint'
+import { useRef } from 'react'
 
 export default function MedicalAllocationsIndex() {
   const authToken = useAuthHeader()

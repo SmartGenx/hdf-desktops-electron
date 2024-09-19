@@ -1,21 +1,18 @@
-'use client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-
 import { Button } from '@renderer/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@renderer/components/ui/form'
 import { Input } from '@renderer/components/ui/input'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Category as CategoryType, Governorate } from '@renderer/types'
+import { Governorate } from '@renderer/types'
 import { getApi, putApi } from '@renderer/lib/http'
 import { useAuthHeader } from 'react-auth-kit'
 import { toast } from '@renderer/components/ui/use-toast'
 import { AlertDialogAction, AlertDialogCancel } from '@renderer/components/ui/alert-dialog'
 import { useEffect } from 'react'
 const formSchema = z.object({
-  name: z.string(),
- 
+  name: z.string()
 })
 interface Props {
   id: string
@@ -23,7 +20,7 @@ interface Props {
 export default function EditGovernorateForm({ id }: Props) {
   const authToken = useAuthHeader()
   const queryClient = useQueryClient()
-  const { data: governorate,isSuccess } = useQuery({
+  const { data: governorate, isSuccess } = useQuery({
     queryKey: ['governorate', id],
     queryFn: async () =>
       await getApi<Governorate>(`/governorate/${id}`, {
@@ -33,20 +30,16 @@ export default function EditGovernorateForm({ id }: Props) {
       })
   })
 
-
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    
+    resolver: zodResolver(formSchema)
   })
   useEffect(() => {
     if (isSuccess) {
       form.reset({
-        name:governorate.data.name
+        name: governorate.data.name
       })
     }
-  
-    
   }, [governorate])
   const { mutate } = useMutation({
     mutationKey: ['editGovernorate'],
@@ -69,7 +62,7 @@ export default function EditGovernorateForm({ id }: Props) {
         variant: 'success'
       })
 
-      queryClient.invalidateQueries({queryKey:["governorate"]})
+      queryClient.invalidateQueries({ queryKey: ['governorate'] })
     },
     onError(error) {
       toast({
@@ -104,7 +97,7 @@ export default function EditGovernorateForm({ id }: Props) {
           </div>
           <div className="flex justify-between">
             <AlertDialogCancel className="text-muted-foregrounds">إلغاء</AlertDialogCancel>
-            <Button variant={'Hdf'} type='button'>
+            <Button variant={'Hdf'} type="button">
               <AlertDialogAction
                 className="bg-transparent w-fit hover:bg-transparent"
                 onClick={() => {

@@ -26,7 +26,7 @@ export default function Category() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema)
   })
-  const { data: category,refetch } = useQuery({
+  const { data: category, refetch } = useQuery({
     queryKey: ['category'],
     queryFn: () =>
       getApi<CategoryType[]>('/category', {
@@ -35,7 +35,7 @@ export default function Category() {
         }
       })
   })
-  const { mutate ,} = useMutation({
+  const { mutate } = useMutation({
     mutationKey: ['addCategory'],
     mutationFn: (values: z.infer<typeof formSchema>) => {
       // Return the API call to be executed
@@ -44,8 +44,7 @@ export default function Category() {
         { ...values, SupportRatio: +values.SupportRatio },
         {
           headers: {
-            Authorization: `${authToken()}`,
-            
+            Authorization: `${authToken()}`
           }
         }
       )
@@ -70,9 +69,8 @@ export default function Category() {
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
     mutate(values)
-
   }
- 
+
   return (
     <div className="space-y-3">
       <Form {...form}>
@@ -126,7 +124,7 @@ export default function Category() {
           </Button>
         </form>
       </Form>
-      <CategoryTabel info={category?.data || []} page="2" pageSize="5" total={5} />
+      <CategoryTabel info={category?.data || []} page="2" total={5} />
     </div>
   )
 }
