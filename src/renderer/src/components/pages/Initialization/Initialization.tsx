@@ -9,6 +9,8 @@ import { ArrowRight, InfoIcon, MoveRight } from 'lucide-react'
 import Home from '../Applicants/home'
 import { Button } from '@renderer/components/ui/button'
 import Category from './tabs/category'
+import Governorate from './tabs/governorate'
+import Directorate from './tabs/directorate'
 
 const subTabs = [
   {
@@ -20,13 +22,13 @@ const subTabs = [
   {
     value: 'governorate',
     title: 'إضافة محافظة',
-    content: "",
+    content: <Governorate/>,
     icon: <InfoIcon color="#434749" />
   },
   {
     value: 'directorate',
     title: 'إضافة مديرية',
-    content: "",
+    content: <Directorate/>,
     icon: <InfoIcon color="#434749" />
   },
   {

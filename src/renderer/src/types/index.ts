@@ -263,3 +263,13 @@ export interface FooterItem {
 export type MainNavItem = NavItemWithOptionalChildren
 
 export type SidebarNavItem = NavItemWithChildren
+export type Governorate = {
+  id: number;
+  globalId: string;
+  name: string;
+  deleted: boolean;
+  version: number;
+  // Directorate: Directorate[];
+  // Pharmacy: Pharmacy[];
+  lastModified: Date;
+}

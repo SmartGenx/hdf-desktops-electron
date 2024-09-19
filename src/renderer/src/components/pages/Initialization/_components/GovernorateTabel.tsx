@@ -1,48 +1,42 @@
 import * as React from 'react'
 import { ColumnDef } from '@tanstack/react-table'
+// import { GevStatus, GovernmentFacility, kind_of_case } from '../../../types/enum'
 
-import { Category } from '@renderer/types'
 
+
+
+import {  Governorate } from '@renderer/types'
 import { HdfTable } from '@renderer/components/tables/hdfTable'
-import DeleteDialog from './delete-dailog'
 import EditDialog from './edit-dailog'
-import EditCategoryForm from './edit-forms/EditCategoryForm'
+import EditGovernorateForm from './edit-forms/EditGovernorateForm'
+import DeleteDialog from './delete-dailog'
 type Props = {
-  info: Category[]
+  info: Governorate[]
   page: string
   pageSize: string
   total: number
 }
-export default function CategoryTabel({ info, page, pageSize, total }: Props) {
-  const columns = React.useMemo<ColumnDef<Category>[]>(
+export default function GovernorateTabel({info,page,pageSize,total}:Props) {
+  const columns = React.useMemo<ColumnDef<Governorate>[]>(
     () => [
       {
         accessorKey: 'name',
-        header: 'اسم الفئة'
+        header:() => <div className='w-96'>المحافظة</div> ,
+        cell:({row}) => <div className='w-full'>{row.original.name}</div>
       },
-      {
-        accessorKey: 'gender',
-        header: 'النسبة',
-        cell: ({ row }) => row.original.SupportRatio
-      },
-      {
-        accessorKey: 'directorate.name',
-        header: 'الوصف',
-        cell: ({ row }) => row.original.description
-      },
-
+      
+      
       {
         id: 'actions',
-        header: '',
-
+        header: "",
         cell: ({ row }) => (
           <div className="flex w-fit">
             <EditDialog
-              content={<EditCategoryForm id={row.original.globalId} />}
+              content={<EditGovernorateForm id={row.original.globalId} />}
             />
             <DeleteDialog
-              url={`/category/${row.original?.globalId}`}
-              keys={['category']}
+              url={`/governorate/${row.original?.globalId}`}
+              keys={['governorate']}
               path={'Initialization'}
             />
           </div>
