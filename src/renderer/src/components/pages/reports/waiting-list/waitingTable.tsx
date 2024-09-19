@@ -96,6 +96,7 @@ export default function WaitingTable({ data }: Props) {
       data={data}
       page={String(5)}
       total={Number(5)}
+
       // onRowClick={(_, { original }) => {
       //   navigate(`/state-affairs/info/${}`)
       // }}

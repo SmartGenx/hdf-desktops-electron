@@ -18,7 +18,6 @@ const FilterDrawer = () => {
   const [date, setDate] = React.useState<Date | undefined>(new Date())
   const [clan, setclan] = React.useState<boolean>(false)
 
-
   return (
     <Drawer direction="left">
       <DrawerTrigger asChild>

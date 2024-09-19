@@ -294,7 +294,7 @@ export default function FormDismissal() {
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectGroup>
-                                    <SelectLabel>الحالات</SelectLabel>
+                                    <SelectLabel>الصيدلية</SelectLabel>
                                     {pharmacy.map((pharmacy) => (
                                       <SelectItem key={pharmacy.globalId} value={pharmacy.globalId}>
                                         {pharmacy.name}

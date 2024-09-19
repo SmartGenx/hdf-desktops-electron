@@ -40,7 +40,7 @@ export default function FollowReceiptTable({ data }: Props) {
       },
       {
         accessorKey: '',
-        header: 'تاريخ التشخصي',
+        header: 'تاريخ التشخيص',
         cell: ({ row }) => {
           const date = new Date(row.original.orescriptionDate).toISOString().split('T')[0]
           return date
