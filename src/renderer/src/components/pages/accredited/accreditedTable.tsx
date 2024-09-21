@@ -11,6 +11,7 @@ import { HdfTable } from '../../tables/hdfTable'
 import { AccreditedInfo } from '../../../types/index'
 import { Button } from '../../ui/button'
 import DeleteDialog from '@renderer/components/ui/delete-dailog'
+import { Link } from 'react-router-dom'
 type Props = {
   info: AccreditedInfo[]
   page: string
@@ -59,11 +60,7 @@ export default function AccreditedTable({ info, page, total }: Props) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="h-17 -mt-[70px] ml-7 min-w-[84.51px] p-0">
               <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                {/* <DeleteDialog
-                  url={`/Organization/${row.original?.id}`}
-                  revalidatePath={Paths.localOrg}
-                /> */}
-                تعديل
+                <Link to={`/UpdateAccredited/${row.original.globalId}`}>تعديل</Link>
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                 <DeleteDialog

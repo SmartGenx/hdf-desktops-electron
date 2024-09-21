@@ -170,11 +170,8 @@ export default function UpdateApplicant() {
   //   return response.data
   // }
 
-  const {
-    isPending,
-    data: applicants
-  } = useQuery({
-    queryKey: ['applicant'],
+  const { isPending, data: applicants } = useQuery({
+    queryKey: ['applicant', id],
     queryFn: () =>
       getApi<ApplicantsInfoResp[]>(`/applicant`, {
         params: {
@@ -208,7 +205,7 @@ export default function UpdateApplicant() {
         state: applicants?.data[0].state
       })
     }
-  }, [])
+  }, [applicants?.data])
 
   const { mutate } = useMutation({
     mutationKey: ['AddApplicant'],
@@ -301,9 +298,6 @@ export default function UpdateApplicant() {
                 <div className="  flex flex-col gap-6 ">
                   <div className="grid grid-cols-6 gap-2">
                     <div className="col-span-2">
-                      <label htmlFor="" className="text-[#A2A1A8]">
-                        الاسم الكامل
-                      </label>
                       <FormField
                         control={form.control}
                         name="name"
@@ -324,9 +318,6 @@ export default function UpdateApplicant() {
                       />
                     </div>
                     <div className="col-span-1">
-                      <label htmlFor="" className="text-[#A2A1A8]">
-                        الجنس
-                      </label>
                       <FormField
                         control={form.control}
                         name="gender"
@@ -347,9 +338,6 @@ export default function UpdateApplicant() {
                       />
                     </div>
                     <div className="col-span-1">
-                      <label htmlFor="" className="text-[#A2A1A8]">
-                        العمر
-                      </label>
                       <FormField
                         control={form.control}
                         name="age"
@@ -369,7 +357,7 @@ export default function UpdateApplicant() {
                         )}
                       />
                     </div>
-                    <div className="col-span-2 translate-y-6">
+                    <div className="col-span-2 ">
                       <label htmlFor="" className="text-[#A2A1A8] "></label>
                       <FormField
                         control={form.control}
@@ -392,10 +380,7 @@ export default function UpdateApplicant() {
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-2">
-                    <div className="col-span-1">
-                      <label htmlFor="" className="text-[#A2A1A8]">
-                        رقم الجوال
-                      </label>
+                    <div className="col-span-1 translate-y-6">
                       <FormField
                         control={form.control}
                         name="phoneNumber"
@@ -453,10 +438,7 @@ export default function UpdateApplicant() {
                         )}
                       />
                     </div>
-                    <div className="col-span-1">
-                      <label htmlFor="" className="text-[#A2A1A8]">
-                        السكن الحالي
-                      </label>
+                    <div className="col-span-1 translate-y-6">
                       <FormField
                         control={form.control}
                         name="currentResidence"
@@ -598,9 +580,6 @@ export default function UpdateApplicant() {
 
                   <div className="grid grid-cols-3 gap-2">
                     <div className="col-span-1">
-                      <label htmlFor="" className="text-[#A2A1A8]">
-                        مكان الولادة
-                      </label>
                       <FormField
                         control={form.control}
                         name="placeOfBirth"
@@ -620,7 +599,7 @@ export default function UpdateApplicant() {
                         )}
                       />
                     </div>
-                    <div className="col-span-1 translate-y-[1.55rem]">
+                    <div className="col-span-1 ">
                       <FormField
                         control={form.control}
                         name="submissionDate"
