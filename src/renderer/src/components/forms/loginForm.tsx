@@ -1,12 +1,8 @@
-'use client'
-import * as React from 'react'
 import { Button } from '../ui/button'
 import { Form, FormControl, FormField, FormItem } from '../ui/form'
 import { Input } from '../../components/inputLogin'
 import { useToast } from '../ui/use-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
-// import { signIn } from "next-auth/react";
-// import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 import { cn } from '../../lib/utils'
@@ -27,14 +23,11 @@ export default function LoginForm() {
   const singIn = useSignIn()
   const { toast } = useToast()
   const navigate = useNavigate()
-  // const { push, replace } = useRouter()
-  // const pathname = usePathname()
-  // const searchParams = useSearchParams()
-  // const callbackUrl = searchParams.get('callbackUrl')
   const form = useForm<UserFormValue>({
     resolver: zodResolver(formSchema)
   })
-  const [delayedSubmitting, setDelayedSubmitting] = useState(form.formState.isSubmitting)
+  const [delayedSubmitting, _setDelayedSubmitting] = useState(form.formState.isSubmitting)
+  // @ts-ignore
   const onSubmit = async (data: UserFormValue) => {
     try {
       const payload = {
@@ -42,7 +35,6 @@ export default function LoginForm() {
         password: data.password
       }
       const response = await axiosInstance.post<typeRespons>('/auth/login', payload)
-      console.log('🚀 ~ onSubmit ~ response:', response.data)
 
       if (response.status === 200 || response.status === 201) {
         const singInResult = singIn({

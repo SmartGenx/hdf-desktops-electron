@@ -14,6 +14,8 @@ export default function EditDialog({  disabled = false,content,className }: Dele
 
   
 
+
+export default function EditDialog({ disabled = false, content }: DeleteDialogProps) {
   return (
     <AlertDialog>
       <AlertDialogTrigger
@@ -22,14 +24,13 @@ export default function EditDialog({  disabled = false,content,className }: Dele
         }`}
         disabled={disabled}
       >
-        <Edit2 className='text-[#475467]' size={15} />
+        <Edit2 className="text-[#475467]" size={15} />
       </AlertDialogTrigger>
       <AlertDialogContent className={className}>
         <AlertDialogHeader className="*:text-right">
           <AlertDialogTitle>{'تعديل'}</AlertDialogTitle>
           {content}
         </AlertDialogHeader>
-        
       </AlertDialogContent>
     </AlertDialog>
   )

@@ -1,6 +1,6 @@
 import { cn } from '@renderer/lib/utils'
 import { Card, CardHeader, CardTitle, CardContent } from './ui/card'
-import { Icon, Icons } from '@renderer/components/icons/icons'
+import { Icons } from '@renderer/components/icons/icons'
 
 
 type proptype = {

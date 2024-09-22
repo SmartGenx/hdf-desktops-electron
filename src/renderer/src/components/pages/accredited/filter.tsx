@@ -1,4 +1,3 @@
-import React, { useState } from 'react'
 import { Button } from '../../ui/button' // Replace with your actual button component
 import {
   Drawer,
@@ -10,7 +9,7 @@ import {
   DrawerTrigger
 } from '../../ui/drawer' // Replace with your actual drawer component
 import CheckboxWithLabel from '@renderer/components/CheckboxWithLabel'
-import { SlidersHorizontal, X } from 'lucide-react'
+import { SlidersHorizontal } from 'lucide-react'
 import { Select } from '@radix-ui/react-select'
 import {
   SelectContent,
@@ -26,9 +25,6 @@ import { useQuery } from '@tanstack/react-query'
 import { getApi } from '@renderer/lib/http'
 
 const FilterDrawer = () => {
-  const [date, setDate] = React.useState<Date | undefined>(new Date())
-  const [clan, setclan] = React.useState<boolean>(false)
-  const statuses = [{ value: 'fdfdsfdf', Label: 'fdfdfdfd' }]
   const authToken = useAuthHeader()
   const { data: Accrediteds } = useQuery({
     queryKey: ['Accredited'],
@@ -39,7 +35,7 @@ const FilterDrawer = () => {
         }
       })
   })
-  const { data: squares } = useQuery({
+  const { data: squares } = {
     queryKey: ['square'],
     queryFn: () =>
       getApi<Square[]>('/square', {
@@ -47,7 +43,7 @@ const FilterDrawer = () => {
           Authorization: authToken()
         }
       })
-  })
+  }
 
   return (
     <Drawer direction="left">

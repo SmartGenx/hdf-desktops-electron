@@ -23,9 +23,8 @@ export function HdfTable<TData, TValue>({
   compact,
   lastHeaderStyle,
   lightHeader = false,
-  total,
-  page,
   shadow = true,
+
   containerClaasName
 }: DataTableProps<TData, TValue>) {
   const [isLargeScreen, setIsLargeScreen] = useState(false)
@@ -104,7 +103,7 @@ export function HdfTable<TData, TValue>({
                     }
                   )}
                 >
-                  {row.getVisibleCells().map((cell, idx) => (
+                  {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
                       className={cn(
@@ -141,9 +140,3 @@ export function HdfTable<TData, TValue>({
     </div>
   )
 }
-
-
-
-
-
-

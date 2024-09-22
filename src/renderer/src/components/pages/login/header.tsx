@@ -1,5 +1,3 @@
-import React from 'react'
-// import backgrounImageLo from '../../../assets/images/Ellipse 7.svg'
 import Youtube from '../../../assets/images/YouTube.svg'
 import logo from '../../../assets/images/newlogo.svg'
 import title from '../../../assets/images/titleLog.svg'

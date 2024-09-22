@@ -1,11 +1,10 @@
 import Header from '../login/header'
 import LoginForm from '../../forms/loginForm'
-import background from '../../../assets/images/Ellipse7.svg'
+import background from '../../../assets/images/ellipse.svg'
 import maps from '../../../assets/images/maps.svg' // Adjust the path as necessary
 import leaf from '../../../assets/images/leaf.svg' // Adjust the path as necessary
 import people from '../../../assets/images/people.svg' // Adjust the path as necessary
 import { Pen } from 'lucide-react'
-
 const Login = () => {
   return (
     <>
@@ -13,7 +12,7 @@ const Login = () => {
       <div className="flex justify-between relative h-[calc(100vh-126px)]">
         <div
           className="relative w-[50%] flex flex-col items-center justify-end bg-left bg-cover"
-          style={{ backgroundImage: `url(${background})` }}
+          style={{ backgroundImage: `url("${background}")` }}
         >
           <img src={maps} alt="Maps" className="absolute left-16 top-20 opacity-20" />
           <div className="flex flex-col items-center justify-center w-80 md:w-96 text-justify text-white gap-5">

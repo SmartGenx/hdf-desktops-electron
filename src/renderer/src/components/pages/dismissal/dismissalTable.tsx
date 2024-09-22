@@ -1,9 +1,6 @@
 import * as React from 'react'
 import { ColumnDef } from '@tanstack/react-table'
-// import { GevStatus, GovernmentFacility, kind_of_case } from '../../../types/enum'
 import { MoreVertical } from 'lucide-react'
-
-import { useNavigate } from 'react-router-dom'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,8 +18,7 @@ type Props = {
   pageSize: string
   total: number
 }
-export default function DismissalTable({ info, page, total, pageSize }: Props) {
-  const navigate = useNavigate()
+export default function DismissalTable({ info, page, total }: Props) {
   const columns = React.useMemo<ColumnDef<DismissalInfo>[]>(
     () => [
       {
@@ -68,7 +64,7 @@ export default function DismissalTable({ info, page, total, pageSize }: Props) {
           </div>
         ),
 
-        cell: ({ row }) => (
+        cell: () => (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">

@@ -12,6 +12,8 @@ import Initialization from '../pages/Initialization/Initialization'
 import FormDismissal from '../pages/dismissal/formDismissal'
 import ProtectedRoute from '../layouts/protected-route'
 import UpdateApplicant from '../pages/Applicants/update'
+import ReportIndex from '../pages/reports'
+import UpdateAccredited from '../pages/accredited/update'
 
 export const router = createHashRouter([
   {
@@ -48,6 +50,11 @@ export const router = createHashRouter([
         // element: <Login />
       },
       {
+        path: '/UpdateAccredited/:id',
+        element: <ProtectedRoute element={<UpdateAccredited />} />
+        // element: <Login />
+      },
+      {
         path: '/accredited',
         element: <ProtectedRoute element={<Accredited />} />
         // element: <Login />
@@ -70,6 +77,11 @@ export const router = createHashRouter([
       {
         path: '/Initialization',
         element: <ProtectedRoute element={<Initialization />} />
+        // element: <Login />
+      },
+      {
+        path: '/Reports',
+        element: <ProtectedRoute element={<ReportIndex />} />
         // element: <Login />
       }
     ]

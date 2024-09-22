@@ -8,6 +8,7 @@ import { ColumnDef } from '@tanstack/react-table'
 // import { Paths } from '@/enums'
 import {  Directorate } from '@renderer/types'
 
+
 import { HdfTable } from '@renderer/components/tables/hdfTable'
 import EditDialog from './edit-dailog'
 import EditDirectorateForm from './edit-forms/EditDirectorateForm'
@@ -15,21 +16,20 @@ import DeleteDialog from './delete-dailog'
 type Props = {
   info: Directorate[]
   page: string
-  pageSize: string
   total: number
 }
 export default function DirectorateTabel({info,page,total}:Props) {
   const columns = React.useMemo<ColumnDef<Directorate>[]>(
+
     () => [
       {
         accessorKey: 'name',
         header:() => <div className='w-96'>المديرية</div> ,
       },
-      
-      
+
       {
         id: 'actions',
-        header: "",
+        header: '',
         cell: ({ row }) => (
           <div className="flex w-fit">
             <EditDialog

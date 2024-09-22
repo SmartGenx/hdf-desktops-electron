@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs'
 // import Structure from "./(sub-tabs)/structure";
 // import AttachmentTab from "./(sub-tabs)/attachment";
 import {  InfoIcon, MoveRight } from 'lucide-react'
+
 import { Button } from '@renderer/components/ui/button'
 import Category from './tabs/category'
 import Governorate from './tabs/governorate'
@@ -17,19 +18,19 @@ const subTabs = [
   {
     value: 'category',
     title: 'إضافة فئة',
-    content:<Category/> ,
+    content: <Category />,
     icon: <InfoIcon color="#434749" />
   },
   {
     value: 'governorate',
     title: 'إضافة محافظة',
-    content: <Governorate/>,
+    content: <Governorate />,
     icon: <InfoIcon color="#434749" />
   },
   {
     value: 'directorate',
     title: 'إضافة مديرية',
-    content: <Directorate/>,
+    content: <Directorate />,
     icon: <InfoIcon color="#434749" />
   },
   {
@@ -50,22 +51,22 @@ const subTabs = [
     content: <Disease/>,
     icon: "",
   },
+
 ]
 const Initialization = () => {
   const [activeTab, setActiveTab] = useState<string>(subTabs[0].value)
   return (
     <>
       <div className=" mt-4 flex flex-col gap-5 ">
-        <h1 className=' text-[24px] font-medium'>تهيئة النظام</h1>
-        <div className='flex justify-between items-center'>
-          <Button variant={'Hdf-outline'} className='flex items-center gap-2'>
-            <MoveRight size={20} className=' '/>
+        <h1 className=" text-[24px] font-medium">تهيئة النظام</h1>
+        <div className="flex justify-between items-center">
+          <Button variant={'Hdf-outline'} className="flex items-center gap-2">
+            <MoveRight size={20} className=" " />
             رجـوع
           </Button>
-          <div className='flex gap-3'>
-          <Button variant={'Hdf-outline'}>إلغاء</Button>
-          <Button variant={'Hdf'}>حفظ</Button>
-
+          <div className="flex gap-3">
+            <Button variant={'Hdf-outline'}>إلغاء</Button>
+            <Button variant={'Hdf'}>حفظ</Button>
           </div>
         </div>
       </div>

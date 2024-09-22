@@ -12,6 +12,7 @@ import { getApi, postApi } from '@renderer/lib/http'
 import { useAuthHeader } from 'react-auth-kit'
 import DirectorateTabel from '../_components/DirectorateTabel'
 import { toast } from '@renderer/components/ui/use-toast'
+
 const formSchema = z.object({
   governorateGlobalId: z.string(),
   name: z.string(),
@@ -84,6 +85,7 @@ export default function Directorate() {
   }
 
   
+
   return (
     <div className="space-y-3">
       <Form {...form}>
@@ -140,6 +142,7 @@ export default function Directorate() {
         </form>
       </Form>
       <DirectorateTabel info={directorates?.data||[]} page="2" pageSize="5" total={5} />
+
     </div>
   )
 }
