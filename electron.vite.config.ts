@@ -3,6 +3,7 @@ import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
 import { resolve } from 'path'
 
 export default defineConfig({
+
   main: {
     plugins: [externalizeDepsPlugin()],
     resolve: {
@@ -10,7 +11,7 @@ export default defineConfig({
         '@/lib': resolve('src/main/lib'),
         '@shared': resolve('src/shared')
       }
-    }
+      },
   },
   preload: {
     plugins: [externalizeDepsPlugin()],
@@ -28,6 +29,7 @@ export default defineConfig({
     }
   },
   renderer: {
+    
     resolve: {
       alias: {
         '@renderer': resolve('src/renderer/src')
