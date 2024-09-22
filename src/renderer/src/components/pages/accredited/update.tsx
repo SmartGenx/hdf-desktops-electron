@@ -111,7 +111,7 @@ export default function UpdateAccredited() {
 
     // Add more options as needed
   ])
-  const { isPending, data: accredited } = useQuery({
+  const { data: accredited } = useQuery({
     queryKey: ['applicant', id],
     queryFn: () =>
       getApi<AccreditedInfos>(`/accredited`, {

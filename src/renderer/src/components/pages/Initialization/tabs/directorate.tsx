@@ -5,7 +5,15 @@ import { z } from 'zod'
 import { Button } from '@renderer/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@renderer/components/ui/form'
 import { Input } from '@renderer/components/ui/input'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@renderer/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue
+} from '@renderer/components/ui/select'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Directorate as DirectorateType, Governorate } from '@renderer/types'
 import { getApi, postApi } from '@renderer/lib/http'
@@ -15,7 +23,7 @@ import { toast } from '@renderer/components/ui/use-toast'
 
 const formSchema = z.object({
   governorateGlobalId: z.string(),
-  name: z.string(),
+  name: z.string()
 })
 
 export default function Directorate() {
@@ -24,10 +32,9 @@ export default function Directorate() {
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    
+    resolver: zodResolver(formSchema)
   })
-  const { data: governorates ,refetch} = useQuery({
+  const { data: governorates, refetch } = useQuery({
     queryKey: ['governorate'],
     queryFn: () =>
       getApi<Governorate[]>('/governorate', {
@@ -51,11 +58,10 @@ export default function Directorate() {
       // Return the API call to be executed
       return postApi(
         '/directorate',
-        {...values,},
+        { ...values },
         {
           headers: {
-            Authorization: `${authToken()}`,
-            
+            Authorization: `${authToken()}`
           }
         }
       )
@@ -83,8 +89,6 @@ export default function Directorate() {
     // ✅ This will be type-safe and validated.
     mutate(values)
   }
-
-  
 
   return (
     <div className="space-y-3">
@@ -122,11 +126,12 @@ export default function Directorate() {
                       <SelectContent>
                         <SelectGroup>
                           <SelectLabel>المحافظات</SelectLabel>
-                          {governorates && governorates.data.map((governorate) => (
-                            <SelectItem key={governorate.id} value={String(governorate.globalId)}>
-                              {governorate.name}
-                            </SelectItem>
-                          ))}
+                          {governorates &&
+                            governorates.data.map((governorate) => (
+                              <SelectItem key={governorate.id} value={String(governorate.globalId)}>
+                                {governorate.name}
+                              </SelectItem>
+                            ))}
                         </SelectGroup>
                       </SelectContent>
                     </Select>
@@ -136,13 +141,12 @@ export default function Directorate() {
               )}
             />
           </div>
-          <Button  variant={'Hdf'} type="submit">
+          <Button variant={'Hdf'} type="submit">
             إضافة
           </Button>
         </form>
       </Form>
-      <DirectorateTabel info={directorates?.data||[]} page="2" pageSize="5" total={5} />
-
+      <DirectorateTabel info={directorates?.data || []} page="2" total={5} />
     </div>
   )
 }

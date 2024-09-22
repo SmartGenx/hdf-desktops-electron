@@ -35,7 +35,8 @@ const FilterDrawer = () => {
         }
       })
   })
-  const { data: squares } = {
+
+  const { data: squares } = useQuery({
     queryKey: ['square'],
     queryFn: () =>
       getApi<Square[]>('/square', {
@@ -43,8 +44,7 @@ const FilterDrawer = () => {
           Authorization: authToken()
         }
       })
-  }
-
+  })
   return (
     <Drawer direction="left">
       <DrawerTrigger asChild>
