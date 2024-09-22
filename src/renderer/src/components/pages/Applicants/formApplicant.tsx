@@ -536,8 +536,8 @@ export default function FormApplicant() {
                           <FormItem>
                             <FormControl>
                               <Input
-                                label="تاريخ الميلاد"
-                                placeholder="ادخل تاريخ الميلاد"
+                                label="تاريخ التقديم"
+                                placeholder="ادخل تاريخ التقديم"
                                 type="date"
                                 {...field}
                                 disabled={delayedSubmitting}
@@ -550,7 +550,7 @@ export default function FormApplicant() {
                     </div>
                   </div>
                 </div>
-                <Button type="submit"  className="w-[120px]">
+                <Button type="submit" className="w-[120px]">
                   حفظ
                 </Button>
               </form>
