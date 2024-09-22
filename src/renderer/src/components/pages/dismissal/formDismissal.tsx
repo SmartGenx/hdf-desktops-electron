@@ -125,6 +125,7 @@ export default function FormDismissal() {
       ? applicant?.data?.[0]?.name
       : null
 
+  console.log('name', name)
   React.useEffect(() => {
     form.setValue('amountPaid', String(totalPrice))
     form.setValue('accreditedGlobalId', number?.info?.[0]?.globalId ?? 'No URL available')

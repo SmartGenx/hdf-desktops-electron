@@ -607,8 +607,8 @@ export default function UpdateApplicant() {
                           <FormItem>
                             <FormControl>
                               <Input
-                                label="تاريخ الميلاد"
-                                placeholder="ادخل تاريخ الميلاد"
+                                label="تاريخ التقديم"
+                                placeholder="ادخل تاريخ التقديم"
                                 type="date"
                                 {...field}
                                 disabled={delayedSubmitting}
