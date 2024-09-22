@@ -7,7 +7,7 @@ import { Button } from '@renderer/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@renderer/components/ui/form'
 import { Input } from '@renderer/components/ui/input'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import {  Governorate } from '@renderer/types'
+import {  DiseasesApplicant } from '@renderer/types'
 import { getApi, putApi } from '@renderer/lib/http'
 import { useAuthHeader } from 'react-auth-kit'
 import { toast } from '@renderer/components/ui/use-toast'
@@ -15,18 +15,20 @@ import { AlertDialogAction, AlertDialogCancel } from '@renderer/components/ui/al
 import { useEffect } from 'react'
 const formSchema = z.object({
   name: z.string(),
+  description: z.string(),
  
 })
 interface Props {
   id: string
 }
-export default function EditGovernorateForm({ id }: Props) {
+export default function EditDiseaseForm({ id }: Props) {
   const authToken = useAuthHeader()
   const queryClient = useQueryClient()
-  const { data: governorate,isSuccess } = useQuery({
-    queryKey: ['governorate', id],
+  
+  const { data: disease,isSuccess } = useQuery({
+    queryKey: ['disease', id],
     queryFn: async () =>
-      await getApi<Governorate>(`/governorate/${id}`, {
+      await getApi<DiseasesApplicant>(`/disease/${id}`, {
         headers: {
           Authorization: authToken()
         }
@@ -42,18 +44,19 @@ export default function EditGovernorateForm({ id }: Props) {
   useEffect(() => {
     if (isSuccess) {
       form.reset({
-        name:governorate.data.name
+        name:disease.data.name,
+        description:disease.data.description
       })
     }
   
     
-  }, [governorate])
+  }, [disease])
   const { mutate } = useMutation({
-    mutationKey: ['editGovernorate'],
+    mutationKey: ['editDisease'],
     mutationFn: (values: z.infer<typeof formSchema>) => {
       // Return the API call to be executed
       return putApi(
-        `/governorate/${id}`,
+        `/disease/${id}`,
         { ...values },
         {
           headers: {
@@ -69,7 +72,7 @@ export default function EditGovernorateForm({ id }: Props) {
         variant: 'success'
       })
 
-      queryClient.invalidateQueries({queryKey:["governorate"]})
+      queryClient.invalidateQueries({queryKey:["disease"]})
     },
     onError(error) {
       toast({
@@ -88,19 +91,44 @@ export default function EditGovernorateForm({ id }: Props) {
     <div className="space-y-3">
       <Form {...form}>
         <form className="space-y-3">
-          <div className="grid grid-cols-1 gap-x-2">
+        <div className="grid w-full grid-cols-2 gap-x-2">
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
-                <FormItem className="col-span-2">
+                <FormItem>
                   <FormControl>
-                    <Input label="المحافظة" placeholder="المحافظة" type="text" {...field} />
+                    <Input
+                      label="إضافة مرض"
+                      placeholder="إضافة مرض"
+                      type="text"
+                      {...field}
+                      className="w-full"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      label="إضافة وصف"
+                      placeholder="إضافة وصف"
+                      type="text"
+                      {...field}
+                      className="w-full"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
           </div>
           <div className="flex justify-between">
             <AlertDialogCancel className="text-muted-foregrounds">إلغاء</AlertDialogCancel>

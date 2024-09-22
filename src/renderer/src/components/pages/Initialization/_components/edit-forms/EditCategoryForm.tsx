@@ -12,7 +12,6 @@ import { getApi, putApi } from '@renderer/lib/http'
 import { useAuthHeader } from 'react-auth-kit'
 import { toast } from '@renderer/components/ui/use-toast'
 import { AlertDialogAction, AlertDialogCancel } from '@renderer/components/ui/alert-dialog'
-import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 const formSchema = z.object({
   name: z.string(),
@@ -24,7 +23,6 @@ interface Props {
 }
 export default function EditCategoryForm({ id }: Props) {
   const authToken = useAuthHeader()
-  const queryClient = useQueryClient()
   const { data: category,isSuccess: isCategorySuccess } = useQuery({
     queryKey: ['category', id],
     queryFn: async () =>
@@ -57,7 +55,7 @@ export default function EditCategoryForm({ id }: Props) {
   }, [category])
   
   
-  const { mutate,error,isSuccess, isError } = useMutation({
+  const { mutate } = useMutation({
     mutationKey: ['editCategory'],
     mutationFn: (values: z.infer<typeof formSchema>) => {
       // Return the API call to be executed

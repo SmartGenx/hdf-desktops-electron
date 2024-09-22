@@ -181,7 +181,9 @@ export type Directorate = {
 
 export type DiseasesApplicant = {
   id: number
+  name:string;
   globalId: string
+  description:string;
   diseaseGlobalId: string
   deleted: boolean
   applicantGlobalId: string
@@ -273,3 +275,5 @@ export type Governorate = {
   // Pharmacy: Pharmacy[];
   lastModified: Date;
 }
+
+

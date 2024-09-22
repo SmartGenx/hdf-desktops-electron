@@ -13,7 +13,7 @@ type Props = {
   pageSize: string
   total: number
 }
-export default function CategoryTabel({ info, page, pageSize, total }: Props) {
+export default function CategoryTabel({ info, page, total }: Props) {
   const columns = React.useMemo<ColumnDef<Category>[]>(
     () => [
       {

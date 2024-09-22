@@ -4,25 +4,30 @@ import { ColumnDef } from '@tanstack/react-table'
 
 
 
+// import DeleteDialog from '@/components/delete-dialog'
+// import { Paths } from '@/enums'
+import { DiseasesApplicant } from '@renderer/types'
 
-import {  Governorate } from '@renderer/types'
 import { HdfTable } from '@renderer/components/tables/hdfTable'
 import EditDialog from './edit-dailog'
-import EditGovernorateForm from './edit-forms/EditGovernorateForm'
 import DeleteDialog from './delete-dailog'
+import EditDiseaseForm from './edit-forms/EditDiseaseForm'
 type Props = {
-  info: Governorate[]
+  info: DiseasesApplicant[]
   page: string
   pageSize: string
   total: number
 }
-export default function GovernorateTabel({info,page,total}:Props) {
-  const columns = React.useMemo<ColumnDef<Governorate>[]>(
+export default function DiseaseTabel({info,page,total}:Props) {
+  const columns = React.useMemo<ColumnDef<DiseasesApplicant>[]>(
     () => [
       {
         accessorKey: 'name',
-        header:() => <div className='w-96'>المحافظة</div> ,
-        cell:({row}) => <div className='w-full'>{row.original.name}</div>
+        header:() => <div className='w-96'>المرض</div> ,
+      },
+      {
+        accessorKey: 'description',
+        header:() => <div className='w-96'>الوصف</div> ,
       },
       
       
@@ -32,11 +37,12 @@ export default function GovernorateTabel({info,page,total}:Props) {
         cell: ({ row }) => (
           <div className="flex w-fit">
             <EditDialog
-              content={<EditGovernorateForm id={row.original.globalId} />}
+            className='max-w-3xl'
+              content={<EditDiseaseForm id={row.original.globalId} />}
             />
             <DeleteDialog
-              url={`/governorate/${row.original?.globalId}`}
-              keys={['governorate']}
+              url={`/disease/${row.original?.globalId}`}
+              keys={['disease']}
               path={'Initialization'}
             />
           </div>

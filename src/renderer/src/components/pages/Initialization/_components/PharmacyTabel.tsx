@@ -5,24 +5,39 @@ import { ColumnDef } from '@tanstack/react-table'
 
 
 
-import {  Governorate } from '@renderer/types'
+import {   Pharmacy } from '@renderer/types'
 import { HdfTable } from '@renderer/components/tables/hdfTable'
 import EditDialog from './edit-dailog'
-import EditGovernorateForm from './edit-forms/EditGovernorateForm'
 import DeleteDialog from './delete-dailog'
+import EditPharmacyForm from './edit-forms/EditPharmacyForm'
 type Props = {
-  info: Governorate[]
+  info: Pharmacy[]
   page: string
   pageSize: string
   total: number
 }
-export default function GovernorateTabel({info,page,total}:Props) {
-  const columns = React.useMemo<ColumnDef<Governorate>[]>(
+export default function PharmacyTabel({info,page,total}:Props) {
+  const columns = React.useMemo<ColumnDef<Pharmacy>[]>(
     () => [
       {
         accessorKey: 'name',
-        header:() => <div className='w-96'>المحافظة</div> ,
+        header:"اسم الصيدلية" ,
         cell:({row}) => <div className='w-full'>{row.original.name}</div>
+      },
+      {
+        accessorKey: 'Governorate.name',
+        header:"المحافظة" ,
+       
+      },
+      {
+        accessorKey: 'startDispenseDate',
+        header:"تاريخ بدأ الصرف" ,
+        
+      },
+      {
+        accessorKey: 'endispenseDate',
+        header:"تاريخ انتهاءالصرف" ,
+        
       },
       
       
@@ -32,11 +47,12 @@ export default function GovernorateTabel({info,page,total}:Props) {
         cell: ({ row }) => (
           <div className="flex w-fit">
             <EditDialog
-              content={<EditGovernorateForm id={row.original.globalId} />}
+            className='max-w-2xl'
+              content={<EditPharmacyForm id={row.original.globalId} />}
             />
             <DeleteDialog
-              url={`/governorate/${row.original?.globalId}`}
-              keys={['governorate']}
+              url={`/pharmacy/${row.original?.globalId}`}
+              keys={['pharmacy']}
               path={'Initialization'}
             />
           </div>

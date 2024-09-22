@@ -8,20 +8,20 @@ import { ColumnDef } from '@tanstack/react-table'
 import {  Governorate } from '@renderer/types'
 import { HdfTable } from '@renderer/components/tables/hdfTable'
 import EditDialog from './edit-dailog'
-import EditGovernorateForm from './edit-forms/EditGovernorateForm'
 import DeleteDialog from './delete-dailog'
+import EditSquareForm from './edit-forms/EditSquareForm'
 type Props = {
   info: Governorate[]
   page: string
   pageSize: string
   total: number
 }
-export default function GovernorateTabel({info,page,total}:Props) {
+export default function SquareTabel({info,page,total}:Props) {
   const columns = React.useMemo<ColumnDef<Governorate>[]>(
     () => [
       {
         accessorKey: 'name',
-        header:() => <div className='w-96'>المحافظة</div> ,
+        header:() => <div className='w-96'>المربع</div> ,
         cell:({row}) => <div className='w-full'>{row.original.name}</div>
       },
       
@@ -32,11 +32,11 @@ export default function GovernorateTabel({info,page,total}:Props) {
         cell: ({ row }) => (
           <div className="flex w-fit">
             <EditDialog
-              content={<EditGovernorateForm id={row.original.globalId} />}
+              content={<EditSquareForm id={row.original.globalId} />}
             />
             <DeleteDialog
-              url={`/governorate/${row.original?.globalId}`}
-              keys={['governorate']}
+              url={`/square/${row.original?.globalId}`}
+              keys={['square']}
               path={'Initialization'}
             />
           </div>

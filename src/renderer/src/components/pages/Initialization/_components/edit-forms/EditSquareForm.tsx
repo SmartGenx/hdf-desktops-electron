@@ -7,7 +7,7 @@ import { Button } from '@renderer/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@renderer/components/ui/form'
 import { Input } from '@renderer/components/ui/input'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import {  Governorate } from '@renderer/types'
+import { Category as CategoryType, Governorate, Square } from '@renderer/types'
 import { getApi, putApi } from '@renderer/lib/http'
 import { useAuthHeader } from 'react-auth-kit'
 import { toast } from '@renderer/components/ui/use-toast'
@@ -20,13 +20,13 @@ const formSchema = z.object({
 interface Props {
   id: string
 }
-export default function EditGovernorateForm({ id }: Props) {
+export default function EditSquareForm({ id }: Props) {
   const authToken = useAuthHeader()
   const queryClient = useQueryClient()
-  const { data: governorate,isSuccess } = useQuery({
-    queryKey: ['governorate', id],
+  const { data: square,isSuccess } = useQuery({
+    queryKey: ['square', id],
     queryFn: async () =>
-      await getApi<Governorate>(`/governorate/${id}`, {
+      await getApi<Square>(`/square/${id}`, {
         headers: {
           Authorization: authToken()
         }
@@ -42,18 +42,18 @@ export default function EditGovernorateForm({ id }: Props) {
   useEffect(() => {
     if (isSuccess) {
       form.reset({
-        name:governorate.data.name
+        name:square.data.name
       })
     }
   
     
-  }, [governorate])
+  }, [square])
   const { mutate } = useMutation({
-    mutationKey: ['editGovernorate'],
+    mutationKey: ['editSquare'],
     mutationFn: (values: z.infer<typeof formSchema>) => {
       // Return the API call to be executed
       return putApi(
-        `/governorate/${id}`,
+        `/square/${id}`,
         { ...values },
         {
           headers: {
@@ -69,7 +69,7 @@ export default function EditGovernorateForm({ id }: Props) {
         variant: 'success'
       })
 
-      queryClient.invalidateQueries({queryKey:["governorate"]})
+      queryClient.invalidateQueries({queryKey:["square"]})
     },
     onError(error) {
       toast({
