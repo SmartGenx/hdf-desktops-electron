@@ -46,7 +46,6 @@ const FilterDrawer = () => {
       })
   })
 
-
   return (
     <Drawer direction="left">
       <DrawerTrigger asChild>

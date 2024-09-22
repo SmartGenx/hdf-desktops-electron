@@ -6,38 +6,43 @@ import { ColumnDef } from '@tanstack/react-table'
 
 // import DeleteDialog from '@/components/delete-dialog'
 // import { Paths } from '@/enums'
-import {  Directorate } from '@renderer/types'
-
+import { DiseasesApplicant } from '@renderer/types'
 
 import { HdfTable } from '@renderer/components/tables/hdfTable'
 import EditDialog from './edit-dailog'
-import EditDirectorateForm from './edit-forms/EditDirectorateForm'
 import DeleteDialog from './delete-dailog'
+import EditDiseaseForm from './edit-forms/EditDiseaseForm'
 type Props = {
-  info: Directorate[]
+  info: DiseasesApplicant[]
   page: string
+  pageSize: string
   total: number
 }
-export default function DirectorateTabel({info,page,total}:Props) {
-  const columns = React.useMemo<ColumnDef<Directorate>[]>(
-
+export default function DiseaseTabel({info,page,total}:Props) {
+  const columns = React.useMemo<ColumnDef<DiseasesApplicant>[]>(
     () => [
       {
         accessorKey: 'name',
-        header:() => <div className='w-96'>المديرية</div> ,
+        header:() => <div className='w-96'>المرض</div> ,
       },
-
+      {
+        accessorKey: 'description',
+        header:() => <div className='w-96'>الوصف</div> ,
+      },
+      
+      
       {
         id: 'actions',
-        header: '',
+        header: "",
         cell: ({ row }) => (
           <div className="flex w-fit">
             <EditDialog
-              content={<EditDirectorateForm id={row.original.globalId} />}
+            className='max-w-3xl'
+              content={<EditDiseaseForm id={row.original.globalId} />}
             />
             <DeleteDialog
-              url={`/directorate/${row.original?.globalId}`}
-              keys={['directorate']}
+              url={`/disease/${row.original?.globalId}`}
+              keys={['disease']}
               path={'Initialization'}
             />
           </div>

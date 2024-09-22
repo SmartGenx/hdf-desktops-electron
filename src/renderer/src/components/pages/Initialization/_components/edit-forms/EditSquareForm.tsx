@@ -1,11 +1,13 @@
+'use client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+
 import { Button } from '@renderer/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@renderer/components/ui/form'
 import { Input } from '@renderer/components/ui/input'
-import { useMutation, useQuery } from '@tanstack/react-query'
-import { Category as CategoryType } from '@renderer/types'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {  Square } from '@renderer/types'
 import { getApi, putApi } from '@renderer/lib/http'
 import { useAuthHeader } from 'react-auth-kit'
 import { toast } from '@renderer/components/ui/use-toast'
@@ -13,53 +15,46 @@ import { AlertDialogAction, AlertDialogCancel } from '@renderer/components/ui/al
 import { useEffect } from 'react'
 const formSchema = z.object({
   name: z.string(),
-  SupportRatio: z.string(),
-  description: z.string()
+ 
 })
 interface Props {
   id: string
 }
-export default function EditCategoryForm({ id }: Props) {
+export default function EditSquareForm({ id }: Props) {
   const authToken = useAuthHeader()
-  const { data: category,isSuccess: isCategorySuccess } = useQuery({
-
-    queryKey: ['category', id],
+  const queryClient = useQueryClient()
+  const { data: square,isSuccess } = useQuery({
+    queryKey: ['square', id],
     queryFn: async () =>
-      await getApi<CategoryType>(`/category/${id}`, {
+      await getApi<Square>(`/square/${id}`, {
         headers: {
           Authorization: authToken()
         }
       })
   })
 
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: category?.data.name,
-      description: category?.data.description,
-      SupportRatio: category?.data.SupportRatio?.toString()
-    }
+    
   })
   useEffect(() => {
-    if (isCategorySuccess) {
+    if (isSuccess) {
       form.reset({
-        name: category.data.name,
-        description: category.data.description,
-        SupportRatio: category.data.SupportRatio?.toString()
+        name:square.data.name
       })
     }
-  }, [category])
   
-  
-
+    
+  }, [square])
   const { mutate } = useMutation({
-    mutationKey: ['editCategory'],
+    mutationKey: ['editSquare'],
     mutationFn: (values: z.infer<typeof formSchema>) => {
       // Return the API call to be executed
       return putApi(
-        `/category/${id}`,
-        { ...values, SupportRatio: +values.SupportRatio },
+        `/square/${id}`,
+        { ...values },
         {
           headers: {
             Authorization: `${authToken()}`
@@ -73,6 +68,8 @@ export default function EditCategoryForm({ id }: Props) {
         description: 'تمت التعديل بنجاح',
         variant: 'success'
       })
+
+      queryClient.invalidateQueries({queryKey:["square"]})
     },
     onError(error) {
       toast({
@@ -91,44 +88,14 @@ export default function EditCategoryForm({ id }: Props) {
     <div className="space-y-3">
       <Form {...form}>
         <form className="space-y-3">
-          <div className="grid grid-cols-7 gap-x-2">
+          <div className="grid grid-cols-1 gap-x-2">
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem className="col-span-2">
                   <FormControl>
-                    <Input label="اسم الفئة" placeholder="اسم الفئة" type="text" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem className="col-span-4">
-                  <FormControl>
-                    <Input label="الوصف" placeholder="الوصف" type="text" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="SupportRatio"
-              render={({ field }) => (
-                <FormItem className="col-span-1">
-                  <FormControl>
-                    <Input
-                      label="النسبة"
-                      placeholder="النسبة"
-                      type="number"
-                      {...field}
-                      value={Number(field.value)}
-                    />
+                    <Input label="المحافظة" placeholder="المحافظة" type="text" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -137,7 +104,7 @@ export default function EditCategoryForm({ id }: Props) {
           </div>
           <div className="flex justify-between">
             <AlertDialogCancel className="text-muted-foregrounds">إلغاء</AlertDialogCancel>
-            <Button variant={'Hdf'}>
+            <Button variant={'Hdf'} type='button'>
               <AlertDialogAction
                 className="bg-transparent w-fit hover:bg-transparent"
                 onClick={() => {

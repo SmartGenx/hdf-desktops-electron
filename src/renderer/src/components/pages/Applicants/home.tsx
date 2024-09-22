@@ -6,10 +6,16 @@ import StateTable from './applicantTabel'
 import { useAuthHeader } from 'react-auth-kit'
 import { Applicants } from '@renderer/types'
 import { useQuery } from '@tanstack/react-query'
-import { getApi } from '@renderer/lib/http'
+import { axiosInstance, getApi } from '@renderer/lib/http'
 import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+
+export type statistCardInfo = {
+  count: number
+}
 
 const Home = () => {
+  const [statist, setStatist] = useState<statistCardInfo | undefined>()
   const authToken = useAuthHeader()
   const {
     isPending,
@@ -32,22 +38,35 @@ const Home = () => {
       })
   })
 
+  useEffect(() => {
+    const fetchStatist = async () => {
+      try {
+        const response = await axiosInstance.get('/applicant/count', {
+          headers: {
+            Authorization: `${authToken()}`
+          }
+        })
+        setStatist(response.data)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      }
+    }
+    fetchStatist()
+  }, [])
+
+  console.log('statist', statist)
   if (isPending) return 'Loading...'
   if (error) return 'An error has occurred: ' + error.message
   return (
     <div>
       <div className="grid grid-cols-4 gap-2">
         <div className=" col-span-1 ">
-          <StatistCard title={'المرضى'} value={45} subtitle={'مستفيد'} icon={'hospital'} />
-        </div>
-        <div className="col-span-1 ">
-          <StatistCard title={'المرضى'} value={20} subtitle={'مستفيد'} icon={'house'} />
-        </div>
-        <div className="col-span-1 ">
-          <StatistCard title={'المرضى'} value={30} subtitle={'مستفيد'} icon={'house'} />
-        </div>
-        <div className="col-span-1 ">
-          <StatistCard title={'المرضى'} value={40} subtitle={'مستفيد'} icon={'house'} />
+          <StatistCard
+            title={'المرضى'}
+            value={statist?.count}
+            subtitle={'مستفيد'}
+            icon={'hospital'}
+          />
         </div>
       </div>
       <div className="flex  gap-5 mt-[85px] items-center justify-between  ">

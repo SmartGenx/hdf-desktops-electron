@@ -1,4 +1,5 @@
 import { Edit2 } from 'lucide-react'
+
 import {
   AlertDialog,
   AlertDialogContent,
@@ -9,11 +10,11 @@ import {
 
 interface DeleteDialogProps {
   disabled?: boolean
-
+  className?: string
   content: React.ReactNode
 }
 
-export default function EditDialog({ disabled = false, content }: DeleteDialogProps) {
+export default function EditDialog({ disabled = false, content, className }: DeleteDialogProps) {
   return (
     <AlertDialog>
       <AlertDialogTrigger
@@ -24,7 +25,7 @@ export default function EditDialog({ disabled = false, content }: DeleteDialogPr
       >
         <Edit2 className="text-[#475467]" size={15} />
       </AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent className={className}>
         <AlertDialogHeader className="*:text-right">
           <AlertDialogTitle>{'تعديل'}</AlertDialogTitle>
           {content}

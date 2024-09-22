@@ -2,17 +2,15 @@ import { cn } from '@renderer/lib/utils'
 import { Card, CardHeader, CardTitle, CardContent } from './ui/card'
 import { Icons } from '@renderer/components/icons/icons'
 
-
 type proptype = {
   title: string
-  value: number
+  value?: number
   subtitle: string
   icon: keyof typeof Icons
   className?: string
 }
 
 const StatistCard = ({ title, value, subtitle, icon, className }: proptype) => {
-
   const Icon = Icons[icon]
   return (
     <Card className={cn('shadow-lg border rounded-lg flex px-4  justify-between', className)}>

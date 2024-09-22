@@ -1,10 +1,18 @@
 import { useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs'
-import { InfoIcon, MoveRight } from 'lucide-react'
+// import OrgProfile from "../org-profile";
+// import MainInfo from "./(sub-tabs)/main-info";
+// import Structure from "./(sub-tabs)/structure";
+// import AttachmentTab from "./(sub-tabs)/attachment";
+import {  InfoIcon, MoveRight } from 'lucide-react'
+
 import { Button } from '@renderer/components/ui/button'
 import Category from './tabs/category'
 import Governorate from './tabs/governorate'
 import Directorate from './tabs/directorate'
+import Square from './tabs/square'
+import Pharmacy from './tabs/pharmacy'
+import Disease from './tabs/disease'
 
 const subTabs = [
   {
@@ -28,21 +36,22 @@ const subTabs = [
   {
     value: 'square',
     title: 'إضافة مربع',
-    content: '',
+    content: <Square/>,
     icon: <InfoIcon color="#434749" />
   },
   {
-    value: 'pharmacy',
-    title: 'إضافة صيدلية',
-    content: '',
-    icon: ''
+    value: "pharmacy",
+    title: "إضافة صيدلية",
+    content: <Pharmacy/>,
+    icon: "",
   },
   {
-    value: 'disease',
-    title: 'إضافة مرض',
-    content: '',
-    icon: ''
-  }
+    value: "disease",
+    title: "إضافة مرض",
+    content: <Disease/>,
+    icon: "",
+  },
+
 ]
 const Initialization = () => {
   const [activeTab, setActiveTab] = useState<string>(subTabs[0].value)

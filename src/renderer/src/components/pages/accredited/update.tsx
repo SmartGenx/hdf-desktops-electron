@@ -1,4 +1,3 @@
-'use client'
 import * as React from 'react'
 import { Button } from '../../ui/button'
 import { Form, FormControl, FormField, FormItem } from '../../ui/form'
@@ -111,6 +110,7 @@ export default function UpdateAccredited() {
 
     // Add more options as needed
   ])
+  
   const {  data: accredited } = useQuery({
     queryKey: ['applicant', id],
     queryFn: () =>

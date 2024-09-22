@@ -5,63 +5,47 @@ import { z } from 'zod'
 import { Button } from '@renderer/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@renderer/components/ui/form'
 import { Input } from '@renderer/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue
-} from '@renderer/components/ui/select'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Directorate as DirectorateType, Governorate } from '@renderer/types'
+import {  DiseasesApplicant } from '@renderer/types'
 import { getApi, postApi } from '@renderer/lib/http'
 import { useAuthHeader } from 'react-auth-kit'
-import DirectorateTabel from '../_components/DirectorateTabel'
 import { toast } from '@renderer/components/ui/use-toast'
-
+import DiseaseTabel from '../_components/DiseaseTabel'
 const formSchema = z.object({
-  governorateGlobalId: z.string(),
-  name: z.string()
+  name: z.string(),
+  description: z.string(),
 })
 
-export default function Directorate() {
+export default function Disease() {
   const authToken = useAuthHeader()
   const queryClient = useQueryClient()
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema)
+    resolver: zodResolver(formSchema),
+    
   })
-  const { data: governorates, refetch } = useQuery({
-    queryKey: ['governorate'],
+  const { data: diseases ,refetch} = useQuery({
+    queryKey: ['disease'],
     queryFn: () =>
-      getApi<Governorate[]>('/governorate', {
+      getApi<DiseasesApplicant[]>('/disease', {
         headers: {
           Authorization: authToken()
         }
       })
   })
-  const { data: directorates } = useQuery({
-    queryKey: ['directorate'],
-    queryFn: () =>
-      getApi<DirectorateType[]>('/directorate', {
-        headers: {
-          Authorization: authToken()
-        }
-      })
-  })
+  
   const { mutate } = useMutation({
-    mutationKey: ['addDirectorate'],
+    mutationKey: ['addDisease'],
     mutationFn: (values: z.infer<typeof formSchema>) => {
       // Return the API call to be executed
       return postApi(
-        '/directorate',
-        { ...values },
+        '/disease',
+        {...values,},
         {
           headers: {
-            Authorization: `${authToken()}`
+            Authorization: `${authToken()}`,
+            
           }
         }
       )
@@ -72,7 +56,7 @@ export default function Directorate() {
         description: 'تمت الاضافة بنجاح',
         variant: 'success'
       })
-      queryClient.invalidateQueries({ queryKey: ['directorate'] })
+      queryClient.invalidateQueries({ queryKey: ['disease'] })
       refetch()
     },
     onError: (error) => {
@@ -90,6 +74,7 @@ export default function Directorate() {
     mutate(values)
   }
 
+  
   return (
     <div className="space-y-3">
       <Form {...form}>
@@ -102,8 +87,8 @@ export default function Directorate() {
                 <FormItem>
                   <FormControl>
                     <Input
-                      label="إضافة مديرية"
-                      placeholder="إضافة مديرية"
+                      label="إضافة مرض"
+                      placeholder="إضافة مرض"
                       type="text"
                       {...field}
                       className="w-full"
@@ -115,38 +100,30 @@ export default function Directorate() {
             />
             <FormField
               control={form.control}
-              name="governorateGlobalId"
+              name="description"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <SelectTrigger className="">
-                        <SelectValue placeholder="إضافة محافظة" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>المحافظات</SelectLabel>
-                          {governorates &&
-                            governorates.data.map((governorate) => (
-                              <SelectItem key={governorate.id} value={String(governorate.globalId)}>
-                                {governorate.name}
-                              </SelectItem>
-                            ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
+                    <Input
+                      label="إضافة وصف"
+                      placeholder="إضافة وصف"
+                      type="text"
+                      {...field}
+                      className="w-full"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            
           </div>
-          <Button variant={'Hdf'} type="submit">
+          <Button  variant={'Hdf'} type="submit">
             إضافة
           </Button>
         </form>
       </Form>
-      <DirectorateTabel info={directorates?.data || []} page="2" total={5} />
+      <DiseaseTabel info={diseases?.data||[]} page="2" pageSize="5" total={5} />
     </div>
   )
 }
