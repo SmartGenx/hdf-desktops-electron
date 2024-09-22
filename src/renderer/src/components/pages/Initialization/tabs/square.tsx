@@ -4,19 +4,12 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import { Button } from '@renderer/components/ui/button'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage
-} from '@renderer/components/ui/form'
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@renderer/components/ui/form'
 import { Input } from '@renderer/components/ui/input'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import {  Square as SquareType } from '@renderer/types'
+import { Square as SquareType } from '@renderer/types'
 import { useAuthHeader } from 'react-auth-kit'
 import { getApi, postApi } from '@renderer/lib/http'
-import GovernorateTabel from '../_components/GovernorateTabel'
 import { toast } from '@renderer/components/ui/use-toast'
 import SquareTabel from '../_components/SquareTabel'
 const formSchema = z.object({
@@ -29,10 +22,9 @@ export default function Square() {
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    
+    resolver: zodResolver(formSchema)
   })
-  const { data: squares ,refetch} = useQuery({
+  const { data: squares, refetch } = useQuery({
     queryKey: ['square'],
     queryFn: () =>
       getApi<SquareType[]>('/square', {
@@ -41,17 +33,16 @@ export default function Square() {
         }
       })
   })
-  const { mutate ,} = useMutation({
+  const { mutate } = useMutation({
     mutationKey: ['addSquare'],
     mutationFn: (values: z.infer<typeof formSchema>) => {
       // Return the API call to be executed
       return postApi(
         '/square',
-        {...values},
+        { ...values },
         {
           headers: {
-            Authorization: `${authToken()}`,
-            
+            Authorization: `${authToken()}`
           }
         }
       )
@@ -76,38 +67,37 @@ export default function Square() {
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
     mutate(values)
-
   }
   return (
-    <div className='space-y-3'>
+    <div className="space-y-3">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex justify-between gap-x-2">
-          <div className='grid w-full grid-cols-1 gap-x-2'>
+          <div className="grid w-full grid-cols-1 gap-x-2">
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
-                <FormItem >
-                  <FormControl >
+                <FormItem>
+                  <FormControl>
                     <Input
                       label="إضافة محافظة"
                       placeholder="إضافة محافظة"
                       type="text"
                       {...field}
-                      className='w-full'
+                      className="w-full"
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            
-            
           </div>
-          <Button variant={'Hdf'} type="submit">إضافة</Button>
+          <Button variant={'Hdf'} type="submit">
+            إضافة
+          </Button>
         </form>
       </Form>
-      <SquareTabel info={squares?.data||[]} page='2' pageSize='5' total={5}/>
+      <SquareTabel info={squares?.data || []} page="2" pageSize="5" total={5} />
     </div>
   )
 }

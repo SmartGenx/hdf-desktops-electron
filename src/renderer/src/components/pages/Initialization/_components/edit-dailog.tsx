@@ -1,21 +1,20 @@
+import { Edit2 } from 'lucide-react'
 
-import { Edit2} from 'lucide-react'
-
-import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@renderer/components/ui/alert-dialog'
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '@renderer/components/ui/alert-dialog'
 
 interface DeleteDialogProps {
   disabled?: boolean
-  className?:string;
-  content:React.ReactNode
+  className?: string
+  content: React.ReactNode
 }
 
-export default function EditDialog({  disabled = false,content,className }: DeleteDialogProps) {
- 
-
-  
-
-
-export default function EditDialog({ disabled = false, content }: DeleteDialogProps) {
+export default function EditDialog({ disabled = false, content, className }: DeleteDialogProps) {
   return (
     <AlertDialog>
       <AlertDialogTrigger
