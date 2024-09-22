@@ -5,10 +5,12 @@ import maps from '../../../assets/images/maps.svg' // Adjust the path as necessa
 import leaf from '../../../assets/images/leaf.svg' // Adjust the path as necessary
 import people from '../../../assets/images/people.svg' // Adjust the path as necessary
 import { Pen } from 'lucide-react'
+
 const Login = () => {
   return (
     <>
       <Header />
+
       <div className="flex justify-between relative h-[calc(100vh-126px)]">
         <div
           className="relative w-[50%] flex flex-col items-center justify-end bg-left bg-cover"
