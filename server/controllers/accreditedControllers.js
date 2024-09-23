@@ -10,6 +10,7 @@ const puppeteer = require('puppeteer')
 const ExcelJS = require('exceljs')
 const path = require('path')
 const fs = require('fs')
+const { number } = require('zod')
 class AccreditedController {
   // Fetch all accreditations
   async fileUploadController(req, res, next) {
@@ -208,65 +209,69 @@ class AccreditedController {
       const id = req.params.id
       const AccreditedService = databaseService.getAccreditedService()
       const accredited = await AccreditedService.getAccreditationById(id)
-
-      if (!accredited) {
-        return res.status(400).send({ error: 'No data provided for the barcodes' })
+      const dta = {
+        number: accredited.numberOfRfid
       }
+      res.status(200).send(dta)
 
-      // Generate the barcode
-      const pngBuffer = await bwipjs.toBuffer({
-        bcid: 'code128',
-        text: `${accredited.numberOfRfid}`,
-        scale: 3,
-        height: 10,
-        textxalign: 'center'
-      })
-      const barcodeData = pngBuffer.toString('base64')
-      const barcodeImageSrc = `data:image/png;base64,${barcodeData}`
+      // if (!accredited) {
+      //   return res.status(400).send({ error: 'No data provided for the barcodes' })
+      // }
 
-      const imagePath = path.join(__dirname, '..', '..', 'static', 'images', 'logo.png')
-      const imageData = fs.readFileSync(imagePath)
-      const base64Image = imageData.toString('base64')
-      const logoImageSrc = `data:image/png;base64,${base64Image}`
-      // Render the HTML content using EJS
-      const templatePath = path.join(__dirname, '..', '..', 'views', 'accreditedsCardOne.ejs')
-      const htmlContent = await ejs.renderFile(templatePath, {
-        accredited,
-        barcodeImageSrc,
-        logoImageSrc
-      })
-      const browser = await puppeteer.launch({
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-      })
-      const page = await browser.newPage()
-      await page.setDefaultNavigationTimeout(60000) // Set default navigation timeout to 60 seconds
+      // // Generate the barcode
+      // const pngBuffer = await bwipjs.toBuffer({
+      //   bcid: 'code128',
+      //   text: `${accredited.numberOfRfid}`,
+      //   scale: 3,
+      //   height: 10,
+      //   textxalign: 'center'
+      // })
+      // const barcodeData = pngBuffer.toString('base64')
+      // const barcodeImageSrc = `data:image/png;base64,${barcodeData}`
 
-      try {
-        await page.setContent(htmlContent, { waitUntil: 'networkidle0' })
-      } catch (error) {
-        console.error('Failed to set page content', error)
-        throw error
-      }
+      // const imagePath = path.join(__dirname, '..', '..', 'static', 'images', 'logo.png')
+      // const imageData = fs.readFileSync(imagePath)
+      // const base64Image = imageData.toString('base64')
+      // const logoImageSrc = `data:image/png;base64,${base64Image}`
+      // // Render the HTML content using EJS
+      // const templatePath = path.join(__dirname, '..', '..', 'views', 'accreditedsCardOne.ejs')
+      // const htmlContent = await ejs.renderFile(templatePath, {
+      //   accredited,
+      //   barcodeImageSrc,
+      //   logoImageSrc
+      // })
+      // const browser = await puppeteer.launch({
+      //   headless: true,
+      //   args: ['--no-sandbox', '--disable-setuid-sandbox']
+      // })
+      // const page = await browser.newPage()
+      // await page.setDefaultNavigationTimeout(60000) // Set default navigation timeout to 60 seconds
 
-      let pdfBuffer
-      try {
-        pdfBuffer = await page.pdf({
-          format: 'A4',
-          printBackground: true,
-          margin: { top: '20mm', right: '20mm', bottom: '20mm', left: '20mm' }
-        })
-      } catch (error) {
-        console.error('Failed to generate PDF', error)
-        throw error
-      }
+      // try {
+      //   await page.setContent(htmlContent, { waitUntil: 'networkidle0' })
+      // } catch (error) {
+      //   console.error('Failed to set page content', error)
+      //   throw error
+      // }
 
-      await browser.close()
+      // let pdfBuffer
+      // try {
+      //   pdfBuffer = await page.pdf({
+      //     format: 'A4',
+      //     printBackground: true,
+      //     margin: { top: '20mm', right: '20mm', bottom: '20mm', left: '20mm' }
+      //   })
+      // } catch (error) {
+      //   console.error('Failed to generate PDF', error)
+      //   throw error
+      // }
 
-      // Send the PDF as response
-      res.setHeader('Content-Type', 'application/pdf')
-      res.setHeader('Content-Disposition', 'attachment; filename=accredited_barcode_card.pdf')
-      res.send(pdfBuffer)
+      // await browser.close()
+
+      // // Send the PDF as response
+      // res.setHeader('Content-Type', 'application/pdf')
+      // res.setHeader('Content-Disposition', 'attachment; filename=accredited_barcode_card.pdf')
+      // res.send(pdfBuffer)
     } catch (error) {
       console.error('Failed to generate the barcode card PDF', error)
       next(new ApiError(500, 'InternalServer', error))
@@ -277,70 +282,76 @@ class AccreditedController {
     try {
       const AccreditedService = databaseService.getAccreditedService()
       const accrediteds = await AccreditedService.getAllAccreditations()
-
-      if (!accrediteds || accrediteds.length === 0) {
-        return res.status(400).send({ error: 'No data provided for the barcodes' })
-      }
-      let cardHtml = '<div style="display: flex; flex-wrap: wrap; gap: 1mm;">'
-
+      let card = []
       for (const data of accrediteds) {
-        // Generate the barcode
-        const pngBuffer = await bwipjs.toBuffer({
-          bcid: 'code128',
-          text: `${data.numberOfRfid}`,
-          scale: 3,
-          height: 7,
-          // includetext: true,
-          textxalign: 'center'
-        })
-        const barcodeData = pngBuffer.toString('base64')
-        const barcodeImageSrc = `data:image/png;base64,${barcodeData}`
-
-        const imagePath = path.join(__dirname, '..', '..', 'static', 'images', 'logo.png')
-        const imageData = fs.readFileSync(imagePath)
-        const base64Image = imageData.toString('base64')
-        const logoImageSrc = `data:image/png;base64,${base64Image}`
-        // Render the HTML content using EJS
-        const templatePath = path.join(__dirname, '..', '..', 'views', 'accreditedsCard.ejs')
-        const cardInstance = await ejs.renderFile(templatePath, {
-          data,
-          barcodeImageSrc,
-          logoImageSrc
-        })
-        // Card style adjusted for size
-        cardHtml += `<div style="width: 95mm; height: 100mm;">${cardInstance}</div>`
+        card.push({ number: data.numberOfRfid })
       }
-      cardHtml += '</div>'
-      const browser = await puppeteer.launch({
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-      })
-      const page = await browser.newPage()
-      await page.setDefaultNavigationTimeout(60000) // Set default navigation timeout to 60 seconds
-      try {
-        await page.setContent(cardHtml, { waitUntil: 'networkidle0' })
-      } catch (error) {
-        console.error('Failed to set page content', error)
-        throw error
-      }
+      res.status(200).json(card)
+      console.log('🚀 ~ AccreditedController ~ exportAllBarcodeCardToPDF ~ card:', card)
 
-      let pdfBuffer
-      try {
-        pdfBuffer = await page.pdf({
-          format: 'A4',
-          printBackground: true,
-          margin: { top: '5mm', right: '5mm', bottom: '5mm', left: '5mm' }
-        })
-      } catch (error) {
-        console.error('Failed to generate PDF', error)
-        throw error
-      }
+      //   if (!accrediteds || accrediteds.length === 0) {
+      //     return res.status(400).send({ error: 'No data provided for the barcodes' })
+      //   }
+      //   let cardHtml = '<div style="display: flex; flex-wrap: wrap; gap: 1mm;">'
 
-      await browser.close()
+      //   for (const data of accrediteds) {
+      //     // Generate the barcode
+      //     const pngBuffer = await bwipjs.toBuffer({
+      //       bcid: 'code128',
+      //       text: `${data.numberOfRfid}`,
+      //       scale: 3,
+      //       height: 7,
+      //       // includetext: true,
+      //       textxalign: 'center'
+      //     })
+      //     const barcodeData = pngBuffer.toString('base64')
+      //     const barcodeImageSrc = `data:image/png;base64,${barcodeData}`
 
-      res.setHeader('Content-Type', 'application/pdf')
-      res.setHeader('Content-Disposition', 'attachment; filename=accrediteds_barcode_cards.pdf')
-      res.send(pdfBuffer)
+      //     const imagePath = path.join(__dirname, '..', '..', 'static', 'images', 'logo.png')
+      //     const imageData = fs.readFileSync(imagePath)
+      //     const base64Image = imageData.toString('base64')
+      //     const logoImageSrc = `data:image/png;base64,${base64Image}`
+      //     // Render the HTML content using EJS
+      //     const templatePath = path.join(__dirname, '..', '..', 'views', 'accreditedsCard.ejs')
+      //     const cardInstance = await ejs.renderFile(templatePath, {
+      //       data,
+      //       barcodeImageSrc,
+      //       logoImageSrc
+      //     })
+      //     // Card style adjusted for size
+      //     cardHtml += `<div style="width: 95mm; height: 100mm;">${cardInstance}</div>`
+      //   }
+      //   cardHtml += '</div>'
+      //   const browser = await puppeteer.launch({
+      //     headless: true,
+      //     args: ['--no-sandbox', '--disable-setuid-sandbox']
+      //   })
+      //   const page = await browser.newPage()
+      //   await page.setDefaultNavigationTimeout(60000) // Set default navigation timeout to 60 seconds
+      //   try {
+      //     await page.setContent(cardHtml, { waitUntil: 'networkidle0' })
+      //   } catch (error) {
+      //     console.error('Failed to set page content', error)
+      //     throw error
+      //   }
+
+      //   let pdfBuffer
+      //   try {
+      //     pdfBuffer = await page.pdf({
+      //       format: 'A4',
+      //       printBackground: true,
+      //       margin: { top: '5mm', right: '5mm', bottom: '5mm', left: '5mm' }
+      //     })
+      //   } catch (error) {
+      //     console.error('Failed to generate PDF', error)
+      //     throw error
+      //   }
+
+      //   await browser.close()
+
+      //   res.setHeader('Content-Type', 'application/pdf')
+      //   res.setHeader('Content-Disposition', 'attachment; filename=accrediteds_barcode_cards.pdf')
+      //   res.send(pdfBuffer)
     } catch (error) {
       console.error('Failed to generate the barcode card PDF', error)
       next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
