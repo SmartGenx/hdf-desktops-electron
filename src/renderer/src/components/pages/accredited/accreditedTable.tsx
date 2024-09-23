@@ -12,6 +12,8 @@ import { AccreditedInfo } from '../../../types/index'
 import { Button } from '../../ui/button'
 import DeleteDialog from '@renderer/components/ui/delete-dailog'
 import { Link } from 'react-router-dom'
+import ReactToPrint from 'react-to-print'
+import A4LayoutById from './print-card-id'
 type Props = {
   info: AccreditedInfo[]
   page: string
@@ -19,6 +21,7 @@ type Props = {
   total: number
 }
 export default function AccreditedTable({ info, page, total }: Props) {
+  const componentRef = React.useRef<HTMLDivElement>(null)
   const columns = React.useMemo<ColumnDef<AccreditedInfo>[]>(
     () => [
       {
@@ -59,6 +62,19 @@ export default function AccreditedTable({ info, page, total }: Props) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="h-17 -mt-[70px] ml-7 min-w-[84.51px] p-0">
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                <ReactToPrint
+                  trigger={() => (
+                    <button className=" flex items-center text-[#000] rounded-lg hover:bg-[#2d5372] px-3 focus:ring-[#2d5372]">
+                      طباعة
+                    </button>
+                  )}
+                  content={() => componentRef.current}
+                />
+                <div className="hidden">
+                  <A4LayoutById ref={componentRef} id={row.original.globalId ?? ''} />
+                </div>
+              </DropdownMenuItem>
               <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                 <Link to={`/UpdateAccredited/${row.original.globalId}`}>تعديل</Link>
               </DropdownMenuItem>

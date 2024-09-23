@@ -55,6 +55,11 @@ export const router = createHashRouter([
         // element: <Login />
       },
       {
+        path: '/PrintAccredited/:id',
+        element: <ProtectedRoute element={<UpdateAccredited />} />
+        // element: <Login />
+      },
+      {
         path: '/accredited',
         element: <ProtectedRoute element={<Accredited />} />
         // element: <Login />
