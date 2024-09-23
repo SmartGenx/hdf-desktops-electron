@@ -259,19 +259,20 @@ class AccreditedService {
     }
   }
 
-  // async countAllAccredited() {
-  //   try {
-  //     // Count all Accredited records
-  //     const accreditedCount = await this.prisma.accredited.count({
-  //       where: {
-  //         deleted: false // Assuming you want to count only non-deleted records
-  //       }
-  //     })
-  //     return accreditedCount
-  //   } catch (error) {
-  //     throw error
-  //   }
-  // }
+  async countAllAccredited() {
+    try {
+      // Count all Accredited records where "deleted" is false
+      const accreditedCount = await this.prisma.accredited.count({
+        where: {
+          deleted: false // Count only non-deleted records
+        }
+      })
+      return accreditedCount
+    } catch (error) {
+      console.error('Error counting accredited records:', error)
+      throw new Error('Failed to count accredited records')
+    }
+  }
 
   async createAccreditation(AccreditedData, fileAtch, filePt) {
     try {
