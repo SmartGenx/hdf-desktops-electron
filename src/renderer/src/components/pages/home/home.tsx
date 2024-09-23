@@ -2,10 +2,8 @@ import StatistCard from '@renderer/components/statistCard'
 import StatistChartCard from './statistChartCard'
 import StatistchartTowCard from './statistchartTowCard'
 import Statistsidebar from './statistsidebar'
-import { axiosInstance, getApi } from '@renderer/lib/http'
-import { useQuery } from '@tanstack/react-query'
+import { axiosInstance } from '@renderer/lib/http'
 import { useAuthHeader } from 'react-auth-kit'
-import { statisticCardType } from '@renderer/types'
 import { useEffect, useState } from 'react'
 
 export type statistCardInfo = {
@@ -18,15 +16,6 @@ export type statistCardInfo = {
 const Home = () => {
   const authToken = useAuthHeader()
   const [statist, setStatist] = useState<statistCardInfo | undefined>()
-  const { isLoading, error, data } = useQuery({
-    queryKey: ['statistics'],
-    queryFn: () =>
-      getApi<statisticCardType>('/statistics/Initialization', {
-        headers: {
-          Authorization: authToken()
-        }
-      })
-  })
 
   useEffect(() => {
     const fetchStatist = async () => {
@@ -44,10 +33,6 @@ const Home = () => {
     fetchStatist()
   }, [])
 
-  console.log('statist', statist)
-
-  if (isLoading) return 'Loading...'
-  if (error) return 'An error has occurred: ' + error.message
   return (
     <div>
       <div className="grid grid-cols-4 gap-2">
