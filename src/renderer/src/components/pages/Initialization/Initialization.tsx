@@ -1,11 +1,6 @@
 import { useState } from 'react'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs'
-// import OrgProfile from "../org-profile";
-// import MainInfo from "./(sub-tabs)/main-info";
-// import Structure from "./(sub-tabs)/structure";
-// import AttachmentTab from "./(sub-tabs)/attachment";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs2'
 import {  InfoIcon, MoveRight } from 'lucide-react'
-
 import { Button } from '@renderer/components/ui/button'
 import Category from './tabs/category'
 import Governorate from './tabs/governorate'
