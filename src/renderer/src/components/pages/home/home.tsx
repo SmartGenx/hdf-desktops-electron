@@ -69,7 +69,7 @@ const Home = () => {
           />
         </div>
       </div>
-      <div className="flex gap-2 mt-4 w-full ">
+      <div className="flex gap-8 mt-4 w-full ">
         <div className="flex flex-col gap-2">
           <StatistChartCard />
           <StatistchartTowCard />
