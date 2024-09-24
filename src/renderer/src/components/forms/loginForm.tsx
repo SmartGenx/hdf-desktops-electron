@@ -13,6 +13,7 @@ import { typeRespons } from '../../types/index'
 import { useSignIn } from 'react-auth-kit'
 import Pen from '../icons/pen'
 import Lock from '../icons/lock'
+import { Eye, EyeOff } from 'lucide-react'
 
 const formSchema = z.object({
   email: z.string().email({ message: 'ادخل البريد الالكتروني' }),
@@ -20,15 +21,21 @@ const formSchema = z.object({
 })
 type UserFormValue = z.infer<typeof formSchema>
 export default function LoginForm() {
+  const [errorMessage, setErrorMessage] = useState('')
   const singIn = useSignIn()
   const { toast } = useToast()
   const navigate = useNavigate()
+  const [showPassword, setShowPassword] = useState(false)
+  const handleShowPassword = () => {
+    setShowPassword((prev) => !prev)
+  }
   const form = useForm<UserFormValue>({
     resolver: zodResolver(formSchema)
   })
   const [delayedSubmitting, _setDelayedSubmitting] = useState(form.formState.isSubmitting)
   // @ts-ignore
   const onSubmit = async (data: UserFormValue) => {
+    setErrorMessage('')
     try {
       const payload = {
         email: data.email,
@@ -51,15 +58,12 @@ export default function LoginForm() {
           })
           navigate('/')
         } else {
-          toast({
-            title: 'حصل خطا ما',
-            description: 'حاول تسجيل الدخول مجددا',
-            variant: 'destructive'
-          })
+          setErrorMessage('حصل خطا ما، حاول تسجيل الدخول مجددا')
         }
       }
     } catch (error) {
       console.error('Error occurred:', error)
+      setErrorMessage('حصل خطا ما، حاول تسجيل الدخول مجددا')
       return JSON.stringify(error)
     }
   }
@@ -106,13 +110,24 @@ export default function LoginForm() {
                             martial
                             label="كلمة المرور"
                             placeholder="كلمة المرور"
-                            type="password"
+                            type={showPassword ? 'text' : 'password'}
                             {...field}
                             disabled={delayedSubmitting}
                             className="bg-primary/5"
                             InputClassName="!h-12 "
                             icon={<Lock size={20} />}
                           />
+                          <button
+                            type="button"
+                            onClick={() => handleShowPassword()}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 transform cursor-pointer p-2 text-lg"
+                          >
+                            {showPassword ? (
+                              <EyeOff size={23} color="#434749" />
+                            ) : (
+                              <Eye size={23} color="#434749" />
+                            )}
+                          </button>
                         </div>
                       </FormControl>
                     </FormItem>
@@ -128,6 +143,9 @@ export default function LoginForm() {
               >
                 تسجيل الدخول
               </Button>
+              {errorMessage && (
+                <div style={{ color: 'red', marginTop: '10px' }}>{errorMessage}</div>
+              )}
             </form>
           </Form>
         </div>
