@@ -203,7 +203,7 @@ class ApplicantController {
 
   // Update an existing applicant
   async updateApplicant(req, res, next) {
-    try {
+    // try {
       const ApplicantService = databaseService.getApplicantService()
       const errors = validationResult(req)
       if (!errors.isEmpty()) {
@@ -219,9 +219,9 @@ class ApplicantController {
       }
 
       res.status(200).json(updatedApplicant)
-    } catch (error) {
-      next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
-    }
+    // } catch (error) {
+    //   next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
+    // }
   }
   async updateApplicantAccredited(req, res, next) {
     try {

@@ -17,7 +17,12 @@ accreditedRouter.post(
 accreditedRouter.post('/uploadFile', AccreditedController.fileUploadController)
 
 // Update an existing accreditation
-accreditedRouter.put('/:id', AccreditedController.updateAccreditation)
+accreditedRouter.put(
+  '/:id',
+  upload.fields(fields),
+  copyFileToProfileDir(),
+  AccreditedController.updateAccreditation
+)
 // Get all accreditations
 accreditedRouter.get('/', AccreditedController.getAllOrSearchApplicants)
 accreditedRouter.get('/all', AccreditedController.getAllApplicants)

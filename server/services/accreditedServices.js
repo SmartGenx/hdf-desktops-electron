@@ -121,14 +121,14 @@ class AccreditedService {
         const skip = (+page - 1) * +pageSize
         const take = +pageSize
         const accredited = await this.prisma.accredited.findMany({
-          where: dataFillter,
+          where: dataFillter && { deleted: false },
           include,
           skip: +skip,
           take: +take,
           orderBy
         })
         const total = await this.prisma.accredited.count({
-          where: dataFillter
+          where: dataFillter&&{ deleted: false }
         })
         return {
           info: accredited,
@@ -138,7 +138,7 @@ class AccreditedService {
         }
       }
       return await this.prisma.accredited.findMany({
-        where: dataFillter,
+        where: dataFillter && { deleted: false },
         include,
         orderBy
       })
@@ -327,8 +327,9 @@ class AccreditedService {
     }
   }
 
-  async updateAccreditation(id, accreditedData) {
+  async updateAccreditation(id, accreditedData, fileAtch, filePt) {
     try {
+      const { type, prescriptionDate, ...rest } = accreditedData
       const existingAccreditation = await this.prisma.accredited.findUnique({
         where: { globalId: id }
       })
@@ -342,15 +343,52 @@ class AccreditedService {
       const numberOfRfid = accreditedData.numberOfRfid
         ? +accreditedData.numberOfRfid
         : existingAccreditation.numberOfRfid
-      return await this.prisma.accredited.update({
+      const accreited = await this.prisma.accredited.update({
         where: { globalId: id },
         data: {
-          ...accreditedData,
+          ...rest,
           formNumber,
           numberOfRfid,
           version: { increment: 1 } // Increment version for conflict resolution
         }
       })
+
+      const attchment = await this.prisma.attachment.findFirst({
+        where: { accreditedGlobalId: id }
+      })
+      if (!attchment) {
+        throw new NotFoundError(`Attachment with id ${id} not found.`)
+      }
+
+      await this.prisma.attachment.update({
+        where: { globalId: attchment.globalId },
+        data: {
+          type: type > 0 ? type : attchment.type, // Use shorthand property names
+          accreditedGlobalId: accreited.globalId, // Use shorthand property names
+          attachmentFile: fileAtch > 0 ? fileAtch : attchment.attachmentFile,
+
+          version: { increment: 1 } // Increment version for conflict resolution
+        }
+      })
+
+      const pt = await this.prisma.prescription.findFirst({ where: { accreditedGlobalId: id } })
+      if (!pt) {
+        throw new NotFoundError(`Prescription with id ${id} not found.`)
+      }
+      const renewalDate = new Date()
+      renewalDate.setMonth(renewalDate.getMonth() + 6)
+
+      await this.prisma.prescription.update({
+        where: { globalId: pt.globalId },
+        data: {
+          prescriptionDate: prescriptionDate > 0 ? prescriptionDate : pt.prescriptionDate,
+          renewalDate: renewalDate,
+          attachedUrl: filePt > 0 ? filePt : pt.attachedUrl,
+          version: { increment: 1 } // Increment version for conflict resolution
+        }
+      })
+
+      return accreited
     } catch (error) {
       throw new DatabaseError('Error updating accreditation.', error)
     }
