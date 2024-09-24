@@ -133,10 +133,12 @@ class AccreditedController {
       if (!errors.isEmpty()) {
         return next(new ValidationError('Validation Failed', errors.array()))
       }
+      const fileAtch = req.atch
+      const filePt = req.pt
 
       const id = req.params.id
       const AccreditedData = req.body
-      const updatedAccreditation = await AccreditedService.updateAccreditation(id, AccreditedData)
+      const updatedAccreditation = await AccreditedService.updateAccreditation(id, AccreditedData,fileAtch, filePt)
 
       if (!updatedAccreditation) {
         return next(new NotFoundError(`Accreditation with id ${id} not found.`))
