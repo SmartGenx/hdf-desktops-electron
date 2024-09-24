@@ -31,7 +31,7 @@ export default function StateTable({ info, page, total }: Props) {
         header: 'الجنس',
         cell: ({ row }) => {
           const gender = row.original.gender
-          return Gender[gender]
+          return gender === 'M' ? 'ذكر' : 'انثى'
         }
       },
       {

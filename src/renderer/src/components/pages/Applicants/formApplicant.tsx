@@ -96,6 +96,12 @@ export default function FormApplicant() {
 
     // Add more options as needed
   ])
+  const [gender, _setGender] = useState([
+    { value: 'M', label: 'ذكر' },
+    { value: 'F', label: 'انثى' }
+
+    // Add more options as needed
+  ])
   const [delayedSubmitting, _setDelayedSubmitting] = useState(form.formState.isSubmitting)
 
   React.useEffect(() => {
@@ -279,13 +285,21 @@ export default function FormApplicant() {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <FormInput
-                                label="ادخل الجنس"
-                                type="text"
-                                {...field}
-                                disabled={delayedSubmitting}
-                                className="text-right bg-primary/5"
-                              />
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <SelectTrigger className="">
+                                  <SelectValue placeholder="اختر الجنس" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectGroup>
+                                    <SelectLabel>الجنس</SelectLabel>
+                                    {gender.map((genders) => (
+                                      <SelectItem key={genders.value} value={genders.value}>
+                                        {genders.label}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectGroup>
+                                </SelectContent>
+                              </Select>
                             </FormControl>
                           </FormItem>
                         )}
@@ -484,7 +498,7 @@ export default function FormApplicant() {
                             <FormControl>
                               <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <SelectTrigger className="">
-                                  <SelectValue placeholder="اخر الحالة" />
+                                  <SelectValue placeholder="اختر الحالة" />
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectGroup>

@@ -54,7 +54,6 @@ const Home = () => {
     fetchStatist()
   }, [])
 
-  console.log('statist', statist)
   if (isPending) return 'Loading...'
   if (error) return 'An error has occurred: ' + error.message
   return (
