@@ -1,6 +1,6 @@
 export enum Gender {
-  ذكر = 1,
-  انثى = 2
+  'ذكر' = 'M',
+  'انثى' = 'F'
 }
 
 export enum Month {

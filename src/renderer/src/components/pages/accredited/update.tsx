@@ -18,7 +18,7 @@ import * as z from 'zod'
 import { cn } from '../../../lib/utils'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { axiosInstance, getApi, postApi } from '../../../lib/http'
+import { axiosInstance, getApi, postApi, putApi } from '../../../lib/http'
 import { useAuthHeader } from 'react-auth-kit'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { AccreditedInfos, Pharmacy, Square, applicantType } from '@renderer/types'
@@ -33,10 +33,10 @@ const formSchema = z.object({
   formNumber: z.string(),
   applicantGlobalId: z.string(),
   pharmacyGlobalId: z.string(),
-  atch: z.instanceof(File),
-  pt: z.instanceof(File),
+  atch: z.instanceof(File).optional(),
+  pt: z.instanceof(File).optional(),
   prescriptionDate: z.string(),
-  type: z.string(),
+  type: z.string().optional(),
   state: z.string()
 })
 
@@ -125,14 +125,14 @@ export default function UpdateAccredited() {
         }
       })
   })
-  console.log('accredited?.data[0].type', accredited?.data[0])
+
   React.useEffect(() => {
     if (accredited?.data[0]) {
       form.reset({
         doctor: accredited?.data[0].doctor,
         formNumber: String(accredited?.data[0].formNumber),
         treatmentSite: accredited?.data[0].treatmentSite,
-        numberOfRfid: accredited?.data[0].numberOfRfid,
+        numberOfRfid: String(accredited?.data[0].numberOfRfid),
         applicantGlobalId: accredited?.data[0].applicantGlobalId,
         pharmacyGlobalId: accredited?.data[0].pharmacyGlobalId,
         prescriptionDate: new Date(accredited?.data[0].prescription[0].prescriptionDate)
@@ -164,8 +164,11 @@ export default function UpdateAccredited() {
       formData.append('formNumber', datas.formNumber)
       formData.append('applicantGlobalId', datas.applicantGlobalId)
       formData.append('pharmacyGlobalId', datas.pharmacyGlobalId)
-      formData.append('type', datas.type)
       formData.append('prescriptionDate', new Date(datas.prescriptionDate).toISOString())
+      if (datas?.type) {
+        formData.append('type', datas.type)
+      }
+
       if (datas.atch) {
         formData.append('atch', datas.atch)
       }
@@ -174,7 +177,7 @@ export default function UpdateAccredited() {
       }
 
       // Return the API call to be executed
-      return postApi('/accredited', formData, {
+      return putApi(`/accredited/${id}`, formData, {
         headers: {
           Authorization: `${authToken()}`,
           'Content-Type': 'multipart/form-data'
