@@ -23,6 +23,7 @@ import { useAuthHeader } from 'react-auth-kit'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { AccreditedInfos, Pharmacy, Square, applicantType } from '@renderer/types'
 import FileUploader from '@renderer/components/fileUploader'
+import { FormInput } from '@renderer/components/ui/forms-input'
 
 const formSchema = z.object({
   squareGlobalId: z.string(),
@@ -110,8 +111,8 @@ export default function UpdateAccredited() {
 
     // Add more options as needed
   ])
-  
-  const {  data: accredited } = useQuery({
+
+  const { data: accredited } = useQuery({
     queryKey: ['applicant', id],
     queryFn: () =>
       getApi<AccreditedInfos>(`/accredited`, {
@@ -242,15 +243,17 @@ export default function UpdateAccredited() {
               <div className="  flex flex-col gap-6 ">
                 <div className="grid grid-cols-3 gap-2">
                   <div className="col-span-1">
+                    <label htmlFor="" className="text-[#A2A1A8]">
+                      اسم الدكتور
+                    </label>
                     <FormField
                       control={form.control}
                       name="doctor"
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
-                            <Input
-                              label=" اسم الدكتور"
-                              placeholder="اسم الدكتور  "
+                            <FormInput
+                              label="ادخل اسم الدكتور"
                               type="text"
                               {...field}
                               disabled={delayedSubmitting}
@@ -262,15 +265,17 @@ export default function UpdateAccredited() {
                     />
                   </div>
                   <div className="col-span-1">
+                    <label htmlFor="" className="text-[#A2A1A8]">
+                      اسم المركز الصحي
+                    </label>
                     <FormField
                       control={form.control}
                       name="treatmentSite"
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
-                            <Input
-                              label="اسم المركز الصحي"
-                              placeholder="اسم المركز الصحي"
+                            <FormInput
+                              label="ادخل المركز الصحي"
                               type="text"
                               {...field}
                               disabled={delayedSubmitting}
@@ -285,16 +290,18 @@ export default function UpdateAccredited() {
                   <div className="col-span-1 flex gap-2">
                     <div className="grid grid-cols-5 gap-2">
                       <div className="col-span-4">
+                        <label htmlFor="" className="text-[#A2A1A8]">
+                          رقم بطاقة الصرف
+                        </label>
                         <FormField
                           control={form.control}
                           name="numberOfRfid"
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
-                                <Input
+                                <FormInput
+                                  label="ادخل بطاقة الصرف"
                                   readOnly
-                                  label="رقم بطاقة الصرف"
-                                  placeholder="ادخل رقم بطاقة الصرف"
                                   type="text"
                                   {...field}
                                   value={field.value} // Ensure the value comes from the field
@@ -306,10 +313,10 @@ export default function UpdateAccredited() {
                           )}
                         />
                       </div>
-                      <div className="col-span-1">
+                      <div className="col-span-1 translate-y-6">
                         <Button
                           // variant="keep"
-                          className="w-[104px] h-[42px] bg-[#196CB0]"
+                          className="w-[104px] h-[42px] bg-[#196CB0] hover:bg-[#2b4d68]"
                           onClick={generateRfid}
                           type="button"
                         >
@@ -321,15 +328,17 @@ export default function UpdateAccredited() {
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   <div className="col-span-1">
+                    <label htmlFor="" className="text-[#A2A1A8]">
+                      رقم الاستمارة
+                    </label>
                     <FormField
                       control={form.control}
                       name="formNumber"
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
-                            <Input
-                              label="رقم الاستمارة"
-                              placeholder="ادخل رقم الاستمارة"
+                            <FormInput
+                              label="ادخل رقم الاستمارة"
                               type="text"
                               {...field}
                               disabled={delayedSubmitting}
@@ -341,6 +350,9 @@ export default function UpdateAccredited() {
                     />
                   </div>
                   <div className="col-span-1 ">
+                    <label htmlFor="" className="text-[#A2A1A8]">
+                      الحالة
+                    </label>
                     <FormField
                       control={form.control}
                       name="state"
@@ -378,6 +390,9 @@ export default function UpdateAccredited() {
                     />
                   </div>
                   <div className="col-span-1">
+                    <label htmlFor="" className="text-[#A2A1A8]">
+                      الصيدلية
+                    </label>
                     <FormField
                       control={form.control}
                       name="pharmacyGlobalId"
@@ -416,6 +431,9 @@ export default function UpdateAccredited() {
 
                 <div className="grid grid-cols-3 gap-2">
                   <div className="col-span-1 ">
+                    <label htmlFor="" className="text-[#A2A1A8]">
+                      المربع
+                    </label>
                     <FormField
                       control={form.control}
                       name="squareGlobalId"
@@ -450,15 +468,16 @@ export default function UpdateAccredited() {
                     />
                   </div>
                   <div className="col-span-1 ">
+                    <label htmlFor="" className="text-[#A2A1A8]">
+                      تاريخ الوصفة
+                    </label>
                     <FormField
                       control={form.control}
                       name="prescriptionDate"
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
-                            <Input
-                              label="تاريخ الوصفة"
-                              placeholder="ادخل تاريخ الوصفة"
+                            <FormInput
                               type="date"
                               {...field}
                               disabled={delayedSubmitting}
@@ -470,6 +489,9 @@ export default function UpdateAccredited() {
                     />
                   </div>
                   <div className="col-span-1 ">
+                    <label htmlFor="" className="text-[#A2A1A8]">
+                      المتقدم
+                    </label>
                     <FormField
                       control={form.control}
                       name="applicantGlobalId"
@@ -507,6 +529,9 @@ export default function UpdateAccredited() {
                 </div>
                 <div className="grid grid-cols-3 gap-2 mt-3">
                   <div className="col-span-1 ">
+                    <label htmlFor="" className="text-[#A2A1A8]">
+                      نوع الهوية
+                    </label>
                     <FormField
                       control={form.control}
                       name="type"
@@ -544,6 +569,9 @@ export default function UpdateAccredited() {
                     />
                   </div>
                   <div className="col-span-1 ">
+                    <label htmlFor="" className="text-[#A2A1A8]">
+                      الهوية الشخصية
+                    </label>
                     <FormField
                       control={form.control}
                       name="pt"
@@ -570,6 +598,9 @@ export default function UpdateAccredited() {
                   </div>
 
                   <div className="col-span-1 ">
+                    <label htmlFor="" className="text-[#A2A1A8]">
+                      الوصفة الطبية
+                    </label>
                     <FormField
                       control={form.control}
                       name="atch"
@@ -597,7 +628,7 @@ export default function UpdateAccredited() {
                 </div>
               </div>
               <div className="flex justify-end gap-4 ">
-                <Button type="submit" className="w-[120px]">
+                <Button type="submit" className="w-[120px] bg-[#196CB0] hover:bg-[#2b4d68]">
                   تعديل
                 </Button>
                 <Button

@@ -23,6 +23,7 @@ import { axiosInstance, postApi } from '../../../lib/http'
 import { useAuthHeader } from 'react-auth-kit'
 import { MoveRight } from 'lucide-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { FormInput } from '@renderer/components/ui/forms-input'
 
 const formSchema = z.object({
   name: z.string(),
@@ -212,7 +213,11 @@ export default function FormApplicant() {
             >
               الغاء
             </Button>
-            <Button form="formId" type="submit" className="w-[120px]">
+            <Button
+              form="formId"
+              type="submit"
+              className="w-[120px] bg-[#196CB0] hover:bg-[#2b4d68]"
+            >
               حفظ
             </Button>
           </div>
@@ -252,9 +257,8 @@ export default function FormApplicant() {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Input
-                                label="الاسم الكامل"
-                                placeholder="ادخل الاسم الكامل"
+                              <FormInput
+                                label="ادخل الاسم الكامل"
                                 type="text"
                                 {...field}
                                 disabled={delayedSubmitting}
@@ -275,9 +279,8 @@ export default function FormApplicant() {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Input
-                                label="الجنس"
-                                placeholder="ادخل الجنس"
+                              <FormInput
+                                label="ادخل الجنس"
                                 type="text"
                                 {...field}
                                 disabled={delayedSubmitting}
@@ -298,9 +301,8 @@ export default function FormApplicant() {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Input
-                                label=" العمر"
-                                placeholder="ادخل العمر"
+                              <FormInput
+                                label="ادخل العمر"
                                 type="Text"
                                 {...field}
                                 disabled={delayedSubmitting}
@@ -311,17 +313,17 @@ export default function FormApplicant() {
                         )}
                       />
                     </div>
-                    <div className="col-span-2 translate-y-6">
-                      <label htmlFor="" className="text-[#A2A1A8] "></label>
+                    <div className="col-span-2 ">
+                      <label htmlFor="" className="text-[#A2A1A8]">
+                        تاريخ الميلاد
+                      </label>
                       <FormField
                         control={form.control}
                         name="dateOfBirth"
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Input
-                                label="تاريخ الميلاد"
-                                placeholder="ادخل تاريخ الميلاد"
+                              <FormInput
                                 type="date"
                                 {...field}
                                 disabled={delayedSubmitting}
@@ -344,9 +346,8 @@ export default function FormApplicant() {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Input
-                                label="رقم الجوال"
-                                placeholder="ادخل رقم الجوال"
+                              <FormInput
+                                label="ادخل رقم الجوال"
                                 type="text"
                                 {...field}
                                 disabled={delayedSubmitting}
@@ -397,9 +398,8 @@ export default function FormApplicant() {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Input
-                                label="السكن الحالي"
-                                placeholder="السكن الحالي"
+                              <FormInput
+                                label="ادخل السكن الحالي"
                                 type="text"
                                 {...field}
                                 disabled={delayedSubmitting}
@@ -515,9 +515,8 @@ export default function FormApplicant() {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Input
-                                label="مكان الولادة"
-                                placeholder="ادخل مكان الولادة"
+                              <FormInput
+                                label="ادخل مكان الولادة"
                                 type="text"
                                 {...field}
                                 disabled={delayedSubmitting}
@@ -528,16 +527,17 @@ export default function FormApplicant() {
                         )}
                       />
                     </div>
-                    <div className="col-span-1 translate-y-[1.55rem]">
+                    <div className="col-span-1 ">
+                      <label htmlFor="" className="text-[#A2A1A8]">
+                        تاريخ التقديم
+                      </label>
                       <FormField
                         control={form.control}
                         name="submissionDate"
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Input
-                                label="تاريخ التقديم"
-                                placeholder="ادخل تاريخ التقديم"
+                              <FormInput
                                 type="date"
                                 {...field}
                                 disabled={delayedSubmitting}
@@ -550,7 +550,7 @@ export default function FormApplicant() {
                     </div>
                   </div>
                 </div>
-                <Button type="submit" className="w-[120px]">
+                <Button type="submit" className="w-[120px] bg-[#196CB0] hover:bg-[#2b4d68]">
                   حفظ
                 </Button>
               </form>

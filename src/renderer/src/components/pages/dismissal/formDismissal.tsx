@@ -25,6 +25,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Accredited, Pharmacy, Square } from '@renderer/types'
 import Pdf from '@renderer/components/icons/pdf'
 import { AlertCircle } from 'lucide-react'
+import { FormInput } from '@renderer/components/ui/forms-input'
 
 const formSchema = z.object({
   totalAmount: z.string(),
@@ -252,6 +253,9 @@ export default function FormDismissal() {
                     <div className="col-span-1 flex gap-2">
                       <div className="grid grid-cols-5 gap-2">
                         <div className="col-span-3">
+                          <label htmlFor="" className="text-[#A2A1A8]">
+                            البطاقة
+                          </label>
                           <input
                             type="text"
                             value={numberOfRfid}
@@ -260,7 +264,7 @@ export default function FormDismissal() {
                             className="w-full p-2 border rounded"
                           />
                         </div>
-                        <div className="col-span-1">
+                        <div className="col-span-1 translate-y-6">
                           <Button
                             className="w-[104px] h-[42px] bg-[#196CB0]"
                             onClick={generateRfid}
@@ -272,6 +276,9 @@ export default function FormDismissal() {
                       </div>
                     </div>
                     <div className="col-span-1">
+                      <label htmlFor="" className="text-[#A2A1A8]">
+                        الصيدلية
+                      </label>
                       <FormField
                         control={form.control}
                         name="pharmacyGlobalId"
@@ -310,15 +317,17 @@ export default function FormDismissal() {
                       />
                     </div>
                     <div className="col-span-1">
+                      <label htmlFor="" className="text-[#A2A1A8]">
+                        الاجمالي
+                      </label>
                       <FormField
                         control={form.control}
                         name="totalAmount"
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Input
-                                label="اجمالي المبلغ"
-                                placeholder="اجمالي المبلغ"
+                              <FormInput
+                                label="ادخل الاجمالي"
                                 type="text"
                                 onChange={(e) => {
                                   const value = Number(e.target.value)
@@ -336,15 +345,16 @@ export default function FormDismissal() {
                   </div>
                   <div className="grid grid-cols-3 gap-2">
                     <div className="col-span-1">
+                      <label htmlFor="" className="text-[#A2A1A8]">
+                        المبلغ المطلوب
+                      </label>
                       <FormField
                         control={form.control}
                         name="amountPaid"
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Input
-                                label="المبلغ المطلوب"
-                                placeholder="المبلغ المطلوب"
+                              <FormInput
                                 type="text"
                                 {...field}
                                 disabled={true}
@@ -356,15 +366,17 @@ export default function FormDismissal() {
                       />
                     </div>
                     <div className="col-span-1">
+                      <label htmlFor="" className="text-[#A2A1A8]">
+                        نسبة الدعم
+                      </label>
                       <FormField
                         control={form.control}
                         name="approvedAmount"
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Input
-                                label="نسبة الدعم"
-                                placeholder="نسبة الدعم"
+                              <FormInput
+                                label="ادخل نسبة الدعم"
                                 type="text"
                                 onChange={(e) => {
                                   const value = Number(e.target.value)
@@ -380,7 +392,11 @@ export default function FormDismissal() {
                       />
                     </div>
                     <div className="col-span-1">
-                      <Input
+                      <label htmlFor="" className="text-[#A2A1A8]">
+                        المعتمد
+                      </label>
+                      <FormInput
+                        label="ادخل المعتمد"
                         className="h-10 p-0 rounded-xl text-sm"
                         placeholder="المعنمد"
                         value={name || ''}
@@ -390,15 +406,17 @@ export default function FormDismissal() {
                   </div>
                   <div className="grid grid-cols-3 gap-2">
                     <div className="col-span-1">
+                      <label htmlFor="" className="text-[#A2A1A8]">
+                        الحاله
+                      </label>
                       <FormField
                         control={form.control}
                         name="state"
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Input
-                                label=" الحاله"
-                                placeholder="الحاله  "
+                              <FormInput
+                                label="ادخل الحاله"
                                 type="text"
                                 {...field}
                                 disabled={delayedSubmitting}

@@ -33,8 +33,18 @@ export default A4Layout
 const Card = ({ value }) => {
   return (
     <div className="bg-white border border-gray-300 flex flex-col justify-center items-center p-4">
-      <img src={logo} alt="" className="mb-5" />
-      <Barcode value={value} />
+      <div className="w-full flex font-black">
+        <div className="basis-[50%]">
+          <img src={logo} alt="" className="mb-5" />
+        </div>
+        <div className="basis-[50%] text-center">
+          <h1>مؤسسة التنمية الصحية</h1>
+          <h1>HEALTH DEVELOPMENT FOUNDATION</h1>
+        </div>
+      </div>
+      {/*  */}
+      <h1 className="my-2">رقم الاستمارة : 1515545</h1>
+      <Barcode value={value} displayValue={false} />
     </div>
   )
 }

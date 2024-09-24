@@ -24,6 +24,7 @@ import { useAuthHeader } from 'react-auth-kit'
 import { MoveRight } from 'lucide-react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ApplicantsInfoResp } from '@renderer/types'
+import { FormInput } from '@renderer/components/ui/forms-input'
 
 const formSchema = z.object({
   name: z.string(),
@@ -161,15 +162,6 @@ export default function UpdateApplicant() {
     fetchDisease()
   }, [])
 
-  // const fetchAgencyData = async () => {
-  //   const response = await axiosInstance.get<ApplicantResponse>(`/applicant/${id}`, {
-  //     headers: {
-  //       Authorization: `${authToken()}`
-  //     }
-  //   })
-  //   return response.data
-  // }
-
   const { isPending, data: applicants } = useQuery({
     queryKey: ['applicant', id],
     queryFn: () =>
@@ -298,15 +290,17 @@ export default function UpdateApplicant() {
                 <div className="  flex flex-col gap-6 ">
                   <div className="grid grid-cols-6 gap-2">
                     <div className="col-span-2">
+                      <label htmlFor="" className="text-[#A2A1A8]">
+                        الاسم الكامل
+                      </label>
                       <FormField
                         control={form.control}
                         name="name"
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Input
-                                label="الاسم الكامل"
-                                placeholder="ادخل الاسم الكامل"
+                              <FormInput
+                                label="ادخل الاسم الكامل"
                                 type="text"
                                 {...field}
                                 disabled={delayedSubmitting}
@@ -318,15 +312,17 @@ export default function UpdateApplicant() {
                       />
                     </div>
                     <div className="col-span-1">
+                      <label htmlFor="" className="text-[#A2A1A8]">
+                        الجنس
+                      </label>
                       <FormField
                         control={form.control}
                         name="gender"
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Input
-                                label="الجنس"
-                                placeholder="ادخل الجنس"
+                              <FormInput
+                                label="ادخل الجنس"
                                 type="text"
                                 {...field}
                                 disabled={delayedSubmitting}
@@ -338,15 +334,16 @@ export default function UpdateApplicant() {
                       />
                     </div>
                     <div className="col-span-1">
+                      <label htmlFor="" className="text-[#A2A1A8]">
+                        العمر
+                      </label>
                       <FormField
                         control={form.control}
                         name="age"
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Input
-                                label=" العمر"
-                                placeholder="ادخل العمر"
+                              <FormInput
                                 type="Text"
                                 {...field}
                                 disabled={delayedSubmitting}
@@ -358,16 +355,16 @@ export default function UpdateApplicant() {
                       />
                     </div>
                     <div className="col-span-2 ">
-                      <label htmlFor="" className="text-[#A2A1A8] "></label>
+                      <label htmlFor="" className="text-[#A2A1A8] ">
+                        تاريخ الميلاد
+                      </label>
                       <FormField
                         control={form.control}
                         name="dateOfBirth"
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Input
-                                label="تاريخ الميلاد"
-                                placeholder="ادخل تاريخ الميلاد"
+                              <FormInput
                                 type="date"
                                 {...field}
                                 disabled={delayedSubmitting}
@@ -380,16 +377,17 @@ export default function UpdateApplicant() {
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-2">
-                    <div className="col-span-1 translate-y-6">
+                    <div className="col-span-1 ">
+                      <label htmlFor="" className="text-[#A2A1A8] ">
+                        رقم الجوال
+                      </label>
                       <FormField
                         control={form.control}
                         name="phoneNumber"
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Input
-                                label="رقم الجوال"
-                                placeholder="ادخل رقم الجوال"
+                              <FormInput
                                 type="text"
                                 {...field}
                                 disabled={delayedSubmitting}
@@ -401,7 +399,7 @@ export default function UpdateApplicant() {
                       />
                     </div>
                     <div className="col-span-1 ">
-                      <label htmlFor="" className="text-[#A2A1A8]">
+                      <label htmlFor="" className="text-[#A2A1A8] ">
                         مديرية
                       </label>
                       <FormField
@@ -420,7 +418,7 @@ export default function UpdateApplicant() {
                                 defaultValue={field.value}
                               >
                                 <SelectTrigger className="">
-                                  <SelectValue placeholder="اخر مديرية" />
+                                  <SelectValue placeholder="اختر مديرية" />
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectGroup>
@@ -438,16 +436,17 @@ export default function UpdateApplicant() {
                         )}
                       />
                     </div>
-                    <div className="col-span-1 translate-y-6">
+                    <div className="col-span-1 ">
+                      <label htmlFor="" className="text-[#A2A1A8] ">
+                        السكن الحالي
+                      </label>
                       <FormField
                         control={form.control}
                         name="currentResidence"
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Input
-                                label="السكن الحالي"
-                                placeholder="السكن الحالي"
+                              <FormInput
                                 type="text"
                                 {...field}
                                 disabled={delayedSubmitting}
@@ -580,15 +579,16 @@ export default function UpdateApplicant() {
 
                   <div className="grid grid-cols-3 gap-2">
                     <div className="col-span-1">
+                      <label htmlFor="" className="text-[#A2A1A8] ">
+                        مكان الولادة
+                      </label>
                       <FormField
                         control={form.control}
                         name="placeOfBirth"
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Input
-                                label="مكان الولادة"
-                                placeholder="ادخل مكان الولادة"
+                              <FormInput
                                 type="text"
                                 {...field}
                                 disabled={delayedSubmitting}
@@ -600,15 +600,16 @@ export default function UpdateApplicant() {
                       />
                     </div>
                     <div className="col-span-1 ">
+                      <label htmlFor="" className="text-[#A2A1A8] ">
+                        تاريخ التقديم
+                      </label>
                       <FormField
                         control={form.control}
                         name="submissionDate"
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Input
-                                label="تاريخ التقديم"
-                                placeholder="ادخل تاريخ التقديم"
+                              <FormInput
                                 type="date"
                                 {...field}
                                 disabled={delayedSubmitting}
