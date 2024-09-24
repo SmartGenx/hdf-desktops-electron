@@ -76,7 +76,7 @@ const Home = () => {
         <div className="flex gap-7">
           <SearchInput />
           <FilterDrawer />
-          <Boutton icon="filter" title={'طباعة'} />
+
           <Link to={'/FormApplicant'}>
             <Boutton
               title={'اضافة متقدم '}
