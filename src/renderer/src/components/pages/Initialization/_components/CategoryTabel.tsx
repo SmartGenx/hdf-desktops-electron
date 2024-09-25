@@ -1,10 +1,10 @@
 import * as React from 'react'
 import { ColumnDef } from '@tanstack/react-table'
 import { Category } from '@renderer/types'
-import { HdfTable } from '@renderer/components/tables/hdfTable'
 import DeleteDialog from './delete-dailog'
 import EditDialog from './edit-dailog'
 import EditCategoryForm from './edit-forms/EditCategoryForm'
+import { SettingTable } from '@renderer/components/tables/settings-table'
 type Props = {
   info: Category[]
   page: string
@@ -47,11 +47,12 @@ export default function CategoryTabel({ info, page, total }: Props) {
     [page]
   )
   return (
-    <HdfTable
+    <SettingTable
       columns={columns}
       data={info}
       page={page.toString()}
       total={Number(total)}
+
       // onRowClick={(_, { original }) => {
       //   navigate(`/state-affairs/info/${}`)
       // }}

@@ -18,7 +18,7 @@ type Props = {
   pageSize: string
   total: number
 }
-export default function DismissalTable({ info, page, total }: Props) {
+export default function DismissalTable({ info, page, total, pageSize }: Props) {
   const columns = React.useMemo<ColumnDef<DismissalInfo>[]>(
     () => [
       {
@@ -99,6 +99,7 @@ export default function DismissalTable({ info, page, total }: Props) {
       data={info}
       page={page.toString()}
       total={Number(total)}
+      pageSize={Number(pageSize)}
       // onRowClick={(_, { original }) => {
       //   navigate(`/state-affairs/info/${}`)
       // }}

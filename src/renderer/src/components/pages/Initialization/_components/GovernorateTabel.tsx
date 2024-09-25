@@ -1,18 +1,17 @@
 import * as React from 'react'
 import { ColumnDef } from '@tanstack/react-table'
 import { Governorate } from '@renderer/types'
-import { HdfTable } from '@renderer/components/tables/hdfTable'
 import EditDialog from './edit-dailog'
 import EditGovernorateForm from './edit-forms/EditGovernorateForm'
 import DeleteDialog from './delete-dailog'
+import { SettingTable } from '@renderer/components/tables/settings-table'
 type Props = {
   info: Governorate[]
   page: string
   // pageSize: string
   total: number
 }
-export default function GovernorateTabel({info,page,total}:Props) {
-
+export default function GovernorateTabel({ info, page, total }: Props) {
   const columns = React.useMemo<ColumnDef<Governorate>[]>(
     () => [
       {
@@ -39,7 +38,7 @@ export default function GovernorateTabel({info,page,total}:Props) {
     [page]
   )
   return (
-    <HdfTable
+    <SettingTable
       columns={columns}
       data={info}
       page={page.toString()}

@@ -7,7 +7,7 @@ import { useAuthHeader } from 'react-auth-kit'
 import { Applicants } from '@renderer/types'
 import { useQuery } from '@tanstack/react-query'
 import { axiosInstance, getApi } from '@renderer/lib/http'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 
 export type statistCardInfo = {
@@ -15,6 +15,8 @@ export type statistCardInfo = {
 }
 
 const Home = () => {
+  const [searchParams] = useSearchParams()
+  const page = searchParams.get('page')
   const [statist, setStatist] = useState<statistCardInfo | undefined>()
   const authToken = useAuthHeader()
   const {
@@ -22,15 +24,15 @@ const Home = () => {
     error,
     data: applicants
   } = useQuery({
-    queryKey: ['applicant'],
+    queryKey: ['applicant', page],
     queryFn: () =>
       getApi<Applicants>('/applicant', {
         params: {
           'include[directorate]': true,
           'include[category]': true,
           'include[diseasesApplicants]': true,
-          page: 1 || 11,
-          pageSize: 5 || 10
+          page: page || 1,
+          pageSize: 5
         },
         headers: {
           Authorization: authToken()

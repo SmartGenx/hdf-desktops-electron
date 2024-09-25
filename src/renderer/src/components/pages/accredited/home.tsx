@@ -6,7 +6,7 @@ import { useAuthHeader } from 'react-auth-kit'
 import { Accrediteds } from '@renderer/types'
 import { useQuery } from '@tanstack/react-query'
 import { axiosInstance, getApi } from '@renderer/lib/http'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import AccreditedTable from './accreditedTable'
 import { useEffect, useRef, useState } from 'react'
 import { Printer } from 'lucide-react'
@@ -16,6 +16,8 @@ export type statistCardInfo = {
   count: number
 }
 const Home = () => {
+  const [searchParams] = useSearchParams()
+  const page = searchParams.get('page')
   const [statist, setStatist] = useState<statistCardInfo | undefined>()
   const authToken = useAuthHeader()
   const {
@@ -23,14 +25,14 @@ const Home = () => {
     error,
     data: accredited
   } = useQuery({
-    queryKey: ['accredited'],
+    queryKey: ['accredited', page],
     queryFn: () =>
       getApi<Accrediteds>('/accredited', {
         params: {
           'include[applicant]': true,
           'include[square]': true,
-          page: 1 || 11,
-          pageSize: 5 || 10
+          page: page || 1,
+          pageSize: 5
         },
         headers: {
           Authorization: authToken()
@@ -52,6 +54,7 @@ const Home = () => {
     }
     fetchStatist()
   }, [])
+
   const componentRef = useRef<HTMLDivElement>(null)
   if (isPending) return 'Loading...'
   if (error) return 'An error has occurred: ' + error.message

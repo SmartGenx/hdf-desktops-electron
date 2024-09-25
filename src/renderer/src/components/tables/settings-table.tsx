@@ -4,7 +4,6 @@ import { ColumnDef, flexRender, getCoreRowModel, Row, useReactTable } from '@tan
 import { cn } from '../../lib/utils'
 // import TablePagination from '../../ui/table-pagination'
 import { ScrollArea, ScrollBar } from '../ui/scroll-area'
-import TablePagination from '../ui/TablePagination'
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
@@ -14,18 +13,15 @@ interface DataTableProps<TData, TValue> {
   lightHeader?: boolean
   total: number
   page: string
-  pageSize: number
   shadow?: boolean
   containerClaasName?: string
 }
-export function HdfTable<TData, TValue>({
+export function SettingTable<TData, TValue>({
   columns,
   data,
   onRowClick,
   compact,
-  total,
-  page,
-  pageSize,
+
   lastHeaderStyle,
   lightHeader = false,
   shadow = true,
@@ -144,7 +140,7 @@ export function HdfTable<TData, TValue>({
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
       </Table>
-      <TablePagination total={total} page={parseInt(page, 10) || 1} pageSize={pageSize} />
+      {/* <TablePagination total={total} page={parseInt(page, 10) || 1} pageSize={pageSize} /> */}
     </div>
   )
 }
