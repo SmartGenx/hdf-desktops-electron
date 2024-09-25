@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { Button } from '../../ui/button'
 import { Form, FormControl, FormField, FormItem } from '../../ui/form'
-import { Input } from '../../ui/input'
 import {
   Select,
   SelectContent,
@@ -18,7 +17,7 @@ import * as z from 'zod'
 import { cn } from '../../../lib/utils'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { axiosInstance, getApi, postApi, putApi } from '../../../lib/http'
+import { axiosInstance, getApi, putApi } from '../../../lib/http'
 import { useAuthHeader } from 'react-auth-kit'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { AccreditedInfos, Pharmacy, Square, applicantType } from '@renderer/types'

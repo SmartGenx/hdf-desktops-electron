@@ -6,7 +6,7 @@ import { useAuthHeader } from 'react-auth-kit'
 import { Dismissales } from '@renderer/types'
 import { useQuery } from '@tanstack/react-query'
 import { axiosInstance, getApi } from '@renderer/lib/http'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import DismissalTable from './dismissalTable'
 import { useEffect, useState } from 'react'
 
@@ -16,6 +16,8 @@ export type statistCardInfo = {
 }
 
 const Dismissal = () => {
+  const [searchParams] = useSearchParams()
+  const page = searchParams.get('page')
   const [statist, setStatist] = useState<statistCardInfo | undefined>()
   const authToken = useAuthHeader()
   const {
@@ -23,13 +25,13 @@ const Dismissal = () => {
     error,
     data: accredited
   } = useQuery({
-    queryKey: ['dismissal'],
+    queryKey: ['dismissal', page],
     queryFn: () =>
       getApi<Dismissales>('/dismissal', {
         params: {
           'include[Accredited][include]': 'pharmacy-applicant',
-          page: 1 || 11,
-          pageSize: 5 || 10
+          page: page || 1,
+          pageSize: 5
         },
         headers: {
           Authorization: authToken()

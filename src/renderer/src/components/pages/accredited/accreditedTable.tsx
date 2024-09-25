@@ -20,7 +20,7 @@ type Props = {
   pageSize: string
   total: number
 }
-export default function AccreditedTable({ info, page, total }: Props) {
+export default function AccreditedTable({ info, page, total, pageSize }: Props) {
   const componentRef = React.useRef<HTMLDivElement>(null)
   const columns = React.useMemo<ColumnDef<AccreditedInfo>[]>(
     () => [
@@ -98,6 +98,7 @@ export default function AccreditedTable({ info, page, total }: Props) {
       data={info}
       page={page.toString()}
       total={Number(total)}
+      pageSize={Number(pageSize)}
       // onRowClick={(_, { original }) => {
       //   navigate(`/state-affairs/info/${}`)
       // }}

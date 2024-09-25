@@ -11,7 +11,6 @@ import {
 import { HdfTable } from '../../tables/hdfTable'
 import { ApplicantsInfo } from '../../../types/index'
 import { Button } from '../../ui/button'
-import { Gender } from '../../../types/enums'
 import DeleteDialog from '@renderer/components/ui/delete-dailog'
 type Props = {
   info: ApplicantsInfo[]
@@ -19,7 +18,7 @@ type Props = {
   pageSize: string
   total: number
 }
-export default function StateTable({ info, page, total }: Props) {
+export default function StateTable({ info, page, total, pageSize }: Props) {
   const columns = React.useMemo<ColumnDef<ApplicantsInfo>[]>(
     () => [
       {
@@ -87,6 +86,7 @@ export default function StateTable({ info, page, total }: Props) {
       data={info}
       page={page.toString()}
       total={Number(total)}
+      pageSize={Number(pageSize)}
       // onRowClick={(_, { original }) => {
       //   navigate(`/state-affairs/info/${}`)
       // }}

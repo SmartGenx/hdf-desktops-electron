@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { Button } from '../../ui/button'
 import { Form, FormControl, FormField, FormItem } from '../../ui/form'
-import { Input } from '../../ui/input'
 import {
   Select,
   SelectContent,
@@ -126,10 +125,10 @@ export default function FormDismissal() {
       ? applicant?.data?.[0]?.name
       : null
 
-  console.log('name', name)
   React.useEffect(() => {
     form.setValue('amountPaid', String(totalPrice))
     form.setValue('accreditedGlobalId', number?.info?.[0]?.globalId ?? 'No URL available')
+    form.setValue('pharmacyGlobalId', number?.info?.[0]?.pharmacyGlobalId ?? 'No URL available')
     const fetchPharmacyDirectorate = async () => {
       try {
         const response = await axiosInstance.get('/pharmacy', {
@@ -146,7 +145,6 @@ export default function FormDismissal() {
     fetchPharmacyDirectorate()
   }, [number?.info?.[0]?.globalId, totalPrice, setValue])
 
-  console.log('sdasdasd', number?.info?.[0]?.pharmacyGlobalId ?? 'No URL available')
   const { mutate } = useMutation({
     // mutationKey: ['AccreditedInfo'],
     mutationFn: (datas: AccreditedFormValue) =>
