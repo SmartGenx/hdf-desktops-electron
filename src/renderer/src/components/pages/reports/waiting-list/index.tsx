@@ -24,7 +24,7 @@ export default function WaitingList() {
     queryKey: ['applicantsReportCategory', page],
     queryFn: () =>
       getApi<applicantsReportCategoryInfo>('/applicant/applicantsReportCategory', {
-        params: { page: page || 1, pageSize: 5 },
+        params: { page: page || 1, pageSize: 2 },
         headers: {
           Authorization: authToken()
         }
