@@ -1,6 +1,6 @@
 import Boutton from '@renderer/components/Boutton'
 import SearchInput from '@renderer/components/searchInput'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import FilterDrawer from './filter'
 import { useAuthHeader } from 'react-auth-kit'
 import { useQuery } from '@tanstack/react-query'
@@ -13,20 +13,25 @@ import { Printer } from 'lucide-react'
 import { useRef } from 'react'
 
 export default function FollowTheRecipes() {
+  const [searchParams] = useSearchParams()
+  const page = searchParams.get('page')
   const authToken = useAuthHeader()
   const {
     isPending,
     error,
     data: AllAccreditedsForPdf
   } = useQuery({
-    queryKey: ['AllAccreditedsForPdf'],
+    queryKey: ['AllAccreditedsForPdf', page],
     queryFn: () =>
-      getApi<AllAccreditedsForPdf[]>('/accredited/AllAccreditedsForPdf', {
+      getApi<AllAccreditedsForPdf>('/accredited/AllAccreditedsForPdf', {
+        params: { page: page || 1, pageSize: 5 },
         headers: {
           Authorization: authToken()
         }
       })
   })
+
+  console.log('AllAccreditedsForPdf', AllAccreditedsForPdf?.data.info)
   const componentRef = useRef<HTMLTableElement>(null)
   if (isPending) return 'Loading...'
   if (error) return 'An error has occurred: ' + error.message
@@ -49,7 +54,7 @@ export default function FollowTheRecipes() {
             content={() => componentRef.current}
           />
           <div className="hidden">
-            <ComponentToPrint ref={componentRef} data={AllAccreditedsForPdf?.data} />
+            <ComponentToPrint ref={componentRef} data={AllAccreditedsForPdf.data.info} />
           </div>
           <Link to={'/formDismissal'}>
             <Boutton
@@ -60,7 +65,12 @@ export default function FollowTheRecipes() {
           </Link>
         </div>
       </div>
-      <FollowReceiptTable data={AllAccreditedsForPdf?.data} />
+      <FollowReceiptTable
+        info={AllAccreditedsForPdf.data.info || []}
+        page={AllAccreditedsForPdf.data.page || '1'}
+        pageSize={AllAccreditedsForPdf.data.pageSize || '5'}
+        total={AllAccreditedsForPdf.data.total || 10}
+      />
     </>
   )
 }

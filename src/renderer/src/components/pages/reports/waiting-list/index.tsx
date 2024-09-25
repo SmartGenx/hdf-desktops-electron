@@ -1,10 +1,10 @@
 import Boutton from '@renderer/components/Boutton'
 import SearchInput from '@renderer/components/searchInput'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import FilterDrawer from './filter'
 import { useAuthHeader } from 'react-auth-kit'
 import { useQuery } from '@tanstack/react-query'
-import { applicantsReportCategory } from '@renderer/types'
+import { applicantsReportCategoryInfo } from '@renderer/types'
 import { getApi } from '@renderer/lib/http'
 import WaitingTable from './waitingTable'
 import ReactToPrint from 'react-to-print'
@@ -13,21 +13,24 @@ import { Printer } from 'lucide-react'
 import { useRef } from 'react'
 
 export default function WaitingList() {
+  const [searchParams] = useSearchParams()
+  const page = searchParams.get('page')
   const authToken = useAuthHeader()
   const {
     isPending,
     error,
     data: applicantsReportCategory
   } = useQuery({
-    queryKey: ['applicantsReportCategory'],
+    queryKey: ['applicantsReportCategory', page],
     queryFn: () =>
-      getApi<applicantsReportCategory[]>('/applicant/applicantsReportCategory', {
+      getApi<applicantsReportCategoryInfo>('/applicant/applicantsReportCategory', {
+        params: { page: page || 1, pageSize: 5 },
         headers: {
           Authorization: authToken()
         }
       })
   })
-
+  console.log('applicantsReportCategory', applicantsReportCategory?.data)
   const componentRef = useRef<HTMLTableElement>(null)
 
   if (isPending) return 'Loading...'
@@ -52,7 +55,7 @@ export default function WaitingList() {
             content={() => componentRef.current}
           />
           <div className="hidden">
-            <ComponentToPrint ref={componentRef} data={applicantsReportCategory?.data} />
+            <ComponentToPrint ref={componentRef} data={applicantsReportCategory.data.info} />
           </div>
 
           <Link to={'/formDismissal'}>
@@ -64,7 +67,12 @@ export default function WaitingList() {
           </Link>
         </div>
       </div>
-      <WaitingTable data={applicantsReportCategory?.data} />
+      <WaitingTable
+        info={applicantsReportCategory.data.info || []}
+        page={applicantsReportCategory.data.page || '1'}
+        pageSize={applicantsReportCategory.data.pageSize || '5'}
+        total={applicantsReportCategory.data.total || 10}
+      />
     </>
   )
 }

@@ -14,9 +14,12 @@ import { applicantsReportCategory } from '../../../../types/index'
 import { Button } from '../../../ui/button'
 
 type Props = {
-  data: applicantsReportCategory[]
+  info: applicantsReportCategory[]
+  page: string
+  pageSize: string
+  total: number
 }
-export default function WaitingTable({ data }: Props) {
+export default function WaitingTable({ info, page, total, pageSize }: Props) {
   const columns = React.useMemo<ColumnDef<applicantsReportCategory>[]>(
     () => [
       {
@@ -93,10 +96,10 @@ export default function WaitingTable({ data }: Props) {
   return (
     <HdfTable
       columns={columns}
-      data={data}
-      page={String(5)}
-      total={Number(5)}
-      pageSize={8}
+      data={info}
+      page={page.toString()}
+      total={Number(total)}
+      pageSize={Number(pageSize)}
       // onRowClick={(_, { original }) => {
       //   navigate(`/state-affairs/info/${}`)
       // }}

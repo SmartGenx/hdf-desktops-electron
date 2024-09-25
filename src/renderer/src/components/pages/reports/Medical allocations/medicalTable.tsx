@@ -10,14 +10,17 @@ import {
   DropdownMenuTrigger
 } from '../../../ui/dropdown-menu'
 import { HdfTable } from '../../../tables/hdfTable'
-import { ApplicantByDirectorateViewModel } from '../../../../types/index'
+import { ApplicantByDirectorateViewModelInfo } from '../../../../types/index'
 import { Button } from '../../../ui/button'
 
 type Props = {
-  data: ApplicantByDirectorateViewModel[]
+  info: ApplicantByDirectorateViewModelInfo[]
+  page: string
+  pageSize: string
+  total: number
 }
-export default function MedicalTable({ data }: Props) {
-  const columns = React.useMemo<ColumnDef<ApplicantByDirectorateViewModel>[]>(
+export default function MedicalTable({ info, page, total, pageSize }: Props) {
+  const columns = React.useMemo<ColumnDef<ApplicantByDirectorateViewModelInfo>[]>(
     () => [
       {
         accessorKey: ' .',
@@ -105,10 +108,10 @@ export default function MedicalTable({ data }: Props) {
   return (
     <HdfTable
       columns={columns}
-      data={data}
-      page={String(5)}
-      total={Number(5)}
-      pageSize={8}
+      data={info}
+      page={page.toString()}
+      total={Number(total)}
+      pageSize={Number(pageSize)}
       // onRowClick={(_, { original }) => {
       //   navigate(`/state-affairs/info/${}`)
       // }}

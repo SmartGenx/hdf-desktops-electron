@@ -1,8 +1,8 @@
 import React from 'react'
 import logo from '../../../../assets/images/newlogo.svg'
-import { ApplicantByDirectorateViewModel } from '@renderer/types'
+import { ApplicantByDirectorateViewModelInfo } from '@renderer/types'
 type Props = {
-  data: ApplicantByDirectorateViewModel[]
+  data: ApplicantByDirectorateViewModelInfo[]
 }
 const ComponentToPrint = React.forwardRef<HTMLDivElement, Props>(function ComponentToPrint(
   { data },
