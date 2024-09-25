@@ -119,19 +119,18 @@ class AccreditedService {
         dataFillter = {}
       }
 
-
       if (page && pageSize) {
         const skip = (+page - 1) * +pageSize
         const take = +pageSize
         const accredited = await this.prisma.accredited.findMany({
-          where: {...dataFillter,deleted:false},
+          where: { ...dataFillter, deleted: false },
           include,
           skip: +skip,
           take: +take,
           orderBy
         })
         const total = await this.prisma.accredited.count({
-          where: {...dataFillter,deleted:false}
+          where: { ...dataFillter, deleted: false }
         })
         return {
           info: accredited,
@@ -141,7 +140,7 @@ class AccreditedService {
         }
       }
       return await this.prisma.accredited.findMany({
-        where: {...dataFillter,deleted:false} ,
+        where: { ...dataFillter, deleted: false },
         include,
         orderBy
       })
@@ -452,114 +451,112 @@ class AccreditedService {
       const pageSize = dataFilter?.pageSize
       delete dataFilter?.page
       delete dataFilter?.pageSize
-      if(page && pageSize)
-        {
-          const skip = (page - 1) * pageSize
-          const take = pageSize
+      if (page && pageSize) {
+        const skip = (page - 1) * pageSize
+        const take = pageSize
 
-
-          const Accredited = await this.prisma.accredited.findMany({
-            where: {
-              applicant: {
+        const Accredited = await this.prisma.accredited.findMany({
+          where: {
+            applicant: {
+              name: {
+                contains: dataFilter?.name
+              },
+              directorate: {
                 name: {
-                  contains: dataFilter?.name
-                },
-                directorate: {
-                  name: {
-                    contains: dataFilter?.directorate
-                  }
-                },
-                diseasesApplicants: {
-                  some: {
-                    Disease: {
-                      name: {
-                        contains: dataFilter?.disease
-                      }
-                    }
-                  }
+                  contains: dataFilter?.directorate
                 }
               },
-
-              prescription: {
+              diseasesApplicants: {
                 some: {
-                  renewalDate: {
-                    gt: dataFilter?.start && new Date(dataFilter?.start),
-                    lt: dataFilter?.end && new Date(dataFilter?.end)
-                  }
-                }
-              }
-            },
-
-            include: {
-              prescription: true,
-              applicant: {
-                include: {
-                  directorate: true,
-                  diseasesApplicants: {
-                    include: {
-                      Disease: true
+                  Disease: {
+                    name: {
+                      contains: dataFilter?.disease
                     }
                   }
                 }
               }
             },
-            skip: +skip,
-            take: +take,
-          })
 
-          const reports = Accredited.map((accredited) => {
-            const applicant = {
-              name: accredited.applicant.name,
-              phoneNumber: accredited.applicant.phoneNumber,
-              state: accredited.state
+            prescription: {
+              some: {
+                renewalDate: {
+                  gt: dataFilter?.start && new Date(dataFilter?.start),
+                  lt: dataFilter?.end && new Date(dataFilter?.end)
+                }
+              }
             }
+          },
 
-            const Namedirectorate = accredited.applicant.directorate.name
-
-            const diseaseNames = accredited.applicant.diseasesApplicants
-              .map((da) => da.Disease.name)
-              .join(', ')
-
-            const prescription = {
-              latestPrescriptionDate: accredited.prescription
-                .map((da) => new Date(da.prescriptionDate))
-                .sort((a, b) => a - b)
-                .pop()
-                .toISOString()
-                .split('T')[0],
-
-              renewalDate: accredited.prescription
-                .map((da) => new Date(da.renewalDate))
-                .sort((a, b) => a - b)
-                .pop()
-                .toISOString()
-                .split('T')[0]
+          include: {
+            prescription: true,
+            applicant: {
+              include: {
+                directorate: true,
+                diseasesApplicants: {
+                  include: {
+                    Disease: true
+                  }
+                }
+              }
             }
+          },
+          skip: +skip,
+          take: +take
+        })
+        const total = await this.prisma.accredited.count({
+          where: dataFilter
+        })
 
-            const days = calculateDaysBetweenDates(
-              prescription.latestPrescriptionDate,
-              prescription.renewalDate
-            )
-            const months = calculateMonthsBetweenDates(
-              prescription.latestPrescriptionDate,
-              prescription.renewalDate
-            )
+        const reports = Accredited.map((accredited) => {
+          const applicant = {
+            name: accredited.applicant.name,
+            phoneNumber: accredited.applicant.phoneNumber,
+            state: accredited.state
+          }
 
-            return new AccreditedByPrescription(
-              applicant,
-              diseaseNames,
-              Namedirectorate,
-              prescription,
-              days,
-              months
-            )
-          })
+          const Namedirectorate = accredited.applicant.directorate.name
 
-          return {info:reports,total:Accredited.length,page:page,pageSize:pageSize}
+          const diseaseNames = accredited.applicant.diseasesApplicants
+            .map((da) => da.Disease.name)
+            .join(', ')
 
-        }
+          const prescription = {
+            latestPrescriptionDate: accredited.prescription
+              .map((da) => new Date(da.prescriptionDate))
+              .sort((a, b) => a - b)
+              .pop()
+              .toISOString()
+              .split('T')[0],
 
+            renewalDate: accredited.prescription
+              .map((da) => new Date(da.renewalDate))
+              .sort((a, b) => a - b)
+              .pop()
+              .toISOString()
+              .split('T')[0]
+          }
 
+          const days = calculateDaysBetweenDates(
+            prescription.latestPrescriptionDate,
+            prescription.renewalDate
+          )
+          const months = calculateMonthsBetweenDates(
+            prescription.latestPrescriptionDate,
+            prescription.renewalDate
+          )
+
+          return new AccreditedByPrescription(
+            applicant,
+            diseaseNames,
+            Namedirectorate,
+            prescription,
+            days,
+            months
+          )
+        })
+
+        return { info: reports, total: total, page: page, pageSize: pageSize }
+      }
 
       // Helper function to calculate days between two dates
       function calculateDaysBetweenDates(date1, date2) {
@@ -581,10 +578,6 @@ class AccreditedService {
         const monthsDifference = endDate.getMonth() - startDate.getMonth()
         return yearsDifference * 12 + monthsDifference
       }
-
-    
-
-
     } catch (error) {
       throw new DatabaseError('Error fetching accreditation data.', error)
     }

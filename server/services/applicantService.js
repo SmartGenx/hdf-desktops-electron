@@ -194,41 +194,41 @@ class ApplicantService {
 
   async updateApplicant(id, ApplicantData) {
     try {
-    const { diseaseGlobalId } = ApplicantData
-    delete ApplicantData.diseaseGlobalId
-    const existingApplicant = await this.prisma.Applicant.findUnique({
-      where: { globalId: id }
-    })
+      const { diseaseGlobalId } = ApplicantData
+      delete ApplicantData.diseaseGlobalId
+      const existingApplicant = await this.prisma.Applicant.findUnique({
+        where: { globalId: id }
+      })
 
-    if (!existingApplicant) {
-      throw new NotFoundError(`Applicant with id ${id} not found.`)
-    }
-
-    const res = await this.prisma.Applicant.update({
-      where: { globalId: id },
-      data: {
-        ...ApplicantData,
-        version: { increment: 1 } // Increment version for conflict resolution
+      if (!existingApplicant) {
+        throw new NotFoundError(`Applicant with id ${id} not found.`)
       }
-    })
 
-    const diseasesApplicantsExist = await this.prisma.diseasesApplicants.findFirst({
-      where: { applicantGlobalId: existingApplicant.globalId, diseaseGlobalId: diseaseGlobalId }
-    })
-    if (!diseasesApplicantsExist) {
-      throw new NotFoundError(`Applicant with id ${id} not found.`)
-    }
-    await this.prisma.diseasesApplicants.update({
-      where: { globalId: diseasesApplicantsExist.globalId },
-      data: {
-        diseaseGlobalId: diseaseGlobalId,
-        applicantGlobalId: existingApplicant.globalId,
+      const res = await this.prisma.Applicant.update({
+        where: { globalId: id },
+        data: {
+          ...ApplicantData,
+          version: { increment: 1 } // Increment version for conflict resolution
+        }
+      })
 
-        version: { increment: 1 } // Increment version for conflict resolution
+      const diseasesApplicantsExist = await this.prisma.diseasesApplicants.findFirst({
+        where: { applicantGlobalId: existingApplicant.globalId, diseaseGlobalId: diseaseGlobalId }
+      })
+      if (!diseasesApplicantsExist) {
+        throw new NotFoundError(`Applicant with id ${id} not found.`)
       }
-    })
+      await this.prisma.diseasesApplicants.update({
+        where: { globalId: diseasesApplicantsExist.globalId },
+        data: {
+          diseaseGlobalId: diseaseGlobalId,
+          applicantGlobalId: existingApplicant.globalId,
 
-    return res
+          version: { increment: 1 } // Increment version for conflict resolution
+        }
+      })
+
+      return res
     } catch (error) {
       throw new DatabaseError('Error updating applicant.', error)
     }
@@ -457,10 +457,12 @@ class ApplicantService {
             }
           },
           skip: +skip,
-          take: +take,
-
+          take: +take
 
           // Make sure this relationship is correctly defined in your Prisma schema
+        })
+        const total = await this.prisma.dismissal.count({
+          where: filterParams
         })
         const reports = dismissal?.map((dismissal) => {
           const applicant = {
@@ -491,10 +493,9 @@ class ApplicantService {
           )
         })
 
-
         return {
           info: reports,
-          total: dismissal.length,
+          total: total,
           page: page,
           pageSize: pageSize
         }
@@ -502,19 +503,18 @@ class ApplicantService {
         throw new DatabaseError('Error deleting accreditation.', error)
       }
     }
-
   }
 
   //**********************************************  *********************************** */
   //no need
   async ApplicantByCategory(applicantfilter) {
     try {
-      const page=applicantfilter?.page
-      const pageSize=applicantfilter?.pageSize
+      const page = applicantfilter?.page
+      const pageSize = applicantfilter?.pageSize
       delete applicantfilter?.page
       delete applicantfilter?.pageSize
-     const skip = (+page - 1) * +pageSize
-     const take= +pageSize
+      const skip = (+page - 1) * +pageSize
+      const take = +pageSize
       const Applicant = await this.prisma.applicant.findMany({
         where: {
           deleted: false,
@@ -553,7 +553,9 @@ class ApplicantService {
         },
         skip: +skip,
         take: +take
-
+      })
+      const total = await this.prisma.applicant.count({
+        where: applicantfilter
       })
 
       const reports = Applicant.map((Applican) => {
@@ -573,10 +575,9 @@ class ApplicantService {
         )
       })
 
-
       return {
         info: reports,
-        total: Applicant.length,
+        total: total,
         page: page,
         pageSize: pageSize
       }
