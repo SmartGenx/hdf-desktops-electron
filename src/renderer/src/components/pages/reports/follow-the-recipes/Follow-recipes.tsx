@@ -9,14 +9,17 @@ import {
   DropdownMenuTrigger
 } from '../../../ui/dropdown-menu'
 import { HdfTable } from '../../../tables/hdfTable'
-import { AllAccreditedsForPdf } from '../../../../types/index'
+import { AllAccreditedsForPdfInfo } from '../../../../types/index'
 import { Button } from '../../../ui/button'
 
 type Props = {
-  data: AllAccreditedsForPdf[]
+  info: AllAccreditedsForPdfInfo[]
+  page: string
+  pageSize: string
+  total: number
 }
-export default function FollowReceiptTable({ data }: Props) {
-  const columns = React.useMemo<ColumnDef<AllAccreditedsForPdf>[]>(
+export default function FollowReceiptTable({ info, page, total, pageSize }: Props) {
+  const columns = React.useMemo<ColumnDef<AllAccreditedsForPdfInfo>[]>(
     () => [
       {
         accessorKey: ' .',
@@ -110,10 +113,10 @@ export default function FollowReceiptTable({ data }: Props) {
   return (
     <HdfTable
       columns={columns}
-      data={data}
-      page={String(5)}
-      total={Number(5)}
-      pageSize={8}
+      data={info}
+      page={page.toString()}
+      total={Number(total)}
+      pageSize={Number(pageSize)}
       // onRowClick={(_, { original }) => {
       //   navigate(`/state-affairs/info/${}`)
       // }}

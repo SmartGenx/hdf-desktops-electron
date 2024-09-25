@@ -1,6 +1,6 @@
 import Boutton from '@renderer/components/Boutton'
 import SearchInput from '@renderer/components/searchInput'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import FilterDrawer from './filter'
 import { useAuthHeader } from 'react-auth-kit'
 import { useQuery } from '@tanstack/react-query'
@@ -13,15 +13,18 @@ import ComponentToPrint from './ComponentToPrint'
 import { useRef } from 'react'
 
 export default function MedicalAllocationsIndex() {
+  const [searchParams] = useSearchParams()
+  const page = searchParams.get('page')
   const authToken = useAuthHeader()
   const {
     isPending,
     error,
     data: ApplicantByDirectorateViewModelData
   } = useQuery({
-    queryKey: ['ApplicantByDirectorateViewModel'],
+    queryKey: ['ApplicantByDirectorateViewModel', page],
     queryFn: () =>
-      getApi<ApplicantByDirectorateViewModel[]>('/applicant/ApplicantByDirectorateViewModel', {
+      getApi<ApplicantByDirectorateViewModel>('/applicant/ApplicantByDirectorateViewModel', {
+        params: { page: page || 1, pageSize: 1 },
         headers: {
           Authorization: authToken()
         }
@@ -31,6 +34,7 @@ export default function MedicalAllocationsIndex() {
   const componentRef = useRef<HTMLTableElement>(null)
   if (isPending) return 'Loading...'
   if (error) return 'An error has occurred: ' + error.message
+  console.log('total', ApplicantByDirectorateViewModelData.data.total)
   return (
     <>
       <div className="flex  gap-5 mt-[85px] items-center justify-between   mb-7">
@@ -50,7 +54,10 @@ export default function MedicalAllocationsIndex() {
             content={() => componentRef.current}
           />
           <div className="hidden">
-            <ComponentToPrint ref={componentRef} data={ApplicantByDirectorateViewModelData?.data} />
+            <ComponentToPrint
+              ref={componentRef}
+              data={ApplicantByDirectorateViewModelData.data.info}
+            />
           </div>
           <Link to={'/formDismissal'}>
             <Boutton
@@ -61,7 +68,13 @@ export default function MedicalAllocationsIndex() {
           </Link>
         </div>
       </div>
-      <MedicalTable data={ApplicantByDirectorateViewModelData.data} />
+
+      <MedicalTable
+        info={ApplicantByDirectorateViewModelData.data.info || []}
+        page={ApplicantByDirectorateViewModelData.data.page || '1'}
+        pageSize={ApplicantByDirectorateViewModelData.data.pageSize || '5'}
+        total={ApplicantByDirectorateViewModelData.data.total || 10}
+      />
     </>
   )
 }

@@ -1,8 +1,8 @@
 import React from 'react'
 import logo from '../../../../assets/images/newlogo.svg'
-import { AllAccreditedsForPdf } from '@renderer/types'
+import { AllAccreditedsForPdfInfo } from '@renderer/types'
 type Props = {
-  data: AllAccreditedsForPdf[]
+  data: AllAccreditedsForPdfInfo[]
 }
 const ComponentToPrint = React.forwardRef<HTMLDivElement, Props>(function ComponentToPrint(
   { data },

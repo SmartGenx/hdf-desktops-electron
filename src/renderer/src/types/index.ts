@@ -19,7 +19,7 @@ export type Dismissales = {
   page: string
   pageSize: string
 }
-export type ApplicantByDirectorateViewModel = {
+export type ApplicantByDirectorateViewModelInfo = {
   name: string
   gender: string
   disease: string
@@ -30,7 +30,13 @@ export type ApplicantByDirectorateViewModel = {
   supportRatio: string
   approvedAmount: number
 }
-export type AllAccreditedsForPdf = {
+export type ApplicantByDirectorateViewModel = {
+  info: ApplicantByDirectorateViewModelInfo[]
+  total: number
+  page: string
+  pageSize: string
+}
+export type AllAccreditedsForPdfInfo = {
   name: string
   disease: string
   directorate: string
@@ -41,6 +47,13 @@ export type AllAccreditedsForPdf = {
   Months: number
   state: string
 }
+export type AllAccreditedsForPdf = {
+  info: AllAccreditedsForPdfInfo[]
+  total: number
+  page: string
+  pageSize: string
+}
+
 export type applicantsReportCategory = {
   name: string
   disease: string
@@ -48,6 +61,12 @@ export type applicantsReportCategory = {
   phoneNumber: string
   submissionDate: Date
   category: string
+}
+export type applicantsReportCategoryInfo = {
+  info: applicantsReportCategory[]
+  total: number
+  page: string
+  pageSize: string
 }
 export type DismissalInfo = {
   id: number
@@ -211,9 +230,9 @@ export type Directorate = {
 
 export type DiseasesApplicant = {
   id: number
-  name:string;
+  name: string
   globalId: string
-  description:string;
+  description: string
   diseaseGlobalId: string
   deleted: boolean
   applicantGlobalId: string
@@ -296,14 +315,12 @@ export type MainNavItem = NavItemWithOptionalChildren
 
 export type SidebarNavItem = NavItemWithChildren
 export type Governorate = {
-  id: number;
-  globalId: string;
-  name: string;
-  deleted: boolean;
-  version: number;
+  id: number
+  globalId: string
+  name: string
+  deleted: boolean
+  version: number
   // Directorate: Directorate[];
   // Pharmacy: Pharmacy[];
-  lastModified: Date;
+  lastModified: Date
 }
-
-
