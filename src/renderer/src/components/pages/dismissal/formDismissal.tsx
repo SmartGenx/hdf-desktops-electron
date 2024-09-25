@@ -21,7 +21,7 @@ import { useNavigate } from 'react-router-dom'
 import { axiosInstance, getApi, postApi } from '../../../lib/http'
 import { useAuthHeader } from 'react-auth-kit'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Accredited, Pharmacy, Square } from '@renderer/types'
+import { Accredited, ApplicantsInfo, Pharmacy, Square } from '@renderer/types'
 import Pdf from '@renderer/components/icons/pdf'
 import { AlertCircle } from 'lucide-react'
 import { FormInput } from '@renderer/components/ui/forms-input'
@@ -90,7 +90,7 @@ export default function FormDismissal() {
   const { data: applicant } = useQuery({
     queryKey: ['applicant'],
     queryFn: () =>
-      getApi<Square[]>('/applicant', {
+      getApi<ApplicantsInfo[]>('/applicant', {
         headers: {
           Authorization: authToken()
         }
@@ -120,11 +120,13 @@ export default function FormDismissal() {
       console.error('Error fetching RFID data:', error)
     }
   }
-  const name =
-    applicant?.data?.[0]?.globalId === number?.info?.[0]?.applicantGlobalId
-      ? applicant?.data?.[0]?.name
-      : null
 
+  const name =
+    applicant?.data?.find((applicant) => applicant?.globalId === number?.info[0]?.applicantGlobalId)
+      ?.name || null
+
+  console.log('name', name)
+  console.log('name', name)
   React.useEffect(() => {
     form.setValue('amountPaid', String(totalPrice))
     form.setValue('accreditedGlobalId', number?.info?.[0]?.globalId ?? 'No URL available')
