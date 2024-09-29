@@ -30,7 +30,7 @@ const Home = () => {
     error,
     data: applicants
   } = useQuery({
-    queryKey: ['applicant', page, query],
+    queryKey: ['applicant', page, query,directorateGlobalId],
     queryFn: () =>
       getApi<Applicants>('/applicant', {
         params: {
@@ -38,6 +38,7 @@ const Home = () => {
           'include[category]': true,
           'include[diseasesApplicants]': true,
           'name[contains]': query,
+          directorateGlobalId:directorateGlobalId,
           page: page || 1,
           pageSize: 5
         },
