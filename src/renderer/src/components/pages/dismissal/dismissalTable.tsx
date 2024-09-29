@@ -23,13 +23,13 @@ export default function DismissalTable({ info, page, total, pageSize }: Props) {
     () => [
       {
         accessorKey: ' .',
-        header: 'الأسم',
-        cell: ({ row }) => row.original.Accredited?.applicant?.name
+        header: 'رقم الاعتماد',
+        cell: ({ row }) => row.original.Accredited?.numberOfRfid
       },
       {
         accessorKey: '',
-        header: 'اسم الصيدلية',
-        cell: ({ row }) => row.original.Accredited?.pharmacy?.name
+        header: 'اسم الدكتور',
+        cell: ({ row }) => row.original.Accredited?.doctor
       },
       {
         accessorKey: '',

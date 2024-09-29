@@ -12,12 +12,15 @@ import { useEffect, useRef, useState } from 'react'
 import { Printer } from 'lucide-react'
 import ReactToPrint from 'react-to-print'
 import A4Layout from './print-cards'
+import AccreditedSearch from './accredited-search'
 export type statistCardInfo = {
   count: number
 }
 const Home = () => {
   const [searchParams] = useSearchParams()
+  const query = searchParams.get('query')
   const page = searchParams.get('page')
+  console.log('query', query)
   const [statist, setStatist] = useState<statistCardInfo | undefined>()
   const authToken = useAuthHeader()
   const {
@@ -25,12 +28,13 @@ const Home = () => {
     error,
     data: accredited
   } = useQuery({
-    queryKey: ['accredited', page],
+    queryKey: ['accredited', page, query],
     queryFn: () =>
       getApi<Accrediteds>('/accredited', {
         params: {
           'include[applicant]': true,
           'include[square]': true,
+          'applicant[name][contains]': query,
           page: page || 1,
           pageSize: 5
         },
@@ -75,7 +79,7 @@ const Home = () => {
           <h1 className="text-2xl font-medium">جدول المعتمدين</h1>
         </div>
         <div className="flex gap-7">
-          <SearchInput />
+          <AccreditedSearch />
           <FilterDrawer />
           {/* <Boutton icon="filter" title={'طباعة'} /> */}
           <ReactToPrint

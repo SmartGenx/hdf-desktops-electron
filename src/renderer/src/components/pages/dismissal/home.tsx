@@ -9,6 +9,7 @@ import { axiosInstance, getApi } from '@renderer/lib/http'
 import { Link, useSearchParams } from 'react-router-dom'
 import DismissalTable from './dismissalTable'
 import { useEffect, useState } from 'react'
+import DismissalSearch from './dismissal.search'
 
 export type statistCardInfo = {
   totalDismissals: number
@@ -17,19 +18,21 @@ export type statistCardInfo = {
 
 const Dismissal = () => {
   const [searchParams] = useSearchParams()
+  const query = searchParams.get('query')
   const page = searchParams.get('page')
   const [statist, setStatist] = useState<statistCardInfo | undefined>()
   const authToken = useAuthHeader()
   const {
     isPending,
     error,
-    data: accredited
+    data: dismissal
   } = useQuery({
-    queryKey: ['dismissal', page],
+    queryKey: ['dismissal', page, query],
     queryFn: () =>
       getApi<Dismissales>('/dismissal', {
         params: {
-          'include[Accredited][include]': 'pharmacy-applicant',
+          'include[Accredited]': true,
+          'Accredited[doctor][contains]': query,
           page: page || 1,
           pageSize: 5
         },
@@ -38,6 +41,8 @@ const Dismissal = () => {
         }
       })
   })
+
+  console.log('dismissal', dismissal?.data)
 
   useEffect(() => {
     const fetchStatist = async () => {
@@ -82,7 +87,7 @@ const Dismissal = () => {
           <h1 className="text-2xl font-medium">جدول متابعة الصرف</h1>
         </div>
         <div className="flex gap-7">
-          <SearchInput />
+          <DismissalSearch />
           <FilterDrawer />
 
           <Link to={'/formDismissal'}>
@@ -96,10 +101,10 @@ const Dismissal = () => {
       </div>
       <div className="mt-5"></div>
       <DismissalTable
-        info={accredited.data.info || []}
-        page={accredited.data.page || '1'}
-        pageSize={accredited.data.pageSize || '5'}
-        total={accredited.data.total || 10}
+        info={dismissal.data.info || []}
+        page={dismissal.data.page || '1'}
+        pageSize={dismissal.data.pageSize || '5'}
+        total={dismissal.data.total || 10}
       />
     </div>
   )

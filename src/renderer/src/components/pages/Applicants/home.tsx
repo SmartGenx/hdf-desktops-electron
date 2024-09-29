@@ -9,6 +9,7 @@ import { useQuery } from '@tanstack/react-query'
 import { axiosInstance, getApi } from '@renderer/lib/http'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import ApplicantsSearch from './applicants-search'
 
 export type statistCardInfo = {
   count: number
@@ -16,6 +17,11 @@ export type statistCardInfo = {
 
 const Home = () => {
   const [searchParams] = useSearchParams()
+  const categoryGlobalId = searchParams.get('categoryGlobalId')
+  const directorateGlobalId = searchParams.get('directorateGlobalId')
+  console.log('governorates', categoryGlobalId)
+  console.log('categories', directorateGlobalId)
+  const query = searchParams.get('query')
   const page = searchParams.get('page')
   const [statist, setStatist] = useState<statistCardInfo | undefined>()
   const authToken = useAuthHeader()
@@ -24,13 +30,14 @@ const Home = () => {
     error,
     data: applicants
   } = useQuery({
-    queryKey: ['applicant', page],
+    queryKey: ['applicant', page, query],
     queryFn: () =>
       getApi<Applicants>('/applicant', {
         params: {
           'include[directorate]': true,
           'include[category]': true,
           'include[diseasesApplicants]': true,
+          'name[contains]': query,
           page: page || 1,
           pageSize: 5
         },
@@ -75,7 +82,7 @@ const Home = () => {
           <h1 className="text-2xl font-medium">جدول المتقدمين</h1>
         </div>
         <div className="flex gap-7">
-          <SearchInput />
+          <ApplicantsSearch />
           <FilterDrawer />
 
           <Link to={'/FormApplicant'}>

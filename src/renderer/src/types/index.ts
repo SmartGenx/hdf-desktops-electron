@@ -84,7 +84,6 @@ export type DismissalInfo = {
   version: number
   lastModified: Date
   Accredited?: AccreditedInfo
-  applicant?: ApplicantsInfo
 }
 
 export type Square = {
