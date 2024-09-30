@@ -92,14 +92,10 @@ export default function FormApplicant() {
   const [states, _setStates] = useState([
     { value: 'active', label: 'نشط' },
     { value: 'not active', label: 'غير نشط' }
-
-    // Add more options as needed
   ])
   const [gender, _setGender] = useState([
     { value: 'M', label: 'ذكر' },
     { value: 'F', label: 'انثى' }
-
-    // Add more options as needed
   ])
   const [delayedSubmitting, _setDelayedSubmitting] = useState(form.formState.isSubmitting)
 
@@ -503,7 +499,7 @@ export default function FormApplicant() {
                                   <SelectGroup>
                                     <SelectLabel>الحالات</SelectLabel>
                                     {states.map((state) => (
-                                      <SelectItem key={state.value} value={state.value}>
+                                      <SelectItem key={state.value} value={state.label}>
                                         {state.label}
                                       </SelectItem>
                                     ))}

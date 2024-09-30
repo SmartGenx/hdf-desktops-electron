@@ -1,5 +1,4 @@
 import StatistCard from '@renderer/components/statistCard'
-import SearchInput from '../../searchInput'
 import Boutton from '@renderer/components/Boutton'
 import FilterDrawer from './filter'
 import { useAuthHeader } from 'react-auth-kit'
@@ -18,6 +17,10 @@ export type statistCardInfo = {
 }
 const Home = () => {
   const [searchParams] = useSearchParams()
+  const doctor = searchParams.get('doctor');
+  const treatmentSite = searchParams.get('treatmentSite');
+  const squareGlobalId = searchParams.get('squareGlobalId');
+  const state = searchParams.get('state');
   const query = searchParams.get('query')
   const page = searchParams.get('page')
   console.log('query', query)
@@ -28,13 +31,17 @@ const Home = () => {
     error,
     data: accredited
   } = useQuery({
-    queryKey: ['accredited', page, query],
+    queryKey: ['accredited', page, query,doctor,treatmentSite,state,squareGlobalId],
     queryFn: () =>
       getApi<Accrediteds>('/accredited', {
         params: {
           'include[applicant]': true,
           'include[square]': true,
           'applicant[name][contains]': query,
+          'doctor': doctor,
+          'treatmentSite':treatmentSite,
+          'squareGlobalId':squareGlobalId,
+          "state":state,
           page: page || 1,
           pageSize: 5
         },

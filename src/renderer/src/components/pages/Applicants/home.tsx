@@ -1,5 +1,4 @@
 import StatistCard from '@renderer/components/statistCard'
-import SearchInput from '../../searchInput'
 import Boutton from '@renderer/components/Boutton'
 import FilterDrawer from './filter'
 import StateTable from './applicantTabel'
@@ -19,6 +18,8 @@ const Home = () => {
   const [searchParams] = useSearchParams()
   const categoryGlobalId = searchParams.get('categoryGlobalId')
   const directorateGlobalId = searchParams.get('directorateGlobalId')
+  const state = searchParams.get('state')
+  const gender = searchParams.get('gender')
   console.log('governorates', categoryGlobalId)
   console.log('categories', directorateGlobalId)
   const query = searchParams.get('query')
@@ -30,7 +31,7 @@ const Home = () => {
     error,
     data: applicants
   } = useQuery({
-    queryKey: ['applicant', page, query,directorateGlobalId],
+    queryKey: ['applicant', page, query, directorateGlobalId, categoryGlobalId, state, gender],
     queryFn: () =>
       getApi<Applicants>('/applicant', {
         params: {
@@ -38,7 +39,10 @@ const Home = () => {
           'include[category]': true,
           'include[diseasesApplicants]': true,
           'name[contains]': query,
-          directorateGlobalId:directorateGlobalId,
+          'directorateGlobalId': directorateGlobalId,
+          'categoryGlobalId': categoryGlobalId,
+          'state': state,
+          'gender': gender,
           page: page || 1,
           pageSize: 5
         },

@@ -21,7 +21,7 @@ import { useNavigate } from 'react-router-dom'
 import { axiosInstance, getApi, postApi } from '../../../lib/http'
 import { useAuthHeader } from 'react-auth-kit'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Accredited, ApplicantsInfo, Pharmacy, Square } from '@renderer/types'
+import { Accredited, ApplicantsInfo, Pharmacy } from '@renderer/types'
 import Pdf from '@renderer/components/icons/pdf'
 import { AlertCircle } from 'lucide-react'
 import { FormInput } from '@renderer/components/ui/forms-input'
@@ -46,6 +46,10 @@ export default function FormDismissal() {
   const form = useForm<AccreditedFormValue>({
     resolver: zodResolver(formSchema)
   })
+  const [states, _setStates] = useState([
+    { value: 'active', label: 'نشط' },
+    { value: 'not active', label: 'غير نشط' }
+  ])
   const [approvedAmounts, setApprovedAmounts] = useState<number>(0)
   const [totalAmounts, setTotalAmounts] = useState<number>(0)
   const [totalPrice, setTotalPrice] = useState<number>(0)
@@ -415,13 +419,21 @@ export default function FormDismissal() {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <FormInput
-                                label="ادخل الحاله"
-                                type="text"
-                                {...field}
-                                disabled={delayedSubmitting}
-                                className="text-right bg-[#EFF1F9]/50 rounded-[8px]"
-                              />
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <SelectTrigger className="">
+                                  <SelectValue placeholder="اختر الحالة" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectGroup>
+                                    <SelectLabel>الحالات</SelectLabel>
+                                    {states.map((state) => (
+                                      <SelectItem key={state.value} value={state.label}>
+                                        {state.label}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectGroup>
+                                </SelectContent>
+                              </Select>
                             </FormControl>
                           </FormItem>
                         )}

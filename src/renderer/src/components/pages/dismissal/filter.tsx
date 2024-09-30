@@ -1,6 +1,5 @@
-import React from 'react'
-import { Button } from '../../ui/button' // Replace with your actual button component
-import { Calendar } from '../../ui/calendar' // Replace with your actual calendar component
+import { useState } from 'react'
+import { Button } from '../../ui/button'
 import {
   Drawer,
   DrawerClose,
@@ -9,88 +8,197 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger
-} from '../../ui/drawer' // Replace with your actual drawer component
-import CheckboxWithLabel from '@renderer/components/CheckboxWithLabel'
-import { SlidersHorizontal, X } from 'lucide-react'
-import { Separator } from '@radix-ui/react-separator'
+} from '../../ui/drawer'
+import { SlidersHorizontal } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
+import { useAuthHeader } from 'react-auth-kit'
+import { getApi } from '@renderer/lib/http'
+import { Select } from '@renderer/components/ui/select'
+import {
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue
+} from '@renderer/components/ui/select'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 
+type DisisslesResp = {
+  id: number
+  globalId: string
+  month: string
+  year: string
+  dateToDay: Date
+  state: string
+  totalAmount: number
+  amountPaid: number
+  approvedAmount: number
+  openDismissal: boolean
+  deleted: boolean
+  accreditedGlobalId: string
+  version: number
+  lastModified: Date
+}
 const FilterDrawer = () => {
-  const [date, setDate] = React.useState<Date | undefined>(new Date())
-  const [clan, setclan] = React.useState<boolean>(false)
+  const [states, _setStates] = useState([
+    { value: 'active', label: 'نشط' },
+    { value: 'not active', label: 'غير نشط' }
+  ])
 
- 
+  const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const authToken = useAuthHeader()
+  const { data: dismissal } = useQuery({
+    queryKey: ['dismissal'],
+    queryFn: () =>
+      getApi<DisisslesResp[]>('/dismissal', {
+        headers: {
+          Authorization: authToken()
+        }
+      })
+  })
+  const handleMonthChange = (month: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('month', month)
 
+    navigate(`/dismissal?${params.toString()}`, { replace: true })
+  }
+  const handleYearChange = (year: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('year', year)
+
+    navigate(`/dismissal?${params.toString()}`, { replace: true })
+  }
+  const handleStateChange = (state: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('state', state)
+
+    navigate(`/dismissal?${params.toString()}`, { replace: true })
+  }
+  console.log('asdasdasd', dismissal?.data)
   return (
     <Drawer direction="left">
       <DrawerTrigger asChild>
         <Button variant="outline" className="border-[#434749]">
           <SlidersHorizontal fill="#434749" stroke="#434749" />
-          <span className="px-1">فلترة</span>
+          <span className="px-1 ">فلترة</span>
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="w-fit max-w-sm bg-white">
-        <DrawerHeader className="flex justify-between p-4">
-          <DrawerTitle className="text-lg font-bold">فلترة</DrawerTitle>
-          <DrawerClose>
+      <DrawerContent className="w-[352.94px] max-w-sm bg-white">
+        <DrawerHeader className="flex justify-center p-4 ">
+          <div className=" font-bold text-xl border-b-2 border-[#DEDEDE] w-full flex justify-center pb-2">
+            <DrawerTitle> فلترة</DrawerTitle>
+          </div>
+
+          {/* <DrawerClose>
             <X className="w-5 h-5 text-gray-600" />
-          </DrawerClose>
+          </DrawerClose> */}
         </DrawerHeader>
-        <Separator />
 
-        <div className="p-6 overflow-y-auto">
-          <div className="mb-6">
-            <h3 className="text-sm font-medium mb-2">حسب المحافظة</h3>
-            <div className="grid grid-cols-3 gap-2">
-              <CheckboxWithLabel label="الكل" />
-              <CheckboxWithLabel label="حضرموت" />
-              <CheckboxWithLabel label="شبوة" />
-              <CheckboxWithLabel label="المهرة" />
-              <CheckboxWithLabel label="أبين" />
-              <CheckboxWithLabel label="عدن" />
+        <form id="formId">
+          <div className="w-full  px-8  flex flex-col gap-5">
+            <div className="w-[279.35px]  border-b-[1px] border-[#F0F1F5]  pb-5 ">
+              <label className="pr-4 font-bold text-[#414141] ">اختار الشهر</label>
+              <Select onValueChange={(value) => handleMonthChange(value)}>
+                <SelectTrigger className="">
+                  <SelectValue placeholder="اختار الشهر" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>الشهر</SelectLabel>
+
+                    <SelectItem key="1" value="1">
+                      يناير
+                    </SelectItem>
+                    <SelectItem key="2" value="2">
+                      فبراير
+                    </SelectItem>
+                    <SelectItem key="3" value="3">
+                      مارس
+                    </SelectItem>
+                    <SelectItem key="4" value="4">
+                      أبريل
+                    </SelectItem>
+                    <SelectItem key="5" value="5">
+                      مايو
+                    </SelectItem>
+                    <SelectItem key="6" value="6">
+                      يونيو
+                    </SelectItem>
+                    <SelectItem key="7" value="7">
+                      يوليو
+                    </SelectItem>
+                    <SelectItem key="8" value="8">
+                      أغسطس
+                    </SelectItem>
+                    <SelectItem key="9" value="9">
+                      سبتمبر
+                    </SelectItem>
+                    <SelectItem key="10" value="10">
+                      أكتوبر
+                    </SelectItem>
+                    <SelectItem key="11" value="11">
+                      نوفمبر
+                    </SelectItem>
+                    <SelectItem key="12" value="12">
+                      ديسمبر
+                    </SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="w-[279.35px]  border-b-[1px] border-[#F0F1F5]  pb-5 ">
+              <label className="pr-4 font-bold text-[#414141] ">اختار السنة</label>
+              <Select onValueChange={(value) => handleYearChange(value)}>
+                <SelectTrigger className="">
+                  <SelectValue placeholder="اختار السنه" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>السنه</SelectLabel>
+
+                    {[...new Set(dismissal?.data.map((dismissals) => dismissals.year))].map(
+                      (year) => (
+                        <SelectItem key={year} value={year}>
+                          {year}
+                        </SelectItem>
+                      )
+                    )}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="w-[279.35px]  border-b-[1px] border-[#F0F1F5]  pb-5 ">
+              <label className="pr-4 font-bold text-[#414141] ">اختار الحالة</label>
+              <Select onValueChange={(value) => handleStateChange(value)}>
+                <SelectTrigger className="">
+                  <SelectValue placeholder="اختار الحالة" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>الحالة</SelectLabel>
+
+                    {states.map((state) => (
+                      <SelectItem key={state.value} value={state.label}>
+                        {state.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
           </div>
-
-          <div className="mb-6">
-            <h3 className="text-sm font-medium mb-2">حسب المربعات</h3>
-            <div className="grid grid-cols-3 gap-2">
-              <CheckboxWithLabel label="الكل" />
-              <CheckboxWithLabel label="حضرموت" />
-              <CheckboxWithLabel label="شبوة" />
-              <CheckboxWithLabel label="متوب" />
-              <CheckboxWithLabel label="غصمي" />
-              <CheckboxWithLabel label="الضالع" />
-            </div>
-          </div>
-
-          <div className="mb-6">
-            <div className="flex items-center mb-4">
-              <CheckboxWithLabel label="تحديد الفترة" />
-            </div>
-            <div className="grid grid-cols-2 gap-2 mb-4">
-              <Button className="bg-blue-600 text-white " onClick={() => setclan(!clan)}>
-                من
-              </Button>
-              <Button className="bg-blue-600 text-white" onClick={() => setclan(!clan)}>
-                إلى
-              </Button>
-            </div>
-            {clan ? (
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={setDate}
-                className="rounded-md border "
-              />
-            ) : null}
-          </div>
-        </div>
+        </form>
 
         <DrawerFooter className="flex justify-between p-4">
           <div className="flex justify-between">
+            <Button className="bg-[#196CB0]">فلتر</Button>
             <DrawerClose asChild>
               <Button variant="outline">إلغاء</Button>
             </DrawerClose>
-            <Button className="bg-[#196CB0]">فلتر</Button>
           </div>
         </DrawerFooter>
       </DrawerContent>
