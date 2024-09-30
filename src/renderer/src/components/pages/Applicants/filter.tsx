@@ -17,6 +17,16 @@ import { getApi } from '@renderer/lib/http'
 import { useAuthHeader } from 'react-auth-kit'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue
+} from '@renderer/components/ui/select'
+
 export interface Directorate {
   id: number
   globalId: string
@@ -38,6 +48,14 @@ export interface Category {
   lastModified: Date
 }
 const FilterDrawer = () => {
+  const [states, _setStates] = useState([
+    { value: 'active', label: 'نشط' },
+    { value: 'not active', label: 'غير نشط' }
+  ])
+  const [gender, _setGender] = useState([
+    { value: 'M', label: 'ذكر' },
+    { value: 'F', label: 'انثى' }
+  ])
   const [date, setDate] = React.useState<Date | undefined>(new Date())
   const [clan, setclan] = React.useState<boolean>(false)
   const [searchParams] = useSearchParams()
@@ -45,7 +63,7 @@ const FilterDrawer = () => {
   const authToken = useAuthHeader()
   const selectedGovernorates = searchParams.getAll('directorateGlobalId')
   const selectedCategories = searchParams.getAll('categoryGlobalId')
-  const pathname = location.pathname
+  
 
   const {
     isPending: isdirectoratePending,
@@ -109,27 +127,19 @@ const FilterDrawer = () => {
     navigate(`/applicants?${params.toString()}`, { replace: true })
   }
 
-  const handleSubmit = () => {
+  const handleStateChange = (state: string) => {
     const params = new URLSearchParams(searchParams.toString())
-
-    // If there's at least one selected category and governorate
-    if (selectedCategories.length > 0) {
-      console.log('Setting categoryGlobalId:', selectedCategories[0]) // Log what you're setting
-      params.set('categoryGlobalId', selectedCategories[0])
-    } else {
-      params.delete('categoryGlobalId')
-    }
-
-    if (selectedGovernorates.length > 0) {
-      console.log('Setting directorateGlobalId:', selectedGovernorates[0]) // Log what you're setting
-      params.set('directorateGlobalId', selectedGovernorates[0])
-    } else {
-      params.delete('directorateGlobalId')
-    }
+     params.set('state', state)
 
     navigate(`/applicants?${params.toString()}`, { replace: true })
   }
 
+  const handleGenderChange = (gender: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+     params.set('gender', gender)
+
+    navigate(`/applicants?${params.toString()}`, { replace: true })
+  }
   if (isdirectoratePending || isCategoryPending) return 'Loading...'
   if (directorateError || categoryError)
     return 'An error has occurred: ' + (directorateError?.message || categoryError?.message)
@@ -202,9 +212,46 @@ const FilterDrawer = () => {
               ))}
             </div>
           </div>
-          <button onClick={handleSubmit} className="bg-blue-600 text-white px-4 py-2 rounded">
-            Submit
-          </button>
+
+          <div className="w-[279.35px]  border-b-[1px] border-[#F0F1F5]  pb-5 ">
+            <label className="pr-4 font-bold text-[#414141] ">اختار الحاله</label>
+            <Select onValueChange={(value) => handleStateChange(value)}>
+              <SelectTrigger className="">
+                <SelectValue placeholder="اختار الحالة" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>الحالة</SelectLabel>
+
+                  {states.map((state) => (
+                    <SelectItem key={state.value} value={state.label}>
+                      {state.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="w-[279.35px]  border-b-[1px] border-[#F0F1F5]  pb-5 ">
+            <label className="pr-4 font-bold text-[#414141] ">اختارالجنس</label>
+            <Select onValueChange={(value) => handleGenderChange(value)}>
+              <SelectTrigger className="">
+                <SelectValue placeholder="اختار الحالة" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>الحالة</SelectLabel>
+                  {gender.map((genders) => (
+                    <SelectItem key={genders.value} value={genders.value}>
+                      {genders.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="w-full h-[1px] bg-[#F0F1F5]"></div>
           <div className="mb-6 mt-3">
             <div className="flex items-center mb-4">

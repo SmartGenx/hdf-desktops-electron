@@ -1,5 +1,4 @@
 import StatistCard from '@renderer/components/statistCard'
-import SearchInput from '../../searchInput'
 import Boutton from '@renderer/components/Boutton'
 import FilterDrawer from './filter'
 import { useAuthHeader } from 'react-auth-kit'
@@ -19,6 +18,9 @@ export type statistCardInfo = {
 const Dismissal = () => {
   const [searchParams] = useSearchParams()
   const query = searchParams.get('query')
+  const month = searchParams.get('month')
+  const state = searchParams.get('state')
+  const year = searchParams.get('year')
   const page = searchParams.get('page')
   const [statist, setStatist] = useState<statistCardInfo | undefined>()
   const authToken = useAuthHeader()
@@ -27,12 +29,15 @@ const Dismissal = () => {
     error,
     data: dismissal
   } = useQuery({
-    queryKey: ['dismissal', page, query],
+    queryKey: ['dismissal', page, query,month,year,state],
     queryFn: () =>
       getApi<Dismissales>('/dismissal', {
         params: {
           'include[Accredited]': true,
           'Accredited[doctor][contains]': query,
+          'month':month,
+          'year':year,
+          'state':state,
           page: page || 1,
           pageSize: 5
         },

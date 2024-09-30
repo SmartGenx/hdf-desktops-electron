@@ -7,8 +7,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger
-} from '../../ui/drawer' // Replace with your actual drawer component
-import CheckboxWithLabel from '@renderer/components/CheckboxWithLabel'
+} from '../../ui/drawer'
 import { SlidersHorizontal } from 'lucide-react'
 import { Select } from '@radix-ui/react-select'
 import {
@@ -23,8 +22,44 @@ import { useAuthHeader } from 'react-auth-kit'
 import { AccreditedInfo, Square } from '@renderer/types'
 import { useQuery } from '@tanstack/react-query'
 import { getApi } from '@renderer/lib/http'
+import { useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 
 const FilterDrawer = () => {
+  const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const [statuses, _setstatuse] = useState<{ label: string; name: string }[]>([
+    { label: 'مستمر', name: 'مستمر' },
+    { label: 'موقف', name: 'موقف' }
+  ])
+
+  const handleDoctorChange = (doctor: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    searchParams.getAll('squareGlobalId')
+    // console.log('doctors', doctors)
+
+    navigate(`/accredited?${params.toString()}`, { replace: true })
+  }
+
+  const handleTreatmentSiteChange = (treatmentSite: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('treatmentSite', treatmentSite)
+
+    navigate(`/accredited?${params.toString()}`, { replace: true })
+  }
+  const handleStateChange = (state: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('state', state)
+
+    navigate(`/accredited?${params.toString()}`, { replace: true })
+  }
+  const handleSquareCheckboxChange = (squareGlobalId: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('squareGlobalId', squareGlobalId)
+
+    navigate(`/accredited?${params.toString()}`, { replace: true })
+  }
+
   const authToken = useAuthHeader()
   const { data: Accrediteds } = useQuery({
     queryKey: ['Accredited'],
@@ -69,7 +104,7 @@ const FilterDrawer = () => {
           <div className="w-full  px-8  flex flex-col gap-5">
             <div className="w-[279.35px]  border-b-[1px] border-[#F0F1F5]  pb-5 ">
               <label className="pr-4 font-bold text-[#414141] ">حسب الدكتور</label>
-              <Select>
+              <Select onValueChange={(value) => handleDoctorChange(value)}>
                 <SelectTrigger className="">
                   <SelectValue placeholder="اختر الدكتور" />
                 </SelectTrigger>
@@ -88,7 +123,7 @@ const FilterDrawer = () => {
 
             <div className="w-[279.35px]  border-b-[1px] border-[#F0F1F5]  pb-5">
               <label className="pr-4 font-bold text-[#414141] ">حسب الموقع</label>
-              <Select>
+              <Select onValueChange={(value) => handleTreatmentSiteChange(value)}>
                 <SelectTrigger className="">
                   <SelectValue placeholder="اختر الموقع" />
                 </SelectTrigger>
@@ -106,16 +141,16 @@ const FilterDrawer = () => {
             </div>
             <div className="w-[279.35px]  border-b-[1px] border-[#F0F1F5]  pb-5">
               <label className="pr-4 font-bold text-[#414141] ">حسب الحالة</label>
-              <Select>
+              <Select onValueChange={(value) => handleStateChange(value)}>
                 <SelectTrigger className="">
                   <SelectValue placeholder="اختر الحالة" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>الحالات</SelectLabel>
-                    {Accrediteds?.data.map((statuse) => (
-                      <SelectItem key={statuse.state} value={statuse.state}>
-                        {statuse.state}
+                    {statuses.map((statuse) => (
+                      <SelectItem key={statuse.label} value={String(statuse.label)}>
+                        {statuse.name}
                       </SelectItem>
                     ))}
                   </SelectGroup>
@@ -124,10 +159,23 @@ const FilterDrawer = () => {
             </div>
           </div>
           <label className="text-black font-bold pr-6">حسب المربعات</label>
-          <div className="grid grid-cols-3 px-7 ">
+          <div className="grid grid-cols-3 gap-4">
             {squares?.data.map((square) => (
-              <div key={square.name} className="col-span-1 mt-3">
-                <CheckboxWithLabel label={square.name} />
+              <div key={square.globalId} className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  value={square.globalId}
+                  onChange={() => handleSquareCheckboxChange(square.globalId)}
+                  className="mr-2"
+                />
+                <label
+                  className="text-sm truncate"
+                  dir="rtl"
+                  style={{ maxWidth: '120px' }}
+                  title={square.name}
+                >
+                  {square.name}
+                </label>
               </div>
             ))}
           </div>

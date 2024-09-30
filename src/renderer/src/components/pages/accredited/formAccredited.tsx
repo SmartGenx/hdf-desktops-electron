@@ -58,8 +58,6 @@ export default function FormAccredited() {
   const [statuses, _setstatuse] = useState<{ label: string; name: string }[]>([
     { label: 'مستمر', name: 'مستمر' },
     { label: 'موقف', name: 'موقف' }
-
-    // Add more options as needed
   ])
 
   React.useEffect(() => {
