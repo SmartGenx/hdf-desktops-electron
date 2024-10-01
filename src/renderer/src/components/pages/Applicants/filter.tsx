@@ -48,22 +48,21 @@ export interface Category {
   lastModified: Date
 }
 const FilterDrawer = () => {
-  const [states, _setStates] = useState([
+  const [states] = useState([
     { value: 'active', label: 'نشط' },
     { value: 'not active', label: 'غير نشط' }
   ])
-  const [gender, _setGender] = useState([
+  const [gender] = useState([
     { value: 'M', label: 'ذكر' },
     { value: 'F', label: 'انثى' }
   ])
   const [date, setDate] = React.useState<Date | undefined>(new Date())
-  const [clan, setclan] = React.useState<boolean>(false)
+  const [clan, setClan] = React.useState<boolean>(false)
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const authToken = useAuthHeader()
   const selectedGovernorates = searchParams.getAll('directorateGlobalId')
   const selectedCategories = searchParams.getAll('categoryGlobalId')
-  
 
   const {
     isPending: isdirectoratePending,
@@ -129,17 +128,22 @@ const FilterDrawer = () => {
 
   const handleStateChange = (state: string) => {
     const params = new URLSearchParams(searchParams.toString())
-     params.set('state', state)
+    params.set('state', state)
 
     navigate(`/applicants?${params.toString()}`, { replace: true })
   }
 
   const handleGenderChange = (gender: string) => {
     const params = new URLSearchParams(searchParams.toString())
-     params.set('gender', gender)
+    params.set('gender', gender)
 
     navigate(`/applicants?${params.toString()}`, { replace: true })
   }
+
+  const handleClearFilters = () => {
+    navigate('/applicants', { replace: true })
+  }
+
   if (isdirectoratePending || isCategoryPending) return 'Loading...'
   if (directorateError || categoryError)
     return 'An error has occurred: ' + (directorateError?.message || categoryError?.message)
@@ -215,7 +219,7 @@ const FilterDrawer = () => {
 
           <div className="w-[279.35px]  border-b-[1px] border-[#F0F1F5]  pb-5 ">
             <label className="pr-4 font-bold text-[#414141] ">اختار الحاله</label>
-            <Select onValueChange={(value) => handleStateChange(value)}>
+            <Select onValueChange={handleStateChange}>
               <SelectTrigger className="">
                 <SelectValue placeholder="اختار الحالة" />
               </SelectTrigger>
@@ -224,7 +228,7 @@ const FilterDrawer = () => {
                   <SelectLabel>الحالة</SelectLabel>
 
                   {states.map((state) => (
-                    <SelectItem key={state.value} value={state.label}>
+                    <SelectItem key={state.value} value={state.value}>
                       {state.label}
                     </SelectItem>
                   ))}
@@ -234,14 +238,14 @@ const FilterDrawer = () => {
           </div>
 
           <div className="w-[279.35px]  border-b-[1px] border-[#F0F1F5]  pb-5 ">
-            <label className="pr-4 font-bold text-[#414141] ">اختارالجنس</label>
-            <Select onValueChange={(value) => handleGenderChange(value)}>
+            <label className="pr-4 font-bold text-[#414141] ">اختار الجنس</label>
+            <Select onValueChange={handleGenderChange}>
               <SelectTrigger className="">
-                <SelectValue placeholder="اختار الحالة" />
+                <SelectValue placeholder="اختار الجنس" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>الحالة</SelectLabel>
+                  <SelectLabel>الجنس</SelectLabel>
                   {gender.map((genders) => (
                     <SelectItem key={genders.value} value={genders.value}>
                       {genders.label}
@@ -258,10 +262,10 @@ const FilterDrawer = () => {
               <CheckboxWithLabel label="تحديد الفترة" />
             </div>
             <div className="grid grid-cols-2 gap-2 mb-4">
-              <Button className="bg-blue-600 text-white " onClick={() => setclan(!clan)}>
+              <Button className="bg-blue-600 text-white " onClick={() => setClan(!clan)}>
                 من
               </Button>
-              <Button className="bg-blue-600 text-white" onClick={() => setclan(!clan)}>
+              <Button className="bg-blue-600 text-white" onClick={() => setClan(!clan)}>
                 إلى
               </Button>
             </div>
@@ -277,10 +281,16 @@ const FilterDrawer = () => {
         </div>
 
         <DrawerFooter className="flex justify-between p-4">
-          <div className="flex justify-between">
+          <div className="flex justify-between gap-2">
+            {/* 'إلغاء' button wrapped with DrawerClose */}
             <DrawerClose asChild>
               <Button variant="outline">إلغاء</Button>
             </DrawerClose>
+            {/* 'إعادة تعيين' button to clear filters */}
+            <Button variant="outline" onClick={handleClearFilters}>
+              إعادة تعيين
+            </Button>
+            {/* 'فلتر' button */}
             <Button className="bg-[#196CB0]">فلتر</Button>
           </div>
         </DrawerFooter>

@@ -76,6 +76,9 @@ const FilterDrawer = () => {
 
     navigate(`/dismissal?${params.toString()}`, { replace: true })
   }
+  const handleClearFilters = () => {
+    navigate('/dismissal', { replace: true })
+  }
   console.log('asdasdasd', dismissal?.data)
   return (
     <Drawer direction="left">
@@ -196,6 +199,9 @@ const FilterDrawer = () => {
         <DrawerFooter className="flex justify-between p-4">
           <div className="flex justify-between">
             <Button className="bg-[#196CB0]">فلتر</Button>
+            <Button variant="outline" onClick={handleClearFilters}>
+              إعادة تعيين
+            </Button>
             <DrawerClose asChild>
               <Button variant="outline">إلغاء</Button>
             </DrawerClose>

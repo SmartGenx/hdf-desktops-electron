@@ -35,8 +35,7 @@ const FilterDrawer = () => {
 
   const handleDoctorChange = (doctor: string) => {
     const params = new URLSearchParams(searchParams.toString())
-    searchParams.getAll('squareGlobalId')
-    // console.log('doctors', doctors)
+    params.set('doctor', doctor)
 
     navigate(`/accredited?${params.toString()}`, { replace: true })
   }
@@ -60,6 +59,9 @@ const FilterDrawer = () => {
     navigate(`/accredited?${params.toString()}`, { replace: true })
   }
 
+  const handleClearFilters = () => {
+    navigate('/accredited', { replace: true })
+  }
   const authToken = useAuthHeader()
   const { data: Accrediteds } = useQuery({
     queryKey: ['Accredited'],
@@ -80,6 +82,16 @@ const FilterDrawer = () => {
         }
       })
   })
+
+  const uniqueDoctors = Accrediteds?.data
+    ? [
+        ...new Set(
+          Accrediteds.data
+            .map((statuse) => statuse.doctor?.trim())
+            .filter((doctor) => doctor && doctor.length > 0)
+        )
+      ]
+    : []
 
   return (
     <Drawer direction="left">
@@ -111,9 +123,9 @@ const FilterDrawer = () => {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>الدكاتره</SelectLabel>
-                    {Accrediteds?.data.map((statuse) => (
-                      <SelectItem key={statuse.doctor} value={statuse.doctor}>
-                        {statuse.doctor}
+                    {uniqueDoctors.map((doctor, index) => (
+                      <SelectItem key={`${doctor}-${index}`} value={doctor}>
+                        {doctor}
                       </SelectItem>
                     ))}
                   </SelectGroup>
@@ -184,6 +196,9 @@ const FilterDrawer = () => {
         <DrawerFooter className="flex justify-between p-4">
           <div className="flex justify-between">
             <Button className="bg-[#196CB0]">فلتر</Button>
+            <Button variant="outline" onClick={handleClearFilters}>
+              إعادة تعيين
+            </Button>
             <DrawerClose asChild>
               <Button variant="outline">إلغاء</Button>
             </DrawerClose>
