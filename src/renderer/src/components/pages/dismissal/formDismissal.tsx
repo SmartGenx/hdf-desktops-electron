@@ -270,7 +270,7 @@ export default function FormDismissal() {
                         </div>
                         <div className="col-span-1 translate-y-6">
                           <Button
-                            className="w-[104px] h-[42px] bg-[#196CB0]"
+                            className="w-[104px] h-[42px] bg-[#196CB0] hover:bg-[#2b4d68]"
                             onClick={generateRfid}
                             type="button"
                           >
@@ -463,7 +463,7 @@ export default function FormDismissal() {
                 </div>
                 {/*  */}
                 <div className="flex justify-end gap-4 ">
-                  <Button type="submit" className="w-[120px]">
+                  <Button type="submit" className="w-[120px] bg-[#196CB0] hover:bg-[#2b4d68]">
                     حفظ
                   </Button>
                   <Button
