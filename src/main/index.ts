@@ -49,13 +49,13 @@ app.whenReady().then(() => {
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
-  let serverPath;
+  let serverPath = join(__dirname, '../../../server/index.js');
 
-  if (is.dev) {
-    serverPath = join(__dirname, '../../server/index.js');
-  } else {
-    serverPath = join(process.resourcesPath, 'server', 'index.js');
-  }
+  // if (is.dev) {
+  //   serverPath = join(__dirname, '../../server/index.js');
+  // } else {
+  //   serverPath = join(process.resourcesPath, 'server', 'index.js');
+  // }
   // }
 
   // } // const serverPath = resolve(__dirname, '../../server/index')
