@@ -135,6 +135,20 @@
         "filter": [
           "**/*"
         ]
+      },
+      {
+        "from": "node_modules",
+        "to": "node_modules",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "prisma",
+        "to": "prisma",
+        "filter": [
+          "**/*"
+        ]
       }
     ],
     "asarUnpack": [
