@@ -4,7 +4,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import FilterDrawer from './filter'
 import { useAuthHeader } from 'react-auth-kit'
 import { useQuery } from '@tanstack/react-query'
-import { applicantsReportCategoryInfo } from '@renderer/types'
+import { applicantsReportCategory, applicantsReportCategoryInfo } from '@renderer/types'
 import { getApi } from '@renderer/lib/http'
 import WaitingTable from './waitingTable'
 import ReactToPrint from 'react-to-print'
@@ -30,7 +30,22 @@ export default function WaitingList() {
         }
       })
   })
-  console.log('applicantsReportCategory', applicantsReportCategory?.data)
+
+  const {
+    isPending: isPeningCardCard,
+    isError: isErrorCard,
+    error: errorCard,
+    data: applicantsReportCategoryPrint
+  } = useQuery({
+    queryKey: ['applicantsReportCategory'],
+    queryFn: () =>
+      getApi<applicantsReportCategory[]>('/applicant/applicantsReportCategory', {
+        headers: {
+          Authorization: authToken()
+        }
+      })
+  })
+
   const componentRef = useRef<HTMLTableElement>(null)
 
   if (isPending) return 'Loading...'
@@ -55,7 +70,7 @@ export default function WaitingList() {
             content={() => componentRef.current}
           />
           <div className="hidden">
-            <ComponentToPrint ref={componentRef} data={applicantsReportCategory.data.info} />
+            <ComponentToPrint ref={componentRef} data={applicantsReportCategoryPrint?.data!} />
           </div>
 
           <Link to={'/formDismissal'}>

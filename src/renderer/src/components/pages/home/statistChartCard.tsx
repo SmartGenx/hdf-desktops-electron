@@ -11,6 +11,36 @@ import {
   Tooltip,
   Legend
 } from 'chart.js'
+import { useAuthHeader } from 'react-auth-kit'
+import { useQuery } from '@tanstack/react-query'
+import { getApi } from '@renderer/lib/http'
+
+export interface StaticsPer {
+  applicantMonthlyGenderCountsWithSquareCount: ApplicantMonthlyGenderCountsWithSquareCount
+}
+
+export interface ApplicantMonthlyGenderCountsWithSquareCount {
+  monthlyCounts: MonthlyCount[]
+  result: Result[]
+  accreditCount: number
+}
+
+export interface MonthlyCount {
+  month: number
+  males: number
+  females: number
+}
+
+export interface Result {
+  name: string
+  count: number
+}
+
+interface StaticDataItem {
+  month: string
+  male: number
+  female: number
+}
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
@@ -40,6 +70,20 @@ const options = {
 }
 
 const StatistChartCard = () => {
+  const authToken = useAuthHeader()
+  const {
+    isPending,
+    error,
+    data: staticsPer
+  } = useQuery({
+    queryKey: ['staticsPer'],
+    queryFn: () =>
+      getApi<StaticsPer>('/applicant/ApplicantMonthlyGenderCount', {
+        headers: {
+          Authorization: authToken()
+        }
+      })
+  })
   const [chartData, setChartData] = useState<{
     labels: string[]
     datasets: {
@@ -74,20 +118,31 @@ const StatistChartCard = () => {
 
   useEffect(() => {
     // Static data for demonstration
-    const staticData = [
-      { month: 'January', male: 20000, female: 15000 },
-      { month: 'February', male: 21000, female: 16000 },
-      { month: 'March', male: 22000, female: 17000 },
-      { month: 'April', male: 23000, female: 18000 },
-      { month: 'May', male: 24000, female: 19000 },
-      { month: 'June', male: 25000, female: 20000 },
-      { month: 'July', male: 26000, female: 21000 },
-      { month: 'August', male: 27000, female: 22000 },
-      { month: 'September', male: 28000, female: 23000 },
-      { month: 'October', male: 29000, female: 24000 },
-      { month: 'November', male: 30000, female: 25000 },
-      { month: 'December', male: 31000, female: 26000 }
+    const monthNames = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
     ]
+
+    const getMonthName = (monthNumber: number): string => {
+      return monthNames[monthNumber - 1] || 'Unknown'
+    }
+
+    const staticData: StaticDataItem[] =
+      staticsPer?.data.applicantMonthlyGenderCountsWithSquareCount.monthlyCounts.map((count) => ({
+        month: getMonthName(count.month),
+        male: count.males,
+        female: count.females
+      })) || []
 
     const labels = staticData.map((item) => item.month)
     const maleData = staticData.map((item) => item.male)

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from '../../ui/button' // Replace with your actual button component
 import { Calendar } from '../../ui/calendar' // Replace with your actual calendar component
 import {
@@ -61,9 +61,12 @@ const FilterDrawer = () => {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const authToken = useAuthHeader()
-  const selectedGovernorates = searchParams.getAll('directorateGlobalId')
-  const selectedCategories = searchParams.getAll('categoryGlobalId')
-
+  // const selectedGovernorates = searchParams.getAll('directorateGlobalId')
+  // const selectedCategories = searchParams.getAll('categoryGlobalId')
+  const [selectedGovernorates, setSelectedGovernorates] = useState<string[]>([])
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+  const [selectedState, setSelectedState] = useState<string>('')
+  const [selectedGender, setSelectedGender] = useState<string>('')
   const {
     isPending: isdirectoratePending,
     error: directorateError,
@@ -92,58 +95,103 @@ const FilterDrawer = () => {
       })
   })
 
-  const handleGovernorateCheckboxChange = (globalId: string) => {
-    const params = new URLSearchParams(searchParams.toString())
-    const governorates = params.getAll('directorateGlobalId')
+  useEffect(() => {
+    const governorates = searchParams.getAll('directorateGlobalId')
+    const categories = searchParams.getAll('categoryGlobalId')
+    const state = searchParams.get('state') || ''
+    const gender = searchParams.get('gender') || ''
 
-    if (governorates.includes(globalId)) {
-      // If already selected, remove it
-      params.delete('directorateGlobalId')
-      governorates
-        .filter((id) => id !== globalId)
-        .forEach((id) => params.append('directorateGlobalId', id))
-    } else {
-      // Add new selection
-      params.append('directorateGlobalId', globalId)
-    }
-    navigate(`/applicants?${params.toString()}`, { replace: true })
+    setSelectedGovernorates(governorates)
+    setSelectedCategories(categories)
+    setSelectedState(state)
+    setSelectedGender(gender)
+  }, [searchParams])
+
+  // const handleGovernorateCheckboxChange = (globalId: string) => {
+  //   const params = new URLSearchParams(searchParams.toString())
+  //   const governorates = params.getAll('directorateGlobalId')
+
+  //   if (governorates.includes(globalId)) {
+  //     // If already selected, remove it
+  //     params.delete('directorateGlobalId')
+  //     governorates
+  //       .filter((id) => id !== globalId)
+  //       .forEach((id) => params.append('directorateGlobalId', id))
+  //   } else {
+  //     // Add new selection
+  //     params.append('directorateGlobalId', globalId)
+  //   }
+  //   navigate(`/applicants?${params.toString()}`, { replace: true })
+  // }
+
+  // const handleCategoryCheckboxChange = (globalId: string) => {
+  //   const params = new URLSearchParams(searchParams.toString())
+  //   const categories = params.getAll('categoryGlobalId')
+
+  //   if (categories.includes(globalId)) {
+  //     // If already selected, remove it
+  //     params.delete('categoryGlobalId')
+  //     categories
+  //       .filter((id) => id !== globalId)
+  //       .forEach((id) => params.append('categoryGlobalId', id))
+  //   } else {
+  //     // Add new selection
+  //     params.append('categoryGlobalId', globalId)
+  //   }
+  //   navigate(`/applicants?${params.toString()}`, { replace: true })
+  // }
+
+  // const handleStateChange = (state: string) => {
+  //   const params = new URLSearchParams(searchParams.toString())
+  //   params.set('state', state)
+
+  //   navigate(`/applicants?${params.toString()}`, { replace: true })
+  // }
+
+  // const handleGenderChange = (gender: string) => {
+  //   const params = new URLSearchParams(searchParams.toString())
+  //   params.set('gender', gender)
+
+  //   navigate(`/applicants?${params.toString()}`, { replace: true })
+  // }
+  const handleGovernorateChange = (globalId: string) => {
+    setSelectedGovernorates((prev) =>
+      prev.includes(globalId) ? prev.filter((id) => id !== globalId) : [...prev, globalId]
+    )
   }
 
-  const handleCategoryCheckboxChange = (globalId: string) => {
-    const params = new URLSearchParams(searchParams.toString())
-    const categories = params.getAll('categoryGlobalId')
-
-    if (categories.includes(globalId)) {
-      // If already selected, remove it
-      params.delete('categoryGlobalId')
-      categories
-        .filter((id) => id !== globalId)
-        .forEach((id) => params.append('categoryGlobalId', id))
-    } else {
-      // Add new selection
-      params.append('categoryGlobalId', globalId)
-    }
-    navigate(`/applicants?${params.toString()}`, { replace: true })
+  const handleCategoryChange = (globalId: string) => {
+    setSelectedCategories((prev) =>
+      prev.includes(globalId) ? prev.filter((id) => id !== globalId) : [...prev, globalId]
+    )
   }
 
   const handleStateChange = (state: string) => {
-    const params = new URLSearchParams(searchParams.toString())
-    params.set('state', state)
-
-    navigate(`/applicants?${params.toString()}`, { replace: true })
+    setSelectedState(state)
   }
 
   const handleGenderChange = (gender: string) => {
-    const params = new URLSearchParams(searchParams.toString())
-    params.set('gender', gender)
-
-    navigate(`/applicants?${params.toString()}`, { replace: true })
+    setSelectedGender(gender)
   }
-
   const handleClearFilters = () => {
     navigate('/applicants', { replace: true })
   }
+  const handleFilter = () => {
+    const params = new URLSearchParams()
 
+    selectedGovernorates.forEach((id) => params.append('directorateGlobalId', id))
+    selectedCategories.forEach((id) => params.append('categoryGlobalId', id))
+
+    if (selectedState) {
+      params.set('state', selectedState)
+    }
+
+    if (selectedGender) {
+      params.set('gender', selectedGender)
+    }
+
+    navigate(`/applicants?${params.toString()}`, { replace: true })
+  }
   if (isdirectoratePending || isCategoryPending) return 'Loading...'
   if (directorateError || categoryError)
     return 'An error has occurred: ' + (directorateError?.message || categoryError?.message)
@@ -166,6 +214,7 @@ const FilterDrawer = () => {
         <Separator />
 
         <div className="p-6 overflow-y-auto">
+          {/* Governorates Filter */}
           <div className="mb-6">
             <h3 className="text-sm font-medium mb-2">حسب المحافظة</h3>
             <div className="grid grid-cols-3 gap-4">
@@ -175,7 +224,7 @@ const FilterDrawer = () => {
                     type="checkbox"
                     value={governorate.globalId}
                     checked={selectedGovernorates.includes(governorate.globalId)}
-                    onChange={() => handleGovernorateCheckboxChange(governorate.globalId)}
+                    onChange={() => handleGovernorateChange(governorate.globalId)}
                     className="mr-2"
                   />
                   <label
@@ -201,7 +250,7 @@ const FilterDrawer = () => {
                     type="checkbox"
                     value={category.globalId}
                     checked={selectedCategories.includes(category.globalId)}
-                    onChange={() => handleCategoryCheckboxChange(category.globalId)}
+                    onChange={() => handleCategoryChange(category.globalId)}
                     className="mr-2"
                   />
                   <label
@@ -217,16 +266,16 @@ const FilterDrawer = () => {
             </div>
           </div>
 
-          <div className="w-[279.35px]  border-b-[1px] border-[#F0F1F5]  pb-5 ">
-            <label className="pr-4 font-bold text-[#414141] ">اختار الحاله</label>
-            <Select onValueChange={handleStateChange}>
-              <SelectTrigger className="">
+          <div className="w-[279.35px] border-b-[1px] border-[#F0F1F5] pb-5">
+            {/* State Filter */}
+            <label className="pr-4 font-bold text-[#414141]">اختار الحالة</label>
+            <Select value={selectedState} onValueChange={handleStateChange}>
+              <SelectTrigger>
                 <SelectValue placeholder="اختار الحالة" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>الحالة</SelectLabel>
-
                   {states.map((state) => (
                     <SelectItem key={state.value} value={state.value}>
                       {state.label}
@@ -237,18 +286,19 @@ const FilterDrawer = () => {
             </Select>
           </div>
 
-          <div className="w-[279.35px]  border-b-[1px] border-[#F0F1F5]  pb-5 ">
-            <label className="pr-4 font-bold text-[#414141] ">اختار الجنس</label>
-            <Select onValueChange={handleGenderChange}>
-              <SelectTrigger className="">
+          <div className="w-[279.35px] border-b-[1px] border-[#F0F1F5] pb-5">
+            {/* Gender Filter */}
+            <label className="pr-4 font-bold text-[#414141]">اختار الجنس</label>
+            <Select value={selectedGender} onValueChange={handleGenderChange}>
+              <SelectTrigger>
                 <SelectValue placeholder="اختار الجنس" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>الجنس</SelectLabel>
-                  {gender.map((genders) => (
-                    <SelectItem key={genders.value} value={genders.value}>
-                      {genders.label}
+                  {gender.map((gender) => (
+                    <SelectItem key={gender.value} value={gender.value}>
+                      {gender.label}
                     </SelectItem>
                   ))}
                 </SelectGroup>
@@ -291,7 +341,9 @@ const FilterDrawer = () => {
               إعادة تعيين
             </Button>
             {/* 'فلتر' button */}
-            <Button className="bg-[#196CB0]">فلتر</Button>
+            <Button className="bg-[#196CB0]" onClick={handleFilter}>
+              فلتر
+            </Button>
           </div>
         </DrawerFooter>
       </DrawerContent>

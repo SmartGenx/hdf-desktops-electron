@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from '../../ui/button'
 import {
   Drawer,
@@ -47,6 +47,9 @@ const FilterDrawer = () => {
   ])
 
   const [searchParams] = useSearchParams()
+  const [selectedMonth, setSelectedMonth] = useState<string>('')
+  const [selectedYear, setSelectedYear] = useState<string>('')
+  const [selectedState, setSelectedState] = useState<string>('')
   const navigate = useNavigate()
   const authToken = useAuthHeader()
   const { data: dismissal } = useQuery({
@@ -58,28 +61,68 @@ const FilterDrawer = () => {
         }
       })
   })
+
+  useEffect(() => {
+    const month = searchParams.get('month') || ''
+    const year = searchParams.get('year') || ''
+    const state = searchParams.get('state') || ''
+
+    setSelectedMonth(month)
+    setSelectedYear(year)
+    setSelectedState(state)
+  }, [searchParams])
+  // const handleMonthChange = (month: string) => {
+  //   const params = new URLSearchParams(searchParams.toString())
+  //   params.set('month', month)
+
+  //   navigate(`/dismissal?${params.toString()}`, { replace: true })
+  // }
+  // const handleYearChange = (year: string) => {
+  //   const params = new URLSearchParams(searchParams.toString())
+  //   params.set('year', year)
+
+  //   navigate(`/dismissal?${params.toString()}`, { replace: true })
+  // }
+  // const handleStateChange = (state: string) => {
+  //   const params = new URLSearchParams(searchParams.toString())
+  //   params.set('state', state)
+
+  //   navigate(`/dismissal?${params.toString()}`, { replace: true })
+  // }
+
   const handleMonthChange = (month: string) => {
-    const params = new URLSearchParams(searchParams.toString())
-    params.set('month', month)
-
-    navigate(`/dismissal?${params.toString()}`, { replace: true })
+    setSelectedMonth(month)
   }
+
   const handleYearChange = (year: string) => {
-    const params = new URLSearchParams(searchParams.toString())
-    params.set('year', year)
-
-    navigate(`/dismissal?${params.toString()}`, { replace: true })
+    setSelectedYear(year)
   }
+
   const handleStateChange = (state: string) => {
-    const params = new URLSearchParams(searchParams.toString())
-    params.set('state', state)
+    setSelectedState(state)
+  }
+
+  const handleFilter = () => {
+    const params = new URLSearchParams()
+
+    if (selectedMonth) {
+      params.set('month', selectedMonth)
+    }
+
+    if (selectedYear) {
+      params.set('year', selectedYear)
+    }
+
+    if (selectedState) {
+      params.set('state', selectedState)
+    }
 
     navigate(`/dismissal?${params.toString()}`, { replace: true })
   }
   const handleClearFilters = () => {
     navigate('/dismissal', { replace: true })
   }
-  console.log('asdasdasd', dismissal?.data)
+
   return (
     <Drawer direction="left">
       <DrawerTrigger asChild>
@@ -103,14 +146,13 @@ const FilterDrawer = () => {
           <div className="w-full  px-8  flex flex-col gap-5">
             <div className="w-[279.35px]  border-b-[1px] border-[#F0F1F5]  pb-5 ">
               <label className="pr-4 font-bold text-[#414141] ">اختار الشهر</label>
-              <Select onValueChange={(value) => handleMonthChange(value)}>
-                <SelectTrigger className="">
+              <Select value={selectedMonth} onValueChange={handleMonthChange}>
+                <SelectTrigger>
                   <SelectValue placeholder="اختار الشهر" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>الشهر</SelectLabel>
-
                     <SelectItem key="1" value="1">
                       يناير
                     </SelectItem>
@@ -154,7 +196,7 @@ const FilterDrawer = () => {
 
             <div className="w-[279.35px]  border-b-[1px] border-[#F0F1F5]  pb-5 ">
               <label className="pr-4 font-bold text-[#414141] ">اختار السنة</label>
-              <Select onValueChange={(value) => handleYearChange(value)}>
+              <Select value={selectedYear} onValueChange={handleYearChange}>
                 <SelectTrigger className="">
                   <SelectValue placeholder="اختار السنه" />
                 </SelectTrigger>
@@ -176,7 +218,7 @@ const FilterDrawer = () => {
 
             <div className="w-[279.35px]  border-b-[1px] border-[#F0F1F5]  pb-5 ">
               <label className="pr-4 font-bold text-[#414141] ">اختار الحالة</label>
-              <Select onValueChange={(value) => handleStateChange(value)}>
+              <Select value={selectedState} onValueChange={handleStateChange}>
                 <SelectTrigger className="">
                   <SelectValue placeholder="اختار الحالة" />
                 </SelectTrigger>
@@ -198,7 +240,9 @@ const FilterDrawer = () => {
 
         <DrawerFooter className="flex justify-between p-4">
           <div className="flex justify-between">
-            <Button className="bg-[#196CB0]">فلتر</Button>
+            <Button className="bg-[#196CB0]" onClick={handleFilter}>
+              فلتر
+            </Button>
             <Button variant="outline" onClick={handleClearFilters}>
               إعادة تعيين
             </Button>

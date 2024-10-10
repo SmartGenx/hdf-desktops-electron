@@ -10,19 +10,46 @@ import {
 } from 'chart.js'
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card'
 import { useEffect, useState } from 'react'
+import { useAuthHeader } from 'react-auth-kit'
+import { useQuery } from '@tanstack/react-query'
+import { getApi } from '@renderer/lib/http'
+
+export interface StaticsPer {
+  applicantMonthlyGenderCountsWithSquareCount: ApplicantMonthlyGenderCountsWithSquareCount
+}
+
+export interface ApplicantMonthlyGenderCountsWithSquareCount {
+  monthlyCounts: MonthlyCount[]
+  result: Result[]
+  accreditCount: number
+}
+
+export interface MonthlyCount {
+  month: number
+  males: number
+  females: number
+}
+
+export interface Result {
+  name: string
+  count: number
+}
+
+interface StaticDataItem {
+  month: string
+  male: number
+  female: number
+}
 
 // Registering the required components from chart.js
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
-
-
 
 const options = {
   responsive: true,
   plugins: {
     legend: {
       position: 'right' as const // Positioning the legend to the right
-    },
-
+    }
   },
   scales: {
     x: {
@@ -37,13 +64,31 @@ const options = {
 }
 
 const StatistchartTowCard = () => {
+  const authToken = useAuthHeader()
+  const {
+    isPending,
+    error,
+    data: staticsPer
+  } = useQuery({
+    queryKey: ['staticsPer'],
+    queryFn: () =>
+      getApi<StaticsPer>('/applicant/ApplicantMonthlyGenderCount', {
+        headers: {
+          Authorization: authToken()
+        }
+      })
+  })
+  console.log(
+    'staticsPer',
+    staticsPer?.data.applicantMonthlyGenderCountsWithSquareCount.monthlyCounts
+  )
   const [chartData, setChartData] = useState<{
     labels: string[]
     datasets: {
       label: string
       data: number[]
       backgroundColor: string
-      borderRadius: number,
+      borderRadius: number
       barPercentage: number
     }[]
   }>({
@@ -55,7 +100,6 @@ const StatistchartTowCard = () => {
         backgroundColor: 'rgba(30, 144, 255, 0.3)',
         borderRadius: 10,
         barPercentage: 0.5
-
       },
       {
         label: 'الإناث',
@@ -68,25 +112,54 @@ const StatistchartTowCard = () => {
   })
   useEffect(() => {
     // Static data for demonstration
-    const staticData = [
-      { month: 'January', male: 20, female: 15 },
-      { month: 'February', male: 10, female: 20 },
-      { month: 'March', male: 10, female: 10 },
-      { month: 'April', male: 30, female: 40 },
-      { month: 'April', male: 15, female: 30 },
-      { month: 'April', male: 30, female: 60 },
-      { month: 'April', male: 10, female: 30 },
-      { month: 'April', male: 30, female: 20 },
-      { month: 'April', male: 10, female: 30 },
-      { month: 'April', male: 50, female: 30 },
-      { month: 'April', male: 30, female: 15 },
+    // const staticData = [
+    //   { month: 'January', male: 20, female: 15 },
+    //   { month: 'February', male: 10, female: 20 },
+    //   { month: 'March', male: 10, female: 10 },
+    //   { month: 'April', male: 30, female: 40 },
+    //   { month: 'April', male: 15, female: 30 },
+    //   { month: 'April', male: 30, female: 60 },
+    //   { month: 'April', male: 10, female: 30 },
+    //   { month: 'April', male: 30, female: 20 },
+    //   { month: 'April', male: 10, female: 30 },
+    //   { month: 'April', male: 50, female: 30 },
+    //   { month: 'April', male: 30, female: 15 }
+    // ]
 
+    // console.log(staticsPer?.data.applicantMonthlyGenderCountsWithSquareCount.monthlyCounts.map((X)=>X.females))
+    // const labels = staticData.map((item) => item.month)
+    // const maleData = staticData.map((item) => item.male)
+    // const femaleData = staticData.map((item) => item.female)
+
+    const monthNames = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
     ]
+
+    const getMonthName = (monthNumber: number): string => {
+      return monthNames[monthNumber - 1] || 'Unknown'
+    }
+
+    const staticData: StaticDataItem[] =
+      staticsPer?.data.applicantMonthlyGenderCountsWithSquareCount.monthlyCounts.map((count) => ({
+        month: getMonthName(count.month),
+        male: count.males,
+        female: count.females
+      })) || []
 
     const labels = staticData.map((item) => item.month)
     const maleData = staticData.map((item) => item.male)
     const femaleData = staticData.map((item) => item.female)
-
     setChartData({
       labels: labels,
       datasets: [
@@ -96,7 +169,6 @@ const StatistchartTowCard = () => {
           backgroundColor: '#196CB0',
           borderRadius: 10,
           barPercentage: 0.5
-
         },
         {
           label: 'الإناث',
@@ -108,7 +180,7 @@ const StatistchartTowCard = () => {
       ]
     })
   }, [])
-  console.log("🚀 ~ StatistchartTowCard ~ chartData:", chartData)
+  console.log('🚀 ~ StatistchartTowCard ~ chartData:', chartData)
 
   return (
     <div className="h-[400px] w-[836px]">

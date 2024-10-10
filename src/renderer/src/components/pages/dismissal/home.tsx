@@ -29,15 +29,15 @@ const Dismissal = () => {
     error,
     data: dismissal
   } = useQuery({
-    queryKey: ['dismissal', page, query,month,year,state],
+    queryKey: ['dismissal', page, query, month, year, state],
     queryFn: () =>
       getApi<Dismissales>('/dismissal', {
         params: {
           'include[Accredited]': true,
           'Accredited[doctor][contains]': query,
-          'month':month,
-          'year':year,
-          'state':state,
+          month: month,
+          year: year,
+          state: state,
           page: page || 1,
           pageSize: 5
         },
@@ -72,7 +72,7 @@ const Dismissal = () => {
       <div className="grid grid-cols-4 gap-2">
         <div className=" col-span-1 ">
           <StatistCard
-            title={'المعتمدين'}
+            title={'المستفيدين'}
             value={statist?.totalDismissals}
             subtitle={'مستفيد'}
             icon={'hospital'}
@@ -82,7 +82,7 @@ const Dismissal = () => {
           <StatistCard
             title={'الصيدليات'}
             value={statist?.totalPharmacies}
-            subtitle={'مستفيد'}
+            subtitle={'صيدلية'}
             icon={'house'}
           />
         </div>
