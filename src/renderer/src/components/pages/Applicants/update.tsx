@@ -227,7 +227,7 @@ export default function UpdateApplicant() {
       toast({
         title: 'اشعار',
         variant: 'success',
-        description: 'تمت الاضافة بنجاح'
+        description: 'تم تحديث بيانات المريض بنجاح'
       })
       queryClient.invalidateQueries({ queryKey: ['applicant'] })
       navigate('/applicants')

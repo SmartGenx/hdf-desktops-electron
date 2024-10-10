@@ -104,9 +104,9 @@ class ApplicantService {
 
       accredited.forEach((accreditedItem) => {
         const month = accreditedItem.applicant.submissionDate?.getMonth()
-        if (accreditedItem.applicant.gender === '1') {
+        if (accreditedItem.applicant.gender === 'M') {
           malesCounts[month]++
-        } else if (accreditedItem.applicant.gender === '2') {
+        } else if (accreditedItem.applicant.gender === 'F') {
           femalesCounts[month]++
         }
       })

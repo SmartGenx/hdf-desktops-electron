@@ -22,7 +22,7 @@ import { useAuthHeader } from 'react-auth-kit'
 import { AccreditedInfo, Square } from '@renderer/types'
 import { useQuery } from '@tanstack/react-query'
 import { getApi } from '@renderer/lib/http'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
 const FilterDrawer = () => {
@@ -33,32 +33,68 @@ const FilterDrawer = () => {
     { label: 'موقف', name: 'موقف' }
   ])
 
-  const handleDoctorChange = (doctor: string) => {
-    const params = new URLSearchParams(searchParams.toString())
-    params.set('doctor', doctor)
+  const [selectedDoctor, setSelectedDoctor] = useState<string>('')
+  const [selectedTreatmentSite, setSelectedTreatmentSite] = useState<string>('')
+  const [selectedStatus, setSelectedStatus] = useState<string>('')
+  const [selectedSquares, setSelectedSquares] = useState<string[]>([])
+  // const handleDoctorChange = (doctor: string) => {
+  //   const params = new URLSearchParams(searchParams.toString())
+  //   params.set('doctor', doctor)
 
-    navigate(`/accredited?${params.toString()}`, { replace: true })
+  //   navigate(`/accredited?${params.toString()}`, { replace: true })
+  // }
+
+  // const handleTreatmentSiteChange = (treatmentSite: string) => {
+  //   const params = new URLSearchParams(searchParams.toString())
+  //   params.set('treatmentSite', treatmentSite)
+
+  //   navigate(`/accredited?${params.toString()}`, { replace: true })
+  // }
+  // const handleStateChange = (state: string) => {
+  //   const params = new URLSearchParams(searchParams.toString())
+  //   params.set('state', state)
+
+  //   navigate(`/accredited?${params.toString()}`, { replace: true })
+  // }
+  // const handleSquareCheckboxChange = (squareGlobalId: string) => {
+  //   const params = new URLSearchParams(searchParams.toString())
+  //   params.set('squareGlobalId', squareGlobalId)
+
+  //   navigate(`/accredited?${params.toString()}`, { replace: true })
+  // }
+
+  useEffect(() => {
+    // Initialize second set of filters
+    const doctor = searchParams.get('doctor') || ''
+    const treatmentSite = searchParams.get('treatmentSite') || ''
+    const status = searchParams.get('state') || ''
+    const squares = searchParams.getAll('squareGlobalId')
+
+    setSelectedDoctor(doctor)
+    setSelectedTreatmentSite(treatmentSite)
+    setSelectedStatus(status)
+    setSelectedSquares(squares)
+  }, [searchParams])
+
+  const handleDoctorChange = (doctor: string) => {
+    setSelectedDoctor(doctor)
   }
 
   const handleTreatmentSiteChange = (treatmentSite: string) => {
-    const params = new URLSearchParams(searchParams.toString())
-    params.set('treatmentSite', treatmentSite)
-
-    navigate(`/accredited?${params.toString()}`, { replace: true })
+    setSelectedTreatmentSite(treatmentSite)
   }
-  const handleStateChange = (state: string) => {
-    const params = new URLSearchParams(searchParams.toString())
-    params.set('state', state)
 
-    navigate(`/accredited?${params.toString()}`, { replace: true })
+  const handleStatusChange = (status: string) => {
+    setSelectedStatus(status)
   }
+
   const handleSquareCheckboxChange = (squareGlobalId: string) => {
-    const params = new URLSearchParams(searchParams.toString())
-    params.set('squareGlobalId', squareGlobalId)
-
-    navigate(`/accredited?${params.toString()}`, { replace: true })
+    setSelectedSquares((prev) =>
+      prev.includes(squareGlobalId)
+        ? prev.filter((id) => id !== squareGlobalId)
+        : [...prev, squareGlobalId]
+    )
   }
-
   const handleClearFilters = () => {
     navigate('/accredited', { replace: true })
   }
@@ -93,6 +129,27 @@ const FilterDrawer = () => {
       ]
     : []
 
+  const handleFilter = () => {
+    const params = new URLSearchParams()
+
+    if (selectedDoctor) {
+      params.set('doctor', selectedDoctor)
+    }
+
+    if (selectedTreatmentSite) {
+      params.set('treatmentSite', selectedTreatmentSite)
+    }
+
+    if (selectedStatus) {
+      params.set('state', selectedStatus)
+    }
+
+    selectedSquares.forEach((id) => params.append('squareGlobalId', id))
+
+    // Navigate to the desired route with all filters
+    navigate(`/accredited?${params.toString()}`, { replace: true })
+    // Adjust the route based on where you want to apply the filters
+  }
   return (
     <Drawer direction="left">
       <DrawerTrigger asChild>
@@ -116,8 +173,8 @@ const FilterDrawer = () => {
           <div className="w-full  px-8  flex flex-col gap-5">
             <div className="w-[279.35px]  border-b-[1px] border-[#F0F1F5]  pb-5 ">
               <label className="pr-4 font-bold text-[#414141] ">حسب الدكتور</label>
-              <Select onValueChange={(value) => handleDoctorChange(value)}>
-                <SelectTrigger className="">
+              <Select value={selectedDoctor} onValueChange={handleDoctorChange}>
+                <SelectTrigger>
                   <SelectValue placeholder="اختر الدكتور" />
                 </SelectTrigger>
                 <SelectContent>
@@ -135,8 +192,8 @@ const FilterDrawer = () => {
 
             <div className="w-[279.35px]  border-b-[1px] border-[#F0F1F5]  pb-5">
               <label className="pr-4 font-bold text-[#414141] ">حسب الموقع</label>
-              <Select onValueChange={(value) => handleTreatmentSiteChange(value)}>
-                <SelectTrigger className="">
+              <Select value={selectedTreatmentSite} onValueChange={handleTreatmentSiteChange}>
+                <SelectTrigger>
                   <SelectValue placeholder="اختر الموقع" />
                 </SelectTrigger>
                 <SelectContent>
@@ -153,7 +210,7 @@ const FilterDrawer = () => {
             </div>
             <div className="w-[279.35px]  border-b-[1px] border-[#F0F1F5]  pb-5">
               <label className="pr-4 font-bold text-[#414141] ">حسب الحالة</label>
-              <Select onValueChange={(value) => handleStateChange(value)}>
+              <Select onValueChange={(value) => handleStatusChange(value)}>
                 <SelectTrigger className="">
                   <SelectValue placeholder="اختر الحالة" />
                 </SelectTrigger>
@@ -177,6 +234,7 @@ const FilterDrawer = () => {
                 <input
                   type="checkbox"
                   value={square.globalId}
+                  checked={selectedSquares.includes(square.globalId)}
                   onChange={() => handleSquareCheckboxChange(square.globalId)}
                   className="mr-2"
                 />
@@ -195,7 +253,9 @@ const FilterDrawer = () => {
 
         <DrawerFooter className="flex justify-between p-4">
           <div className="flex justify-between">
-            <Button className="bg-[#196CB0]">فلتر</Button>
+            <Button className="bg-[#196CB0]" onClick={handleFilter}>
+              فلتر
+            </Button>
             <Button variant="outline" onClick={handleClearFilters}>
               إعادة تعيين
             </Button>

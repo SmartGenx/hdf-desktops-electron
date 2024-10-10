@@ -1,6 +1,6 @@
 import { cn } from '@renderer/lib/utils'
 import { useEffect, useState } from 'react'
-import logo from '../../assets/images/newlogo.svg'
+import logo from '../../assets/images/شعار التنمية-01.png'
 import useNavItems from '../../hooks/useNavItems'
 import useNavItemsSetting from '../../hooks/useNavItemsSetting'
 import useScreenSize from '../../hooks/useScreenSize'
@@ -34,7 +34,7 @@ export default function Sidebar() {
 
       <div className={cn('flex w-full flex-col items-center justify-center p-4 gap-2', {})}>
         {expanded ? (
-          <img src={logo} alt="logo" className="w-[110px] h-[79px]" />
+          <img src={logo} alt="logo" className="w-[130px] h-[119px]" />
         ) : (
           <img src={logo} alt="logo" className="w-[62px] h-[62px]" />
         )}

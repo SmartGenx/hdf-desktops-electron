@@ -5,7 +5,7 @@ import FilterDrawer from './filter'
 import { useAuthHeader } from 'react-auth-kit'
 import { useQuery } from '@tanstack/react-query'
 import { getApi } from '@renderer/lib/http'
-import { AllAccreditedsForPdf } from '@renderer/types'
+import { AllAccreditedsForPdf, AllAccreditedsForPdfInfo } from '@renderer/types'
 import FollowReceiptTable from './Follow-recipes'
 import ReactToPrint from 'react-to-print'
 import ComponentToPrint from './ComponentToPrint'
@@ -31,7 +31,21 @@ export default function FollowTheRecipes() {
       })
   })
 
-  console.log('AllAccreditedsForPdf', AllAccreditedsForPdf?.data.info)
+  const {
+    isPending: isPeningCardCard,
+    isError: isErrorCard,
+    error: errorCard,
+    data: AllAccreditedsForPdfPrint
+  } = useQuery({
+    queryKey: ['AllAccreditedsForPdf'],
+    queryFn: () =>
+      getApi<AllAccreditedsForPdfInfo[]>('/accredited/AllAccreditedsForPdf', {
+        headers: {
+          Authorization: authToken()
+        }
+      })
+  })
+
   const componentRef = useRef<HTMLTableElement>(null)
   if (isPending) return 'Loading...'
   if (error) return 'An error has occurred: ' + error.message
@@ -54,7 +68,7 @@ export default function FollowTheRecipes() {
             content={() => componentRef.current}
           />
           <div className="hidden">
-            <ComponentToPrint ref={componentRef} data={AllAccreditedsForPdf.data.info} />
+            <ComponentToPrint ref={componentRef} data={AllAccreditedsForPdfPrint?.data!} />
           </div>
           <Link to={'/formDismissal'}>
             <Boutton
