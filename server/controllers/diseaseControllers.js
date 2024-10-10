@@ -48,7 +48,9 @@ class DiseaseController {
 
       res.status(201).json(newDisease);
     } catch (error) {
-      next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
+      // next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
+      res.status(500).json({ message: `${error}` });
+
     }
   }
 
@@ -71,7 +73,9 @@ class DiseaseController {
 
       res.status(200).json(updatedDisease);
     } catch (error) {
-      next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
+      // next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
+      res.status(500).json({ message: `${error}` });
+
     }
   }
 

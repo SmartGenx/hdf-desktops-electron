@@ -46,7 +46,9 @@ class SquareController {
       const newSquare = await SquareService.createSquare(name);
       res.status(201).json(newSquare);
     } catch (error) {
-      next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
+      // next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
+      res.status(500).json({ message: `${error}` });
+
     }
   }
 
@@ -67,7 +69,9 @@ class SquareController {
 
       res.status(200).json(updatedSquare);
     } catch (error) {
-      next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
+      // next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
+      res.status(500).json({ message: `${error}` });
+
     }
   }
 

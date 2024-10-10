@@ -41,6 +41,12 @@ class GovernorateService {
       const timestamp = Date.now();
       const uniqueId = uuidv4();
       const globalId = `${process.env.LOCAL_DB_ID}-${uniqueId}-${timestamp}`; //remove name artib
+      const existingGovernorate = await this.prisma.governorate.findFirst({
+        where: { name: name },
+      })
+      if(existingGovernorate) {
+        throw new ValidationError(`هذي المحافظة  ${name}  موجودة بالفعل `);
+      }
       return await this.prisma.governorate.create({
         data: {
           name,
@@ -49,9 +55,15 @@ class GovernorateService {
         },
       });
     } catch (error) {
+
       if (error.code === 'P2002') {
         throw new ValidationError(`A governorate with the name '${name}' already exists.`);
-      } else {
+      }
+      else if (error instanceof ValidationError) {
+        throw error
+      }
+
+       else {
         throw new DatabaseError('Error creating new governorate.', error);
       }
     }
@@ -65,6 +77,12 @@ class GovernorateService {
       if (!existingGovernorate) {
         throw new NotFoundError(`Governorate with id ${id} not found.`);
       }
+      const existingGovernorateName = await this.prisma.governorate.findFirst({ where: { name: data.name } })
+
+      if (existingGovernorateName) {
+        throw new ValidationError(`هذي المحافظة  ${name}  موجودة بالفعل `);
+      }
+
 
       return await this.prisma.governorate.update({
         where: { globalId: id },
@@ -74,6 +92,12 @@ class GovernorateService {
         },
       });
     } catch (error) {
+      if( error instanceof ValidationError) {
+        throw error
+      }
+      else if( error instanceof NotFoundError) {
+        throw error
+      }
       throw new DatabaseError('Error updating governorate.', error);
     }
   }

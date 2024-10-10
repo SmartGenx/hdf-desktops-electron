@@ -49,12 +49,13 @@ app.whenReady().then(() => {
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
-  let serverPath = join(__dirname, '../../../server/index.js')
+  
+  let serverPath ='';
 
   if (is.dev) {
-    serverPath = join(__dirname, '../../server/index.js')
+    serverPath = join(__dirname, '../../server/index.js');
   } else {
-    serverPath = join(__dirname, '../../../server/index.js')
+    serverPath = join(__dirname, '../../../server/index.js');
   }
   // }
 
