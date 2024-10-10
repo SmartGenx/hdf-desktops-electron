@@ -41,7 +41,7 @@ const ComponentToPrint = React.forwardRef<HTMLDivElement, Props>(function Compon
             <td>{String(item.renewalDate)}</td>
             <td>{item.days}</td>
             <td>{item.Months}</td>
-            <td>{item.state}</td>
+            <td className="translate-x-4">{item.state}</td>
           </tr>
         ))}
       </table>

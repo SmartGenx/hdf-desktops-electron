@@ -39,10 +39,10 @@ const Home = () => {
           'include[category]': true,
           'include[diseasesApplicants]': true,
           'name[contains]': query,
-          'directorateGlobalId': directorateGlobalId,
-          'categoryGlobalId': categoryGlobalId,
-          'state': state,
-          'gender': gender,
+          directorateGlobalId: directorateGlobalId,
+          categoryGlobalId: categoryGlobalId,
+          state: state,
+          gender: gender,
           page: page || 1,
           pageSize: 5
         },
@@ -75,7 +75,7 @@ const Home = () => {
       <div className="grid grid-cols-4 gap-2">
         <div className=" col-span-1 ">
           <StatistCard
-            title={'المرضى'}
+            title={'المتقدمين'}
             value={statist?.count}
             subtitle={'مستفيد'}
             icon={'hospital'}

@@ -49,6 +49,7 @@ app.whenReady().then(() => {
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+  
   let serverPath ='';
 
   if (is.dev) {

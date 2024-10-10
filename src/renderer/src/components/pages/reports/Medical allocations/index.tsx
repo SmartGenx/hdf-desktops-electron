@@ -5,7 +5,10 @@ import FilterDrawer from './filter'
 import { useAuthHeader } from 'react-auth-kit'
 import { useQuery } from '@tanstack/react-query'
 import { getApi } from '@renderer/lib/http'
-import { ApplicantByDirectorateViewModel } from '@renderer/types'
+import {
+  ApplicantByDirectorateViewModel,
+  ApplicantByDirectorateViewModelInfo
+} from '@renderer/types'
 import MedicalTable from './medicalTable'
 import ReactToPrint from 'react-to-print'
 import { Printer } from 'lucide-react'
@@ -17,8 +20,9 @@ export default function MedicalAllocationsIndex() {
   const page = searchParams.get('page')
   const authToken = useAuthHeader()
   const {
-    isPending,
-    error,
+    isPending: isPendingViewModel,
+    isError: isErrorViewModel,
+    error: errorViewModel,
     data: ApplicantByDirectorateViewModelData
   } = useQuery({
     queryKey: ['ApplicantByDirectorateViewModel', page],
@@ -31,10 +35,25 @@ export default function MedicalAllocationsIndex() {
       })
   })
 
+  const {
+    isPending: isPeningCardCard,
+    isError: isErrorCard,
+    error: errorCard,
+    data: ApplicantByDirectorateViewModelDataCard
+  } = useQuery({
+    queryKey: ['ApplicantByDirectorateViewModel'],
+    queryFn: () =>
+      getApi<ApplicantByDirectorateViewModelInfo[]>('/applicant/ApplicantByDirectorateViewModel', {
+        headers: {
+          Authorization: authToken()
+        }
+      })
+  })
+
   const componentRef = useRef<HTMLTableElement>(null)
-  if (isPending) return 'Loading...'
-  if (error) return 'An error has occurred: ' + error.message
-  console.log('total', ApplicantByDirectorateViewModelData.data.total)
+  if (isPendingViewModel) return 'Loading...'
+  if (errorViewModel) return 'An error has occurred: ' + errorViewModel.message
+
   return (
     <>
       <div className="flex  gap-5 mt-[85px] items-center justify-between   mb-7">
@@ -56,9 +75,10 @@ export default function MedicalAllocationsIndex() {
           <div className="hidden">
             <ComponentToPrint
               ref={componentRef}
-              data={ApplicantByDirectorateViewModelData.data.info}
+              data={ApplicantByDirectorateViewModelDataCard?.data!}
             />
           </div>
+
           <Link to={'/formDismissal'}>
             <Boutton
               icon="addaccredited"

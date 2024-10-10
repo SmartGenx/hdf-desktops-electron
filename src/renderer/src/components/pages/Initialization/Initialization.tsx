@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs2'
-import {  InfoIcon, MoveRight } from 'lucide-react'
+import { InfoIcon, MoveRight } from 'lucide-react'
 import { Button } from '@renderer/components/ui/button'
 import Category from './tabs/category'
 import Governorate from './tabs/governorate'
@@ -8,6 +8,7 @@ import Directorate from './tabs/directorate'
 import Square from './tabs/square'
 import Pharmacy from './tabs/pharmacy'
 import Disease from './tabs/disease'
+import { useNavigate } from 'react-router-dom'
 
 const subTabs = [
   {
@@ -31,38 +32,38 @@ const subTabs = [
   {
     value: 'square',
     title: 'إضافة مربع',
-    content: <Square/>,
+    content: <Square />,
     icon: <InfoIcon color="#434749" />
   },
   {
-    value: "pharmacy",
-    title: "إضافة صيدلية",
-    content: <Pharmacy/>,
-    icon: "",
+    value: 'pharmacy',
+    title: 'إضافة صيدلية',
+    content: <Pharmacy />,
+    icon: ''
   },
   {
-    value: "disease",
-    title: "إضافة مرض",
-    content: <Disease/>,
-    icon: "",
-  },
-
+    value: 'disease',
+    title: 'إضافة مرض',
+    content: <Disease />,
+    icon: ''
+  }
 ]
 const Initialization = () => {
   const [activeTab, setActiveTab] = useState<string>(subTabs[0].value)
+  const navigate = useNavigate()
   return (
     <>
       <div className=" mt-4 flex flex-col gap-5 ">
         <h1 className=" text-[24px] font-medium">تهيئة النظام</h1>
         <div className="flex justify-between items-center">
-          <Button variant={'Hdf-outline'} className="flex items-center gap-2">
+          <Button
+            variant={'Hdf-outline'}
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2"
+          >
             <MoveRight size={20} className=" " />
             رجـوع
           </Button>
-          <div className="flex gap-3">
-            <Button variant={'Hdf-outline'}>إلغاء</Button>
-            <Button variant={'Hdf'}>حفظ</Button>
-          </div>
         </div>
       </div>
       <Tabs
