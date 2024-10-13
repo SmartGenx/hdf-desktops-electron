@@ -290,7 +290,7 @@ export default function UpdateApplicant() {
                   <div className="grid grid-cols-6 gap-2">
                     <div className="col-span-2">
                       <label htmlFor="" className="text-[#A2A1A8]">
-                        الاسم الكامل
+                        الاسم
                       </label>
                       <FormField
                         control={form.control}
@@ -299,7 +299,7 @@ export default function UpdateApplicant() {
                           <FormItem>
                             <FormControl>
                               <FormInput
-                                label="ادخل الاسم الكامل"
+                                label="ادخل الاسم"
                                 type="text"
                                 {...field}
                                 disabled={delayedSubmitting}
@@ -399,7 +399,7 @@ export default function UpdateApplicant() {
                     </div>
                     <div className="col-span-1 ">
                       <label htmlFor="" className="text-[#A2A1A8] ">
-                        مديرية
+                        المديرية
                       </label>
                       <FormField
                         control={form.control}
@@ -417,7 +417,7 @@ export default function UpdateApplicant() {
                                 defaultValue={field.value}
                               >
                                 <SelectTrigger className="">
-                                  <SelectValue placeholder="اختر مديرية" />
+                                  <SelectValue placeholder="اختر المديرية" />
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectGroup>
@@ -579,7 +579,7 @@ export default function UpdateApplicant() {
                   <div className="grid grid-cols-3 gap-2">
                     <div className="col-span-1">
                       <label htmlFor="" className="text-[#A2A1A8] ">
-                        مكان الولادة
+                        مكان الميلاد
                       </label>
                       <FormField
                         control={form.control}

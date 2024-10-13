@@ -4,7 +4,9 @@ import background from '../../../assets/images/ellipse.svg'
 import maps from '../../../assets/images/maps.svg' // Adjust the path as necessary
 import leaf from '../../../assets/images/leaf.svg' // Adjust the path as necessary
 import people from '../../../assets/images/people.svg' // Adjust the path as necessary
-import { Pen } from 'lucide-react'
+import { Globe, Pen, Phone } from 'lucide-react'
+import {} from '../../icons/icons'
+import Sms from '@renderer/components/icons/sms'
 
 const Login = () => {
   return (
@@ -33,15 +35,15 @@ const Login = () => {
           <div className=" absolute bottom-4 flex gap-3">
             <div className="flex gap-3">
               <h1 className="text-[14px] text-[#196BAE] font-normal">7733146365</h1>
-              <Pen />
+              <Phone color="#196BAE" />
             </div>
             <div className="flex gap-3">
               <h1 className="text-[14px] text-[#196BAE] font-normal">INFO@HDFYE.ORG</h1>
-              <Pen />
+              <Globe color="#196BAE" />
             </div>
             <div className="flex gap-3">
               <h1 className="text-[14px] text-[#196BAE] font-normal">INFO@HDFYE.ORG</h1>
-              <Pen />
+              <Sms className="text-[#196BAE]" />
             </div>
           </div>
         </div>

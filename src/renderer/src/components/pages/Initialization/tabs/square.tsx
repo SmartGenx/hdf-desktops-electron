@@ -22,7 +22,10 @@ export default function Square() {
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema)
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: ''
+    }
   })
   const { data: squares, refetch } = useQuery({
     queryKey: ['square'],
@@ -55,11 +58,13 @@ export default function Square() {
       })
       queryClient.invalidateQueries({ queryKey: ['square'] })
       refetch()
+      form.reset()
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'حدث خطأ ما'
       toast({
         title: 'لم تتم العملية',
-        description: error.message,
+        description: errorMessage,
         variant: 'destructive'
       })
     }
@@ -80,8 +85,8 @@ export default function Square() {
                 <FormItem>
                   <FormControl>
                     <Input
-                      label="إضافة محافظة"
-                      placeholder="إضافة محافظة"
+                      label="إضافة مربع"
+                      placeholder="إضافة مربع"
                       type="text"
                       {...field}
                       className="w-full"

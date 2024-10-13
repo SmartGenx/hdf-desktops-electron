@@ -16,21 +16,22 @@ const Header = () => {
           <img src={title} alt="" />
         </div>
       </div>
-      <div className="flex flex-col gap-[7px]">
-        <h1 className="text-3xl text-[#196CB0] font-semibold">الصحة حيــــاة</h1>
-        <div className="flex items-center gap-3 mr-3 ">
+      <div className="flex flex-col gap-[7px] ">
+        <h1 className="text-3xl text-[#196CB0] text-center font-semibold">الصحة حيــــاة</h1>
+        <div className="flex items-center gap-4 mr-2 ">
           <div>
             <img src={Youtube} alt="" className="" />
           </div>
-          <div className="w-[2px] h-[10px] bg-[#6B6B6B]"></div>
+          <div className="w-[2px] h-[16px]  bg-[#6B6B6B]"></div>
           <div>
             <img src={inst} alt="" className="" />
           </div>
-          <div className="w-[2px] h-[10px] bg-[#6B6B6B]"></div>
+
+          <div className="w-[2px] h-[16px]  bg-[#6B6B6B]"></div>
           <div>
             <img src={facebook} alt="" className="" />
           </div>
-          <div className="w-[2px] h-[10px] bg-[#6B6B6B]"></div>
+          <div className="w-[2px] h-[16px]  bg-[#6B6B6B]"></div>
           <div>
             <img src={x} alt="" className="" />
           </div>

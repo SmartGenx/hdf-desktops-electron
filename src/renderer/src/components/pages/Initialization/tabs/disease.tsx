@@ -6,14 +6,14 @@ import { Button } from '@renderer/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@renderer/components/ui/form'
 import { Input } from '@renderer/components/ui/input'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import {  DiseasesApplicant } from '@renderer/types'
+import { DiseasesApplicant } from '@renderer/types'
 import { getApi, postApi } from '@renderer/lib/http'
 import { useAuthHeader } from 'react-auth-kit'
 import { toast } from '@renderer/components/ui/use-toast'
 import DiseaseTabel from '../_components/DiseaseTabel'
 const formSchema = z.object({
   name: z.string(),
-  description: z.string(),
+  description: z.string()
 })
 
 export default function Disease() {
@@ -23,9 +23,12 @@ export default function Disease() {
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    
+    defaultValues: {
+      name: '',
+      description: ''
+    }
   })
-  const { data: diseases ,refetch} = useQuery({
+  const { data: diseases, refetch } = useQuery({
     queryKey: ['disease'],
     queryFn: () =>
       getApi<DiseasesApplicant[]>('/disease', {
@@ -34,18 +37,17 @@ export default function Disease() {
         }
       })
   })
-  
+
   const { mutate } = useMutation({
     mutationKey: ['addDisease'],
     mutationFn: (values: z.infer<typeof formSchema>) => {
       // Return the API call to be executed
       return postApi(
         '/disease',
-        {...values,},
+        { ...values },
         {
           headers: {
-            Authorization: `${authToken()}`,
-            
+            Authorization: `${authToken()}`
           }
         }
       )
@@ -58,11 +60,13 @@ export default function Disease() {
       })
       queryClient.invalidateQueries({ queryKey: ['disease'] })
       refetch()
+      form.reset()
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'حدث خطأ ما'
       toast({
         title: 'لم تتم العملية',
-        description: error.message,
+        description: errorMessage,
         variant: 'destructive'
       })
     }
@@ -74,7 +78,6 @@ export default function Disease() {
     mutate(values)
   }
 
-  
   return (
     <div className="space-y-3">
       <Form {...form}>
@@ -116,14 +119,13 @@ export default function Disease() {
                 </FormItem>
               )}
             />
-            
           </div>
-          <Button  variant={'Hdf'} type="submit">
+          <Button variant={'Hdf'} type="submit">
             إضافة
           </Button>
         </form>
       </Form>
-      <DiseaseTabel info={diseases?.data||[]} page="2" pageSize="5" total={5} />
+      <DiseaseTabel info={diseases?.data || []} page="2" pageSize="5" total={5} />
     </div>
   )
 }

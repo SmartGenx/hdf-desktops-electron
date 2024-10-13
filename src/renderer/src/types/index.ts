@@ -276,6 +276,23 @@ export interface AccreditedInfos {
   lastModified: Date
   prescription: Prescription[]
 }
+export interface AccreditedInfosRes {
+  id: number
+  globalId: string
+  squareGlobalId: string
+  treatmentSite: string
+  doctor: string
+  state: string
+  numberOfRfid: number
+  formNumber: number
+  deleted: boolean
+  applicantGlobalId: string
+  pharmacyGlobalId: string
+  version: number
+  lastModified: Date
+  prescription: Prescription[]
+  applicant: ApplicantsInfo
+}
 export interface Prescription {
   id: number
   globalId: string
@@ -289,6 +306,12 @@ export interface Prescription {
 }
 export interface Accredited {
   info: AccreditedInfos[]
+  total: number
+  page: string
+  pageSize: string
+}
+export interface AccreditedRes {
+  info: AccreditedInfosRes[]
   total: number
   page: string
   pageSize: string

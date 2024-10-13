@@ -9,6 +9,8 @@ import { Link, useSearchParams } from 'react-router-dom'
 import DismissalTable from './dismissalTable'
 import { useEffect, useState } from 'react'
 import DismissalSearch from './dismissal.search'
+import LackOfAir from '../../../assets/images/lack-of-air.png'
+import StatistCardWithImage from '@renderer/components/statistCardWithImage'
 
 export type statistCardInfo = {
   totalDismissals: number
@@ -71,11 +73,11 @@ const Dismissal = () => {
     <div>
       <div className="grid grid-cols-4 gap-2">
         <div className=" col-span-1 ">
-          <StatistCard
+          <StatistCardWithImage
             title={'المستفيدين'}
             value={statist?.totalDismissals}
             subtitle={'مستفيد'}
-            icon={'hospital'}
+            image={LackOfAir}
           />
         </div>
         <div className="col-span-1 ">

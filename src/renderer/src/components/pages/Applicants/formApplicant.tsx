@@ -206,22 +206,6 @@ export default function FormApplicant() {
               <h1 className="-translate-y-1 mr-2 font-bold">رجوع</h1>
             </Button>
           </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              className="w-[120px] border-2 border-[#196CB0] text-[#196CB0]"
-              onClick={() => navigate('/applicants')}
-            >
-              الغاء
-            </Button>
-            <Button
-              form="formId"
-              type="submit"
-              className="w-[120px] bg-[#196CB0] hover:bg-[#2b4d68]"
-            >
-              حفظ
-            </Button>
-          </div>
         </div>
 
         <div className="flex  flex-col justify-center px-6 gap-16 bg-white rounded-[8px] pb-20">
@@ -250,7 +234,7 @@ export default function FormApplicant() {
                   <div className="grid grid-cols-6 gap-2">
                     <div className="col-span-2">
                       <label htmlFor="" className="text-[#A2A1A8]">
-                        الاسم الكامل
+                        الاسم
                       </label>
                       <FormField
                         control={form.control}
@@ -259,7 +243,7 @@ export default function FormApplicant() {
                           <FormItem>
                             <FormControl>
                               <FormInput
-                                label="ادخل الاسم الكامل"
+                                label="ادخل الاسم"
                                 type="text"
                                 {...field}
                                 disabled={delayedSubmitting}
@@ -369,7 +353,7 @@ export default function FormApplicant() {
                     </div>
                     <div className="col-span-1 ">
                       <label htmlFor="" className="text-[#A2A1A8]">
-                        مديرية
+                        المديرية
                       </label>
                       <FormField
                         control={form.control}
@@ -379,7 +363,7 @@ export default function FormApplicant() {
                             <FormControl>
                               <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <SelectTrigger className="">
-                                  <SelectValue placeholder="اخر مديرية" />
+                                  <SelectValue placeholder="اختر المديرية" />
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectGroup>
@@ -516,7 +500,7 @@ export default function FormApplicant() {
                   <div className="grid grid-cols-3 gap-2">
                     <div className="col-span-1">
                       <label htmlFor="" className="text-[#A2A1A8]">
-                        مكان الولادة
+                        مكان الميلاد
                       </label>
                       <FormField
                         control={form.control}
@@ -525,7 +509,7 @@ export default function FormApplicant() {
                           <FormItem>
                             <FormControl>
                               <FormInput
-                                label="ادخل مكان الولادة"
+                                label="ادخل مكان الميلاد"
                                 type="text"
                                 {...field}
                                 disabled={delayedSubmitting}

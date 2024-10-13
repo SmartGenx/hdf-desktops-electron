@@ -21,10 +21,11 @@ import { useNavigate } from 'react-router-dom'
 import { axiosInstance, getApi, postApi } from '../../../lib/http'
 import { useAuthHeader } from 'react-auth-kit'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Accredited, ApplicantsInfo, Pharmacy } from '@renderer/types'
+import { Accredited, AccreditedRes, ApplicantsInfo, Pharmacy } from '@renderer/types'
 import Pdf from '@renderer/components/icons/pdf'
 import { AlertCircle } from 'lucide-react'
 import { FormInput } from '@renderer/components/ui/forms-input'
+import test1 from '../../../../../../Profiles/f8923bdb-a947-4966-8f96-c6cf268864d4-Approved attachments.png'
 
 const formSchema = z.object({
   totalAmount: z.string(),
@@ -50,11 +51,40 @@ export default function FormDismissal() {
     { value: 'active', label: 'نشط' },
     { value: 'not active', label: 'غير نشط' }
   ])
+  const [numberOfRfid, setNumberOfRfid] = useState('')
+  const [number, setNumber] = useState<AccreditedRes>()
+
+  const generateRfid = async () => {
+    try {
+      const response = await axiosInstance.get(
+        `/accredited?page=1&pageSize=4&include[prescription]=true&numberOfRfid=${numberOfRfid}&include[applicant][include]=category`,
+        {
+          headers: {
+            Authorization: `${authToken()}`
+          }
+        }
+      )
+
+      // Handle the response as necessary
+      console.log('Data fetched:', response.data)
+      setNumber(response.data)
+    } catch (error) {
+      console.error('Error fetching RFID data:', error)
+    }
+  }
   const [approvedAmounts, setApprovedAmounts] = useState<number>(0)
+  console.log(
+    'number?.info[0].applicant.category.SupportRatio',
+    number?.info[0].applicant.category.SupportRatio
+  )
   const [totalAmounts, setTotalAmounts] = useState<number>(0)
   const [totalPrice, setTotalPrice] = useState<number>(0)
 
   React.useEffect(() => {
+    if (number && number.info.length > 0) {
+      const supportRatio = number.info[0].applicant.category.SupportRatio
+      setApprovedAmounts(supportRatio!)
+    }
     let computedPrice = 0
 
     if (totalAmounts > 50000) {
@@ -67,7 +97,7 @@ export default function FormDismissal() {
     }
 
     setTotalPrice(computedPrice)
-  }, [totalAmounts, approvedAmounts])
+  }, [totalAmounts, approvedAmounts, number])
 
   const [pharmacy, setPharmacy] = useState<Pharmacy[]>([])
   const [_selectedPharmacy, setSelectedPharmacy] = useState<Pharmacy | null>(null)
@@ -103,38 +133,19 @@ export default function FormDismissal() {
 
   const [delayedSubmitting, _setDelayedSubmitting] = useState(form.formState.isSubmitting)
 
-  const [numberOfRfid, setNumberOfRfid] = useState('')
-  const [number, setNumber] = useState<Accredited>()
-
-  const generateRfid = async () => {
-    try {
-      const response = await axiosInstance.get(
-        `/accredited?page=1&pageSize=4&include[prescription]=true&numberOfRfid=${numberOfRfid}`,
-        {
-          headers: {
-            Authorization: `${authToken()}`
-          }
-        }
-      )
-
-      // Handle the response as necessary
-      console.log('Data fetched:', response.data)
-      setNumber(response.data)
-    } catch (error) {
-      console.error('Error fetching RFID data:', error)
-    }
-  }
-
+  console.log('numbernumbernumber', number?.info[0].applicant.category.SupportRatio)
   const name =
     applicant?.data?.find((applicant) => applicant?.globalId === number?.info[0]?.applicantGlobalId)
       ?.name || null
 
-  console.log('name', name)
-  console.log('name', name)
   React.useEffect(() => {
     form.setValue('amountPaid', String(totalPrice))
     form.setValue('accreditedGlobalId', number?.info?.[0]?.globalId ?? 'No URL available')
     form.setValue('pharmacyGlobalId', number?.info?.[0]?.pharmacyGlobalId ?? 'No URL available')
+    form.setValue(
+      'approvedAmount',
+      String(number?.info[0].applicant.category.SupportRatio) ?? 'No URL available'
+    )
     const fetchPharmacyDirectorate = async () => {
       try {
         const response = await axiosInstance.get('/pharmacy', {
@@ -149,8 +160,17 @@ export default function FormDismissal() {
     }
 
     fetchPharmacyDirectorate()
-  }, [number?.info?.[0]?.globalId, totalPrice, setValue])
+  }, [
+    number?.info?.[0]?.globalId,
+    number?.info[0].applicant.category.SupportRatio,
+    totalPrice,
+    setValue
+  ])
 
+  console.log(
+    'number?.info?.[0]?.prescription?.[0]?.attachedUrl',
+    number?.info?.[0]?.prescription?.[0]?.attachedUrl
+  )
   const { mutate } = useMutation({
     // mutationKey: ['AccreditedInfo'],
     mutationFn: (datas: AccreditedFormValue) =>
@@ -381,14 +401,25 @@ export default function FormDismissal() {
                             <FormControl>
                               <FormInput
                                 label="ادخل نسبة الدعم"
-                                type="text"
+                                type="number" // Use 'number' for better handling
+                                disabled={true}
+                                value={approvedAmounts !== null ? approvedAmounts : ''}
                                 onChange={(e) => {
-                                  const value = Number(e.target.value)
-                                  setApprovedAmounts(value)
-                                  field.onChange(e)
+                                  const inputValue = e.target.value
+                                  const parsedValue = Number(inputValue)
+
+                                  const newAmount =
+                                    inputValue !== '' && !isNaN(parsedValue)
+                                      ? parsedValue
+                                      : (number?.info[0].applicant.category.SupportRatio ?? 0)
+
+                                  setApprovedAmounts(newAmount)
+                                  field.onChange(newAmount) // Pass the numeric value
                                 }}
-                                disabled={delayedSubmitting}
                                 className="text-right bg-primary/5"
+                                placeholder={
+                                  approvedAmounts === null ? 'Loading...' : 'Enter support ratio'
+                                }
                               />
                             </FormControl>
                           </FormItem>

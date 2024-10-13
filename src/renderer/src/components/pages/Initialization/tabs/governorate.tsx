@@ -22,7 +22,10 @@ export default function Governorate() {
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema)
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: ''
+    }
   })
   const { data: governorates, refetch } = useQuery({
     queryKey: ['governorate'],
@@ -55,11 +58,13 @@ export default function Governorate() {
       })
       queryClient.invalidateQueries({ queryKey: ['addCategory'] })
       refetch()
+      form.reset()
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'حدث خطأ ما'
       toast({
         title: 'لم تتم العملية',
-        description: error.message,
+        description: errorMessage,
         variant: 'destructive'
       })
     }
