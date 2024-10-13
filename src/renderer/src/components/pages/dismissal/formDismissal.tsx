@@ -25,6 +25,7 @@ import { Accredited, AccreditedRes, ApplicantsInfo, Pharmacy } from '@renderer/t
 import Pdf from '@renderer/components/icons/pdf'
 import { AlertCircle } from 'lucide-react'
 import { FormInput } from '@renderer/components/ui/forms-input'
+import test1 from '../../../../../../Profiles/f8923bdb-a947-4966-8f96-c6cf268864d4-Approved attachments.png'
 
 const formSchema = z.object({
   totalAmount: z.string(),
@@ -166,6 +167,10 @@ export default function FormDismissal() {
     setValue
   ])
 
+  console.log(
+    'number?.info?.[0]?.prescription?.[0]?.attachedUrl',
+    number?.info?.[0]?.prescription?.[0]?.attachedUrl
+  )
   const { mutate } = useMutation({
     // mutationKey: ['AccreditedInfo'],
     mutationFn: (datas: AccreditedFormValue) =>
