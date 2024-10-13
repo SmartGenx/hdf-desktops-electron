@@ -6,7 +6,11 @@ import { axiosInstance } from '@renderer/lib/http'
 import { useAuthHeader } from 'react-auth-kit'
 import { useEffect, useRef, useState } from 'react'
 import useScreenSize from '@renderer/hooks/useScreenSize'
-
+import StatistCardWithImage from '@renderer/components/statistCardWithImage'
+import LackOfAir from '../../../assets/images/lack-of-air.png'
+import LocationPin from '../../../assets/images/location-pin.png'
+import map from '../../../assets/images/map.png'
+import yemen from '../../../assets/images/yemen.png'
 export type statistCardInfo = {
   diseaseCount: number
   GovernorateCount: number
@@ -88,35 +92,35 @@ const Home = () => {
         <>
           <div className=" grid grid-cols-4 gap-2">
             <div className=" col-span-1 ">
-              <StatistCard
+              <StatistCardWithImage
                 title={'المرض'}
                 value={statist?.diseaseCount ?? 0}
                 subtitle={'مستفيد'}
-                icon={'hospital'}
+                image={LackOfAir}
               />
             </div>
             <div className="col-span-1 ">
-              <StatistCard
+              <StatistCardWithImage
                 title={'مديرية'}
                 value={statist?.directoratecount ?? 0}
                 subtitle={'مستفيد'}
-                icon={'house'}
+                image={LocationPin}
               />
             </div>
             <div className="col-span-1 ">
-              <StatistCard
+              <StatistCardWithImage
                 title={'المربع'}
                 value={statist?.squareCount ?? 0}
                 subtitle={'مستفيد'}
-                icon={'house'}
+                image={map}
               />
             </div>
             <div className="col-span-1 ">
-              <StatistCard
+              <StatistCardWithImage
                 title={'محافظة'}
                 value={statist?.GovernorateCount ?? 0}
                 subtitle={'مستفيد'}
-                icon={'house'}
+                image={yemen}
               />
             </div>
           </div>
@@ -134,35 +138,35 @@ const Home = () => {
         <>
           <div className=" grid grid-cols-4 gap-2">
             <div className=" col-span-1 ">
-              <StatistCard
+              <StatistCardWithImage
                 title={'المرض'}
                 value={statist?.diseaseCount ?? 0}
                 subtitle={'مستفيد'}
-                icon={'hospital'}
+                image={LackOfAir}
               />
             </div>
             <div className="col-span-1 ">
-              <StatistCard
+              <StatistCardWithImage
                 title={'مديرية'}
                 value={statist?.directoratecount ?? 0}
                 subtitle={'مستفيد'}
-                icon={'house'}
+                image={LocationPin}
               />
             </div>
             <div className="col-span-1 ">
-              <StatistCard
+              <StatistCardWithImage
                 title={'المربع'}
                 value={statist?.squareCount ?? 0}
                 subtitle={'مستفيد'}
-                icon={'house'}
+                image={map}
               />
             </div>
             <div className="col-span-1 ">
-              <StatistCard
+              <StatistCardWithImage
                 title={'محافظة'}
                 value={statist?.GovernorateCount ?? 0}
                 subtitle={'مستفيد'}
-                icon={'house'}
+                image={yemen}
               />
             </div>
           </div>

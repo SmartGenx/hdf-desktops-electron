@@ -9,6 +9,8 @@ import { axiosInstance, getApi } from '@renderer/lib/http'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import ApplicantsSearch from './applicants-search'
+import LackOfAir from '../../../assets/images/lack-of-air.png'
+import StatistCardWithImage from '@renderer/components/statistCardWithImage'
 
 export type statistCardInfo = {
   count: number
@@ -20,7 +22,7 @@ const Home = () => {
   const directorateGlobalId = searchParams.get('directorateGlobalId')
   const state = searchParams.get('state')
   const gender = searchParams.get('gender')
- 
+
   const query = searchParams.get('query')
   const page = searchParams.get('page')
   const [statist, setStatist] = useState<statistCardInfo | undefined>()
@@ -73,11 +75,11 @@ const Home = () => {
     <div>
       <div className="grid grid-cols-4 gap-2">
         <div className=" col-span-1 ">
-          <StatistCard
+          <StatistCardWithImage
             title={'المتقدمين'}
             value={statist?.count}
             subtitle={'مستفيد'}
-            icon={'hospital'}
+            image={LackOfAir}
           />
         </div>
       </div>

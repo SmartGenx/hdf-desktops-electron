@@ -5,6 +5,8 @@ import maps from '../../../assets/images/maps.svg' // Adjust the path as necessa
 import leaf from '../../../assets/images/leaf.svg' // Adjust the path as necessary
 import people from '../../../assets/images/people.svg' // Adjust the path as necessary
 import { Globe, Pen, Phone } from 'lucide-react'
+import {} from '../../icons/icons'
+import Sms from '@renderer/components/icons/sms'
 
 const Login = () => {
   return (
@@ -41,7 +43,7 @@ const Login = () => {
             </div>
             <div className="flex gap-3">
               <h1 className="text-[14px] text-[#196BAE] font-normal">INFO@HDFYE.ORG</h1>
-              <Pen />
+              <Sms className="text-[#196BAE]" />
             </div>
           </div>
         </div>

@@ -12,15 +12,17 @@ import { Printer } from 'lucide-react'
 import ReactToPrint from 'react-to-print'
 import A4Layout from './print-cards'
 import AccreditedSearch from './accredited-search'
+import LackOfAir from '../../../assets/images/lack-of-air.png'
+import StatistCardWithImage from '@renderer/components/statistCardWithImage'
 export type statistCardInfo = {
   count: number
 }
 const Home = () => {
   const [searchParams] = useSearchParams()
-  const doctor = searchParams.get('doctor');
-  const treatmentSite = searchParams.get('treatmentSite');
-  const squareGlobalId = searchParams.get('squareGlobalId');
-  const state = searchParams.get('state');
+  const doctor = searchParams.get('doctor')
+  const treatmentSite = searchParams.get('treatmentSite')
+  const squareGlobalId = searchParams.get('squareGlobalId')
+  const state = searchParams.get('state')
   const query = searchParams.get('query')
   const page = searchParams.get('page')
   console.log('query', query)
@@ -31,17 +33,17 @@ const Home = () => {
     error,
     data: accredited
   } = useQuery({
-    queryKey: ['accredited', page, query,doctor,treatmentSite,state,squareGlobalId],
+    queryKey: ['accredited', page, query, doctor, treatmentSite, state, squareGlobalId],
     queryFn: () =>
       getApi<Accrediteds>('/accredited', {
         params: {
           'include[applicant]': true,
           'include[square]': true,
           'applicant[name][contains]': query,
-          'doctor': doctor,
-          'treatmentSite':treatmentSite,
-          'squareGlobalId':squareGlobalId,
-          "state":state,
+          doctor: doctor,
+          treatmentSite: treatmentSite,
+          squareGlobalId: squareGlobalId,
+          state: state,
           page: page || 1,
           pageSize: 5
         },
@@ -73,11 +75,11 @@ const Home = () => {
     <div>
       <div className="grid grid-cols-4 gap-2">
         <div className=" col-span-1 ">
-          <StatistCard
+          <StatistCardWithImage
             title={'المعتمدين'}
             value={statist?.count}
             subtitle={'مستفيد'}
-            icon={'hospital'}
+            image={LackOfAir}
           />
         </div>
       </div>
