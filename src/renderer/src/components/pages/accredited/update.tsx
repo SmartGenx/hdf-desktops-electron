@@ -415,7 +415,7 @@ export default function UpdateAccredited() {
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectGroup>
-                                  <SelectLabel>الحالات</SelectLabel>
+                                  <SelectLabel>صيدلية</SelectLabel>
                                   {pharmacy.map((pharmacy) => (
                                     <SelectItem key={pharmacy.globalId} value={pharmacy.globalId}>
                                       {pharmacy.name}
