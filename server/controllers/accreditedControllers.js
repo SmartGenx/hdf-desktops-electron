@@ -111,7 +111,9 @@ class AccreditedController {
         return next(new ValidationError('Validation Failed', errors.array()))
       }
       const fileAtch = req.atch
+      console.log("🚀 ~ AccreditedController ~ createAccreditation ~ fileAtch:", fileAtch)
       const filePt = req.pt
+      console.log("🚀 ~ AccreditedController ~ createAccreditation ~ filePt:", filePt)
       const AccreditedData = req.body
       const newAccreditation = await AccreditedService.createAccreditation(
         AccreditedData,
