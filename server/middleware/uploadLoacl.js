@@ -37,19 +37,22 @@ const copyFileToProfileDir = () => async (req, res, next) => {
     if (req.files) {
       if (req.files.atch) {
         const ext = path.extname(req.files.atch[0].originalname)
-        fileName = `${uuidv4()}-Approved attachments${ext}`
+        fileName = `${req.files.atch[0].originalname}${ext}`
 
+        console.log("🚀 ~ copyFileToProfileDir ~ fileName:", fileName)
         destPath = path.join(profileDir, fileName)
-        req.atch = fileName
+        console.log("🚀 ~ copyFileToProfileDir ~ destPath:", destPath)
+
+        req.atch = destPath
 
         await fs.writeFile(destPath, req.files.atch[0].buffer)
       }
       if (req.files.pt) {
         const ext = path.extname(req.files.pt[0].originalname)
 
-        fileName = `${uuidv4()}-Approved attachments${ext}`
+           fileName = `${req.files.atch[0].originalname}${ext}`
         destPath = path.join(profileDir, fileName)
-        req.pt = fileName
+        req.pt = destPath
 
         await fs.writeFile(destPath, req.files.pt[0].buffer)
       }
@@ -61,7 +64,7 @@ const copyFileToProfileDir = () => async (req, res, next) => {
       fileName = `${uuidv4()}-Approved attachments${ext}` // توليد اسم فريد جديد مع الامتداد الأصلي
 
       destPath = path.join(profileDir, fileName)
-      req.file.local = fileName
+      req.file.local = destPath
       await fs.writeFile(destPath, req.file.buffer)
     }
 
@@ -72,5 +75,51 @@ const copyFileToProfileDir = () => async (req, res, next) => {
     next(error)
   }
 }
+// const copyFileToProfileDir = () => async (req, res, next) => {
+//   if (!req.file && !req.files) {
+//     return next(new Error('No file uploaded'));
+//   }
+
+//   let destPath;
+//   try {
+//     // Ensure the directory exists
+//     await fs.mkdir(profileDir, { recursive: true });
+
+//     // If multiple files are uploaded
+//     if (req.files) {
+//       if (req.files.atch) {
+//         const ext = path.extname(req.files.atch[0].originalname);
+//         const fileName = `${uuidv4()}-Approved attachments${ext}`;
+//         destPath = path.join(profileDir, fileName); // Full file path
+//         req.atch = destPath; // Store the full path
+//         console.log('🚀 ~ copyFileToProfileDir ~ req.atch:', req.atch);
+
+//         await fs.writeFile(destPath, req.files.atch[0].buffer);
+//       }
+//       if (req.files.pt) {
+//         const ext = path.extname(req.files.pt[0].originalname);
+//         const fileName = `${uuidv4()}-Approved attachments${ext}`;
+//         destPath = path.join(profileDir, fileName); // Full file path
+//         req.pt = destPath; // Store the full path
+//         await fs.writeFile(destPath, req.files.pt[0].buffer);
+//       }
+//     }
+
+//     // If a single file is uploaded
+//     if (req.file) {
+//       const ext = path.extname(req.file.originalname);
+//       const fileName = `${uuidv4()}-Approved attachments${ext}`;
+//       destPath = path.join(profileDir, fileName); // Full file path
+//       req.file.local = destPath; // Store the full path
+//       await fs.writeFile(destPath, req.file.buffer);
+//     }
+
+//     // Proceed to the next middleware or route handler
+//     next();
+//   } catch (error) {
+//     console.error('Failed to write file in profile directory', error);
+//     next(error);
+//   }
+// };
 
 module.exports = { upload, copyFileToProfileDir }
