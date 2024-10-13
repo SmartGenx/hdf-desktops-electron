@@ -66,41 +66,6 @@ export default function MedicalTable({ info, page, total, pageSize }: Props) {
         accessorKey: '',
         header: 'مساهمة المريض',
         cell: ({ row }) => row.original.approvedAmount
-      },
-
-      {
-        id: 'actions',
-        header: () => (
-          <div>
-            <MoreVertical />
-          </div>
-        ),
-
-        cell: () => (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <MoreVertical className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="h-17 -mt-[70px] ml-7 min-w-[84.51px] p-0">
-              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                {/* <DeleteDialog
-                  url={`/Organization/${row.original?.id}`}
-                  revalidatePath={Paths.localOrg}
-                /> */}
-                تعديل
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                {/* <DeleteDialog
-                  url={`/Organization/${row.original?.id}`}
-                  revalidatePath={Paths.localOrg}
-                /> */}
-                حذف
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )
       }
     ],
     [5]

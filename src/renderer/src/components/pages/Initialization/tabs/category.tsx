@@ -24,7 +24,12 @@ export default function Category() {
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema)
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: '',
+      description: '',
+      SupportRatio: ''
+    }
   })
   const { data: category, refetch } = useQuery({
     queryKey: ['category'],
@@ -57,15 +62,18 @@ export default function Category() {
       })
       queryClient.invalidateQueries({ queryKey: ['addCategory'] })
       refetch()
+      form.reset()
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'حدث خطأ ما'
       toast({
         title: 'لم تتم العملية',
-        description: error.message,
+        description: errorMessage,
         variant: 'destructive'
       })
     }
   })
+
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
     mutate(values)

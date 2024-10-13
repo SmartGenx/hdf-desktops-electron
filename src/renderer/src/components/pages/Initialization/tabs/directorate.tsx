@@ -32,7 +32,11 @@ export default function Directorate() {
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema)
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: '',
+      governorateGlobalId: ''
+    }
   })
   const { data: governorates, refetch } = useQuery({
     queryKey: ['governorate'],
@@ -74,11 +78,13 @@ export default function Directorate() {
       })
       queryClient.invalidateQueries({ queryKey: ['directorate'] })
       refetch()
+      form.reset()
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'حدث خطأ ما'
       toast({
         title: 'لم تتم العملية',
-        description: error.message,
+        description: errorMessage,
         variant: 'destructive'
       })
     }
@@ -121,7 +127,7 @@ export default function Directorate() {
                   <FormControl>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <SelectTrigger className="">
-                        <SelectValue placeholder="إضافة محافظة" />
+                        <SelectValue placeholder="اختار محافظة" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>

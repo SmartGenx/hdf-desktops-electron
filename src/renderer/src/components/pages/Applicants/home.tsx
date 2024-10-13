@@ -20,8 +20,7 @@ const Home = () => {
   const directorateGlobalId = searchParams.get('directorateGlobalId')
   const state = searchParams.get('state')
   const gender = searchParams.get('gender')
-  console.log('governorates', categoryGlobalId)
-  console.log('categories', directorateGlobalId)
+ 
   const query = searchParams.get('query')
   const page = searchParams.get('page')
   const [statist, setStatist] = useState<statistCardInfo | undefined>()
