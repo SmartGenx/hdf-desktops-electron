@@ -335,62 +335,71 @@ class AccreditedService {
       throw new DatabaseError('Error updating accreditation.', error)
     }
   }
-  async updateAccreditation(id,AccreditedData, fileAtch, filePt) {
+  async updateAccreditation(id, AccreditedData, fileAtch, filePt) {
     // try {
-      const timestamp = Date.now()
-      const uniqueId = uuidv4()
-      const globalId = `${process.env.LOCAL_DB_ID}-${uniqueId}-${timestamp}` //remove name artib
-      const {
-        type,
+    const timestamp = Date.now()
+    const uniqueId = uuidv4()
+    const globalId = `${process.env.LOCAL_DB_ID}-${uniqueId}-${timestamp}` //remove name artib
+    const {
+      type,
 
-        prescriptionDate,
+      prescriptionDate,
+      ...rest
+    } = AccreditedData
+
+    const accreited = await this.prisma.accredited.update({
+      where: { globalId: id },
+      data: {
         ...rest
-
-
-      } = AccreditedData
-
-
-      const accreited = await this.prisma.accredited.update({
-        where: { globalId: id },
-        data: {
-          ...rest,
-        }
+      }
+    })
+    if (fileAtch) {
+      const atchment = await this.prisma.attachment.findFirst({
+        where: { accreditedGlobalId: accreited.globalId }
       })
-      if(fileAtch){
+      if (atchment) {
+        console.log("🚀 ~ AccreditedService ~ updateAccreditation ~ atchment:", atchment.globalId)
+        const atch = await this.prisma.attachment.update({
 
-      const atch = await this.prisma.attachment.create({
-        data: {
-          type: type, // Use shorthand property names
-          accreditedGlobalId: accreited.globalId, // Use shorthand property names
-          attachmentFile: fileAtch,
-          globalId: `${process.env.LOCAL_DB_ID}-${uuidv4()}-${new Date()}` // Assign the generated global ID
-        }
-      })
+          where: { globalId: atchment.globalId },
+          data: {
+            type: type, // Use shorthand property names
+            accreditedGlobalId: accreited.globalId, // Use shorthand property names
+            attachmentFile: fileAtch,
+            globalId: `${process.env.LOCAL_DB_ID}-${uuidv4()}-${new Date()}` // Assign the generated global ID
+          }
+        })
 
+      }
     }
 
-      const renewalDate = new Date()
-      renewalDate.setMonth(renewalDate.getMonth() + 6)
-      if(filePt){
-
-      const pt = await this.prisma.prescription.create({
-        data: {
-          prescriptionDate: prescriptionDate,
-          renewalDate,
-          attachedUrl: filePt,
-          accreditedGlobalId: accreited.globalId,
-          globalId: `${process.env.LOCAL_DB_ID}-${uuidv4()}-${new Date()}` // Assign the generated global ID
-        }
+    const renewalDate = new Date()
+    renewalDate.setMonth(renewalDate.getMonth() + 6)
+    if (filePt) {
+      const prescription = await this.prisma.prescription.findFirst({
+        where: { accreditedGlobalId: accreited.globalId }
       })
+      if (prescription) {
+        const pt = await this.prisma.prescription.update({
+          where: { globalId: prescription.globalId },
+          data: {
+            prescriptionDate: prescriptionDate,
+            renewalDate,
+            attachedUrl: filePt,
+            accreditedGlobalId: accreited.globalId,
+            globalId: `${process.env.LOCAL_DB_ID}-${uuidv4()}-${new Date()}` // Assign the generated global ID
+          }
+        })
+      }
     }
-      const app = await this.prisma.applicant.update({
-        where: { globalId: AccreditedData.applicantGlobalId },
-        data: {
-          accredited: true
-        }
-      })
+    const app = await this.prisma.applicant.update({
+      where: { globalId: AccreditedData.applicantGlobalId },
+      data: {
+        accredited: true
+      }
+    })
 
-      return accreited
+    return accreited
     // } catch (error) {
     //   throw new DatabaseError('Error updating accreditation.', error)
     // }
