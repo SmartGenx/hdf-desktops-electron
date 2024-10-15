@@ -23,6 +23,7 @@ import { useAuthHeader } from 'react-auth-kit'
 import { MoveRight } from 'lucide-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { FormInput } from '@renderer/components/ui/forms-input'
+import { Combobox } from '@renderer/components/ui/Combobox'
 
 const formSchema = z.object({
   name: z.string(),
@@ -80,6 +81,7 @@ export type Disease = {
 export default function FormApplicant() {
   const [category, setCategory] = useState<Category[]>([])
   const [directorates, setDirectorates] = useState<Governorate[]>([])
+  const [selectedDirectorate, setSelectedDirectorate] = useState<Governorate | null>(null)
   const [disease, setDisease] = useState<Disease[]>([])
   const authToken = useAuthHeader()
   const { toast } = useToast()
@@ -98,7 +100,7 @@ export default function FormApplicant() {
     { value: 'F', label: 'انثى' }
   ])
   const [delayedSubmitting, _setDelayedSubmitting] = useState(form.formState.isSubmitting)
-
+  console.log('selectedDirectorate?.globalId', selectedDirectorate?.globalId)
   React.useEffect(() => {
     const fetchData = async () => {
       try {
@@ -184,6 +186,14 @@ export default function FormApplicant() {
       })
     }
   })
+  React.useEffect(() => {
+    if (selectedDirectorate?.globalId) {
+      console.log('selectedDirectorate?.globalId', selectedDirectorate.globalId)
+      form.setValue('directorateGlobalId', selectedDirectorate.globalId)
+    } else {
+      form.setValue('directorateGlobalId', '')
+    }
+  }, [selectedDirectorate])
   const onSubmit = async (data: UserFormValue) => {
     mutate(data)
   }
@@ -361,21 +371,16 @@ export default function FormApplicant() {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <SelectTrigger className="">
-                                  <SelectValue placeholder="اختر المديرية" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectGroup>
-                                    <SelectLabel>المديريات</SelectLabel>
-                                    {directorates.map((directorate) => (
-                                      <SelectItem key={directorate.id} value={directorate.globalId}>
-                                        {directorate.name}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectGroup>
-                                </SelectContent>
-                              </Select>
+                              <Combobox
+                                options={directorates}
+                                valueKey="id"
+                                displayKey="name"
+                                placeholder="أختر مديرية"
+                                emptyMessage="لم يتم العثور على مديرية"
+                                onSelect={(directorate) =>
+                                  setSelectedDirectorate(directorate as Governorate)
+                                }
+                              />
                             </FormControl>
                           </FormItem>
                         )}
