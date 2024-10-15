@@ -130,7 +130,7 @@ class AccreditedController {
   // Update an existing accreditation
   async updateAccreditation(req, res, next) {
     const AccreditedService = databaseService.getAccreditedService()
-    try {
+    // try {
       const errors = validationResult(req)
       if (!errors.isEmpty()) {
         return next(new ValidationError('Validation Failed', errors.array()))
@@ -147,9 +147,9 @@ class AccreditedController {
       }
 
       res.status(200).json(updatedAccreditation)
-    } catch (error) {
-      next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
-    }
+    // } catch (error) {
+    //   next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
+    // }
   }
   async updateAccreditationState(req, res, next) {
     const AccreditedService = databaseService.getAccreditedService()
