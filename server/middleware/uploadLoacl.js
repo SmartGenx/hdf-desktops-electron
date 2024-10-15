@@ -1,7 +1,7 @@
 const multer = require('multer')
 const fs = require('fs').promises
 const path = require('path')
-const profileDir = 'C:Profiles'
+const profileDir = 'D:\\Profiles'
 require('dotenv').config()
 const { v4: uuidv4 } = require('uuid') // استيراد دالة uuid
 
@@ -37,23 +37,19 @@ const copyFileToProfileDir = () => async (req, res, next) => {
     if (req.files) {
       if (req.files.atch) {
         const ext = path.extname(req.files.atch[0].originalname)
-        fileName = `${req.files.atch[0].originalname}`
-
-        console.log('🚀 ~ copyFileToProfileDir ~ fileName:', fileName)
+        fileName = `${req.files.atch[0].originalname}${ext}`
         destPath = path.join(profileDir, fileName)
-        console.log('🚀 ~ copyFileToProfileDir ~ destPath:', destPath)
-
+        console.log(':rocket: ~ copyFileToProfileDir ~ destPath:', destPath)
         req.atch = destPath
-
         await fs.writeFile(destPath, req.files.atch[0].buffer)
       }
       if (req.files.pt) {
+        console.log(':rocket: ~ copyFileToProfileDir ~ req.files.pt:', req.files.pt)
         const ext = path.extname(req.files.pt[0].originalname)
-
-        fileName = `${req.files.atch[0].originalname}`
+        fileName = `${req.files.pt[0].originalname}${ext}`
         destPath = path.join(profileDir, fileName)
+        console.log(':rocket: ~ copyFileToProfileDir ~ destPath:', destPath)
         req.pt = destPath
-
         await fs.writeFile(destPath, req.files.pt[0].buffer)
       }
     }

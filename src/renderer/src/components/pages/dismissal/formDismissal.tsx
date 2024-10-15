@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '../../ui/select'
+
 import { Alert, AlertDescription, AlertTitle } from '../../ui/alert'
 import { useToast } from '../../ui/use-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -171,6 +172,11 @@ export default function FormDismissal() {
     'number?.info?.[0]?.attachment[0].attachmentFile',
     number?.info?.[0]?.attachment[0].attachmentFile
   )
+
+  const imagePath = `${number?.info?.[0]?.prescription[0].attachedUrl}`
+  const encodedPath = encodeURI(imagePath)
+  const src = `file:///${encodedPath}`
+
   const { mutate } = useMutation({
     // mutationKey: ['AccreditedInfo'],
     mutationFn: (datas: AccreditedFormValue) =>
@@ -474,33 +480,21 @@ export default function FormDismissal() {
                 </div>
                 {/*  */}
                 <div className="flex justify-start gap-4  h-40 ">
-                  <a
-                    href={number?.info?.[0]?.prescription?.[0]?.attachedUrl ?? 'No URL available'}
-                    target="_blank"
-                    className="ml-14"
-                    rel="noopener noreferrer"
-                  >
-                    <h1 className="mb-5 text-[#8B8D97]">عرض البيانات الشخصية</h1>
-                    {/* <Pdf /> */}
-                    <img
-                      src={number?.info?.[0]?.prescription?.[0]?.attachedUrl ?? 'No URL available'}
-                      alt=""
-                    />
-                  </a>
-                  <a
-                    href={number?.info?.[0]?.attachment[0].attachmentFile ?? 'No URL available'}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <h1 className="mb-5 text-[#8B8D97]">عرض ملف الوصفة الطبية</h1>
-                    {/* <Pdf /> */}
-                    <img
-                      src={number?.info?.[0]?.attachment[0].attachmentFile ?? 'No URL available'}
-                      alt=""
-                    />
-                  </a>
+                  <h1 className="mb-5 text-[#8B8D97]">عرض البيانات الشخصية</h1>
+
+                  <img
+                    src={number?.info?.[0]?.prescription[0].attachedUrl ?? 'No URL available'}
+                    alt=""
+                  />
+
+                  <h1 className="mb-5 text-[#8B8D97]">عرض ملف الوصفة الطبية</h1>
+
+                  <img
+                    src={number?.info?.[0]?.attachment[0].attachmentFile ?? 'No URL available'}
+                    alt=""
+                  />
                 </div>
-                {/*  */}
+
                 <div className="flex justify-end gap-4 ">
                   <Button type="submit" className="w-[120px] bg-[#196CB0] hover:bg-[#2b4d68]">
                     حفظ
