@@ -24,6 +24,7 @@ import { MoveRight } from 'lucide-react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ApplicantsInfoResp } from '@renderer/types'
 import { FormInput } from '@renderer/components/ui/forms-input'
+import { Combobox } from '@renderer/components/ui/Combobox'
 
 const formSchema = z.object({
   name: z.string(),
@@ -100,8 +101,11 @@ export type Disease = {
 export default function UpdateApplicant() {
   const { id } = useParams<{ id: string }>()
   const [category, setCategory] = useState<Category[]>([])
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
   const [directorates, setDirectorates] = useState<Governorate[]>([])
+  const [selectedDirectorate, setSelectedDirectorate] = useState<Governorate | null>(null)
   const [disease, setDisease] = useState<Disease[]>([])
+  const [selectedDisease, setSelectedDisease] = useState<Disease | null>(null)
   const authToken = useAuthHeader()
   const { toast } = useToast()
   const navigate = useNavigate()
@@ -196,6 +200,11 @@ export default function UpdateApplicant() {
         state: applicants?.data[0].state
       })
     }
+    const selectedCategoryObject = category.find(
+      (c) => c.globalId === applicants?.data[0].categoryGlobalId
+    )
+    setSelectedCategory(selectedCategoryObject || null)
+    console.log('selectedCategoryObject', selectedCategoryObject)
   }, [applicants?.data])
 
   const { mutate } = useMutation({
@@ -407,29 +416,16 @@ export default function UpdateApplicant() {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Select
-                                onValueChange={field.onChange}
-                                value={
-                                  field.value
-                                    ? String(field.value)
-                                    : String(applicants?.data[0].directorateGlobalId)
+                              <Combobox
+                                options={directorates}
+                                valueKey="id"
+                                displayKey="name"
+                                placeholder="أختر مديرية"
+                                emptyMessage="لم يتم العثور على مديرية"
+                                onSelect={(directorate) =>
+                                  setSelectedDirectorate(directorate as Governorate)
                                 }
-                                defaultValue={field.value}
-                              >
-                                <SelectTrigger className="">
-                                  <SelectValue placeholder="اختر المديرية" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectGroup>
-                                    <SelectLabel>المديريات</SelectLabel>
-                                    {directorates.map((directorate) => (
-                                      <SelectItem key={directorate.id} value={directorate.globalId}>
-                                        {directorate.name}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectGroup>
-                                </SelectContent>
-                              </Select>
+                              />
                             </FormControl>
                           </FormItem>
                         )}
@@ -469,31 +465,14 @@ export default function UpdateApplicant() {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Select
-                                onValueChange={field.onChange}
-                                value={
-                                  field.value
-                                    ? String(field.value)
-                                    : String(
-                                        applicants?.data[0].diseasesApplicants[0].diseaseGlobalId
-                                      )
-                                }
-                                defaultValue={field.value}
-                              >
-                                <SelectTrigger className="">
-                                  <SelectValue placeholder="اختر المرض" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectGroup>
-                                    <SelectLabel>الامراض</SelectLabel>
-                                    {disease.map((diseases) => (
-                                      <SelectItem key={diseases.id} value={diseases.globalId}>
-                                        {diseases.name}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectGroup>
-                                </SelectContent>
-                              </Select>
+                              <Combobox
+                                options={disease}
+                                valueKey="id"
+                                displayKey="name"
+                                placeholder="أختر المرض"
+                                emptyMessage="لم يتم العثور على المرض"
+                                onSelect={(diseasies) => setSelectedDisease(diseasies as Disease)}
+                              />
                             </FormControl>
                           </FormItem>
                         )}
@@ -509,28 +488,16 @@ export default function UpdateApplicant() {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Select
-                                onValueChange={field.onChange}
-                                value={
-                                  field.value
-                                    ? String(field.value)
-                                    : String(applicants?.data[0].categoryGlobalId)
+                              <Combobox
+                                options={category}
+                                valueKey="id"
+                                displayKey="name"
+                                placeholder="أختر فئة"
+                                emptyMessage="لم يتم العثور على الفئة"
+                                onSelect={(categories) =>
+                                  setSelectedCategory(categories as Category)
                                 }
-                                defaultValue={field.value}
-                              >
-                                <SelectTrigger className="">
-                                  <SelectValue placeholder="اختر فئة" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectGroup>
-                                    {category.map((category) => (
-                                      <SelectItem key={category.id} value={category.globalId}>
-                                        {category.name}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectGroup>
-                                </SelectContent>
-                              </Select>
+                              />
                             </FormControl>
                           </FormItem>
                         )}

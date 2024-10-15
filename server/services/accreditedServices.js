@@ -291,8 +291,7 @@ class AccreditedService {
         squareId,
         ...rest
       } = AccreditedData
-        console.log("🚀 ~ AccreditedService ~ createAccreditation ~ applicantId:", applicantId)
-
+      console.log('🚀 ~ AccreditedService ~ createAccreditation ~ applicantId:', applicantId)
 
       const accreited = await this.prisma.accredited.create({
         data: {
@@ -324,7 +323,7 @@ class AccreditedService {
           globalId: `${process.env.LOCAL_DB_ID}-${uuidv4()}-${new Date()}` // Assign the generated global ID
         }
       })
-      const app=await this.prisma.applicant.update({
+      const app = await this.prisma.applicant.update({
         where: { globalId: AccreditedData.applicantGlobalId },
         data: {
           accredited: true

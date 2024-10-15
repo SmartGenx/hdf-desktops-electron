@@ -200,7 +200,8 @@ export default function UpdateAccredited() {
       })
     }
   })
-
+  console.log('accredited?.data[0].applicantGlobalId', accredited?.data[0].applicantGlobalId)
+  console.log('applicantType', applicantType)
   const onSubmit = async (data: AccreditedFormValue) => {
     // console.log(data)
     mutate(data)
