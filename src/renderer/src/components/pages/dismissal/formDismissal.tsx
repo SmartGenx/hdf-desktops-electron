@@ -57,7 +57,7 @@ export default function FormDismissal() {
   const generateRfid = async () => {
     try {
       const response = await axiosInstance.get(
-        `/accredited?page=1&pageSize=4&include[prescription]=true&numberOfRfid=${numberOfRfid}&include[applicant][include]=category`,
+        `/accredited?page=1&pageSize=4&include[prescription]=true&numberOfRfid=${numberOfRfid}&include[applicant][include]=category&include[attachment]=true`,
         {
           headers: {
             Authorization: `${authToken()}`
@@ -74,8 +74,8 @@ export default function FormDismissal() {
   }
   const [approvedAmounts, setApprovedAmounts] = useState<number>(0)
   console.log(
-    'number?.info[0].applicant.category.SupportRatio',
-    number?.info[0].applicant.category.SupportRatio
+    'number?.info[0].attachment[0].attachmentFile',
+    number?.info[0].attachment[0].attachmentFile
   )
   const [totalAmounts, setTotalAmounts] = useState<number>(0)
   const [totalPrice, setTotalPrice] = useState<number>(0)
@@ -168,8 +168,8 @@ export default function FormDismissal() {
   ])
 
   console.log(
-    'number?.info?.[0]?.prescription?.[0]?.attachedUrl',
-    number?.info?.[0]?.prescription?.[0]?.attachedUrl
+    'number?.info?.[0]?.attachment[0].attachmentFile',
+    number?.info?.[0]?.attachment[0].attachmentFile
   )
   const { mutate } = useMutation({
     // mutationKey: ['AccreditedInfo'],
@@ -481,15 +481,23 @@ export default function FormDismissal() {
                     rel="noopener noreferrer"
                   >
                     <h1 className="mb-5 text-[#8B8D97]">عرض البيانات الشخصية</h1>
-                    <Pdf />
+                    {/* <Pdf /> */}
+                    <img
+                      src={number?.info?.[0]?.prescription?.[0]?.attachedUrl ?? 'No URL available'}
+                      alt=""
+                    />
                   </a>
                   <a
-                    href={number?.info?.[0]?.prescription?.[0]?.attachedUrl ?? 'No URL available'}
+                    href={number?.info?.[0]?.attachment[0].attachmentFile ?? 'No URL available'}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     <h1 className="mb-5 text-[#8B8D97]">عرض ملف الوصفة الطبية</h1>
-                    <Pdf />
+                    {/* <Pdf /> */}
+                    <img
+                      src={number?.info?.[0]?.attachment[0].attachmentFile ?? 'No URL available'}
+                      alt=""
+                    />
                   </a>
                 </div>
                 {/*  */}

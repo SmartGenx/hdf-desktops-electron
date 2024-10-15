@@ -37,11 +37,11 @@ const copyFileToProfileDir = () => async (req, res, next) => {
     if (req.files) {
       if (req.files.atch) {
         const ext = path.extname(req.files.atch[0].originalname)
-        fileName = `${req.files.atch[0].originalname}${ext}`
+        fileName = `${req.files.atch[0].originalname}`
 
-        console.log("🚀 ~ copyFileToProfileDir ~ fileName:", fileName)
+        console.log('🚀 ~ copyFileToProfileDir ~ fileName:', fileName)
         destPath = path.join(profileDir, fileName)
-        console.log("🚀 ~ copyFileToProfileDir ~ destPath:", destPath)
+        console.log('🚀 ~ copyFileToProfileDir ~ destPath:', destPath)
 
         req.atch = destPath
 
@@ -50,7 +50,7 @@ const copyFileToProfileDir = () => async (req, res, next) => {
       if (req.files.pt) {
         const ext = path.extname(req.files.pt[0].originalname)
 
-           fileName = `${req.files.atch[0].originalname}${ext}`
+        fileName = `${req.files.atch[0].originalname}`
         destPath = path.join(profileDir, fileName)
         req.pt = destPath
 
