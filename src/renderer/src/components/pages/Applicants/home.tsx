@@ -1,4 +1,3 @@
-import StatistCard from '@renderer/components/statistCard'
 import Boutton from '@renderer/components/Boutton'
 import FilterDrawer from './filter'
 import StateTable from './applicantTabel'

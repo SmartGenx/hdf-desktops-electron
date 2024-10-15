@@ -4,7 +4,7 @@ import background from '../../../assets/images/ellipse.svg'
 import maps from '../../../assets/images/maps.svg' // Adjust the path as necessary
 import leaf from '../../../assets/images/leaf.svg' // Adjust the path as necessary
 import people from '../../../assets/images/people.svg' // Adjust the path as necessary
-import { Globe, Pen, Phone } from 'lucide-react'
+import { Globe,  Phone } from 'lucide-react'
 import {} from '../../icons/icons'
 import Sms from '@renderer/components/icons/sms'
 

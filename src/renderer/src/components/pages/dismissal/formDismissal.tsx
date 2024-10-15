@@ -22,11 +22,10 @@ import { useNavigate } from 'react-router-dom'
 import { axiosInstance, getApi, postApi } from '../../../lib/http'
 import { useAuthHeader } from 'react-auth-kit'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Accredited, AccreditedRes, ApplicantsInfo, Pharmacy } from '@renderer/types'
+import { AccreditedRes, ApplicantsInfo, Pharmacy } from '@renderer/types'
 import Pdf from '@renderer/components/icons/pdf'
 import { AlertCircle } from 'lucide-react'
 import { FormInput } from '@renderer/components/ui/forms-input'
-import test1 from '../../../../../../Profiles/f8923bdb-a947-4966-8f96-c6cf268864d4-Approved attachments.png'
 
 const formSchema = z.object({
   totalAmount: z.string(),
@@ -184,9 +183,9 @@ export default function FormDismissal() {
     number?.info?.[0]?.attachment[0].attachmentFile
   )
 
-  const imagePath = `${number?.info?.[0]?.prescription[0].attachedUrl}`
-  const encodedPath = encodeURI(imagePath)
-  const src = `file:///${encodedPath}`
+  // const imagePath = `${number?.info?.[0]?.prescription[0].attachedUrl}`
+  // const encodedPath = encodeURI(imagePath)
+  // const src = `file:///${encodedPath}`
 
   const { mutate } = useMutation({
     // mutationKey: ['AccreditedInfo'],
@@ -235,7 +234,11 @@ export default function FormDismissal() {
     setModalOpen(false)
   }
 
+  const attachedUrlPrec = number?.info?.[0]?.prescription?.[0]?.attachedUrl ?? null
+  const isPDF = attachedUrlPrec?.toLowerCase().endsWith('.pdf')
   //
+  const attachedUrlAttachment = number?.info?.[0]?.attachment?.[0]?.attachmentFile ?? null
+  const isPDFAtta = attachedUrlPrec?.toLowerCase().endsWith('.pdf')
   const openPtModal = () => {
     if (number?.info?.[0]?.attachment[0].attachmentFile) {
       setModalPtOpen(true)
@@ -513,47 +516,88 @@ export default function FormDismissal() {
                 {/*  */}
                 <div className="flex justify-start gap-4  h-40 ">
                   <h1 className="mb-5 text-[#8B8D97]">عرض البيانات الشخصية</h1>
-                  <a onClick={openModal}>
+                  <a onClick={openModal} className="cursor-pointer">
                     <Pdf />
                   </a>
                   {modalOpen && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
-                      <div className="relative w-[100%] h-[100%] overflow-hidden">
-                        <img
-                          src={number?.info?.[0]?.prescription[0].attachedUrl ?? 'No URL available'}
-                          className="w-full h-full mx-auto object-contain"
-                          alt=""
-                        />
-                        <button
-                          onClick={closeModal}
-                          className="absolute top-4 right-4 p-2 rounded-full bg-white text-black hover:bg-gray-200"
-                        >
-                          &times;
-                        </button>
+                    <div
+                      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50"
+                      onClick={closeModal}
+                    >
+                      <div
+                        className="relative w-[100%] h-[100%] overflow-hidden"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {isPDF ? (
+                          // If it's a PDF, render an iframe
+                          <>
+                            <iframe
+                              src={attachedUrlPrec!}
+                              className="w-full h-full"
+                              frameBorder="0"
+                            ></iframe>
+                            <button
+                              onClick={closeModal}
+                              className="absolute top-4 right-4 p-2 rounded-full bg-white text-black hover:bg-gray-200"
+                            >
+                              &times;
+                            </button>
+                          </>
+                        ) : (
+                          // If it's an image, render an img
+                          <>
+                            <img
+                              src={attachedUrlPrec!}
+                              className="w-full h-full object-contain"
+                              alt=""
+                            />
+                            <button
+                              onClick={closeModal}
+                              className="absolute top-4 right-4 p-2 rounded-full bg-white text-black hover:bg-gray-200"
+                            >
+                              &times;
+                            </button>
+                          </>
+                        )}
                       </div>
                     </div>
                   )}
+
                   <h1 className="mb-5 text-[#8B8D97]">عرض ملف الوصفة الطبية</h1>
 
-                  <a onClick={openPtModal}>
+                  <a onClick={openPtModal} className="cursor-pointer">
                     <Pdf />
                   </a>
                   {modalPtOpen && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
-                      <div className="relative w-[100%] h-[100%] overflow-hidden">
-                        <img
-                          src={
-                            number?.info?.[0]?.attachment?.[0]?.attachmentFile ?? 'No URL available'
-                          }
-                          className="w-full h-full mx-auto object-contain"
-                          alt=""
-                        />
+                    <div
+                      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50"
+                      onClick={closePtModal}
+                    >
+                      <div
+                        className="relative w-auto max-w-[90vw] max-h-[90vh] bg-white flex justify-center items-center p-4"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <button
                           onClick={closePtModal}
                           className="absolute top-4 right-4 p-2 rounded-full bg-white text-black hover:bg-gray-200"
                         >
                           &times;
                         </button>
+                        {isPDFAtta ? (
+                          // If it's a PDF, render an iframe
+                          <iframe
+                            src={attachedUrlAttachment!}
+                            className="w-full h-full"
+                            frameBorder="0"
+                          ></iframe>
+                        ) : (
+                          // If it's an image, render an img
+                          <img
+                            src={attachedUrlAttachment!}
+                            className="w-full h-full object-contain"
+                            alt=""
+                          />
+                        )}
                       </div>
                     </div>
                   )}

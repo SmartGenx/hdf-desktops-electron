@@ -1,11 +1,9 @@
-import StatistCard from '@renderer/components/statistCard'
 import StatistChartCard from './statistChartCard'
 import StatistchartTowCard from './statistchartTowCard'
 import Statistsidebar from './statistsidebar'
 import { axiosInstance } from '@renderer/lib/http'
 import { useAuthHeader } from 'react-auth-kit'
 import { useEffect, useRef, useState } from 'react'
-import useScreenSize from '@renderer/hooks/useScreenSize'
 import StatistCardWithImage from '@renderer/components/statistCardWithImage'
 import LackOfAir from '../../../assets/images/lack-of-air.png'
 import LocationPin from '../../../assets/images/location-pin.png'
@@ -24,8 +22,8 @@ const Home = () => {
   const divRef = useRef<HTMLDivElement>(null)
 
   // Custom hook to get screen size
-  const screenSize = useScreenSize()
-  const screenWidth = screenSize.width
+  // const screenSize = useScreenSize()
+  // const screenWidth = screenSize.width
 
   // State to track if div width is greater than 1218px
   const [expanded, setExpanded] = useState<boolean>(true)
