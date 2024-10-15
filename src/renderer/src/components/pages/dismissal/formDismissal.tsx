@@ -41,6 +41,8 @@ type AccreditedFormValue = z.infer<typeof formSchema>
 
 export default function FormDismissal() {
   // const signIn = useSignIn()
+  const [modalOpen, setModalOpen] = useState(false)
+  const [modalPtOpen, setModalPtOpen] = useState(false)
   const inputRef = React.useRef<HTMLInputElement>(null)
   const { toast } = useToast()
   const { setValue } = useForm()
@@ -223,6 +225,26 @@ export default function FormDismissal() {
     }
   })
 
+  const openModal = () => {
+    if (number?.info?.[0]?.prescription[0].attachedUrl) {
+      setModalOpen(true)
+    }
+  }
+
+  const closeModal = () => {
+    setModalOpen(false)
+  }
+
+  //
+  const openPtModal = () => {
+    if (number?.info?.[0]?.attachment[0].attachmentFile) {
+      setModalPtOpen(true)
+    }
+  }
+
+  const closePtModal = () => {
+    setModalPtOpen(false)
+  }
   const onSubmit = async (data: AccreditedFormValue) => {
     mutate(data)
   }
@@ -491,18 +513,50 @@ export default function FormDismissal() {
                 {/*  */}
                 <div className="flex justify-start gap-4  h-40 ">
                   <h1 className="mb-5 text-[#8B8D97]">عرض البيانات الشخصية</h1>
-
-                  <img
-                    src={number?.info?.[0]?.prescription[0].attachedUrl ?? 'No URL available'}
-                    alt=""
-                  />
-
+                  <a onClick={openModal}>
+                    <Pdf />
+                  </a>
+                  {modalOpen && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
+                      <div className="relative w-[100%] h-[100%] overflow-hidden">
+                        <img
+                          src={number?.info?.[0]?.prescription[0].attachedUrl ?? 'No URL available'}
+                          className="w-full h-full mx-auto object-contain"
+                          alt=""
+                        />
+                        <button
+                          onClick={closeModal}
+                          className="absolute top-4 right-4 p-2 rounded-full bg-white text-black hover:bg-gray-200"
+                        >
+                          &times;
+                        </button>
+                      </div>
+                    </div>
+                  )}
                   <h1 className="mb-5 text-[#8B8D97]">عرض ملف الوصفة الطبية</h1>
 
-                  <img
-                    src={number?.info?.[0]?.attachment[0].attachmentFile ?? 'No URL available'}
-                    alt=""
-                  />
+                  <a onClick={openPtModal}>
+                    <Pdf />
+                  </a>
+                  {modalPtOpen && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
+                      <div className="relative w-[100%] h-[100%] overflow-hidden">
+                        <img
+                          src={
+                            number?.info?.[0]?.attachment?.[0]?.attachmentFile ?? 'No URL available'
+                          }
+                          className="w-full h-full mx-auto object-contain"
+                          alt=""
+                        />
+                        <button
+                          onClick={closePtModal}
+                          className="absolute top-4 right-4 p-2 rounded-full bg-white text-black hover:bg-gray-200"
+                        >
+                          &times;
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex justify-end gap-4 ">
