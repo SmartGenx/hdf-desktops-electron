@@ -292,6 +292,17 @@ export interface AccreditedInfosRes {
   lastModified: Date
   prescription: Prescription[]
   applicant: ApplicantsInfo
+  attachment: Attachment[]
+}
+export interface Attachment {
+  id: number
+  globalId: string
+  attachmentFile: string
+  type: string
+  deleted: boolean
+  accreditedGlobalId: string
+  version: number
+  lastModified: Date
 }
 export interface Prescription {
   id: number

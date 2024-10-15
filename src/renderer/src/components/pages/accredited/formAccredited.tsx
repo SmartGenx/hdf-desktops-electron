@@ -139,7 +139,7 @@ export default function FormAccredited() {
         formData.append('pt', datas.pt)
       }
 
-      // Return the API call to be executed
+      
       return postApi('/accredited', formData, {
         headers: {
           Authorization: `${authToken()}`,
@@ -166,7 +166,7 @@ export default function FormAccredited() {
   })
 
   const onSubmit = async (data: AccreditedFormValue) => {
-    // console.log(data)
+    
     mutate(data)
   }
 

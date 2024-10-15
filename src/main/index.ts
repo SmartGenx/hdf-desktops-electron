@@ -9,13 +9,16 @@ function createWindow(): void {
     height: 670,
     show: false,
     autoHideMenuBar: true,
+    
     ...(process.platform === 'linux' ? { icon } : {}),
     title: 'مؤسسة التنمية الصحية',
     icon: join(__dirname, '../../resources/مؤسسة التنمية الصحية 2.png'),
 
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: false,
+      webSecurity: false, // Disable web security to allow local file access
+
     }
   })
 

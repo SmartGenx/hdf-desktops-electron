@@ -33,7 +33,7 @@ class DatabaseService {
     // Initialize both Prisma clients for local and cloud databases
     this.localPrisma = new PrismaClient({
       datasources: {
-        db: { url: 'postgresql://postgres:sami2020@localhost:5432/Hdf_electron?schema=public' }
+        db: { url: 'postgresql://postgres:123@localhost:5432/Hdf_electron?schema=public' }
       }
     })
     // this.cloudPrisma = new PrismaClient({
