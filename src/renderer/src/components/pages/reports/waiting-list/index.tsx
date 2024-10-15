@@ -32,9 +32,9 @@ export default function WaitingList() {
   })
 
   const {
-    isPending: isPeningCardCard,
-    isError: isErrorCard,
-    error: errorCard,
+    isPending: _isPeningCardCard,
+    isError: _isErrorCard,
+    error: _errorCard,
     data: applicantsReportCategoryPrint
   } = useQuery({
     queryKey: ['applicantsReportCategory'],

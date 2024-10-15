@@ -65,11 +65,7 @@ const options = {
 
 const StatistchartTowCard = () => {
   const authToken = useAuthHeader()
-  const {
-    isPending,
-    error,
-    data: staticsPer
-  } = useQuery({
+  const { data: staticsPer } = useQuery({
     queryKey: ['staticsPer'],
     queryFn: () =>
       getApi<StaticsPer>('/applicant/ApplicantMonthlyGenderCount', {

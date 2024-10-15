@@ -1,17 +1,8 @@
 import * as React from 'react'
 import { ColumnDef } from '@tanstack/react-table'
-// import { GevStatus, GovernmentFacility, kind_of_case } from '../../../types/enum'
-import { MoreVertical } from 'lucide-react'
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from '../../../ui/dropdown-menu'
 import { HdfTable } from '../../../tables/hdfTable'
 import { ApplicantByDirectorateViewModelInfo } from '../../../../types/index'
-import { Button } from '../../../ui/button'
+
 
 type Props = {
   info: ApplicantByDirectorateViewModelInfo[]

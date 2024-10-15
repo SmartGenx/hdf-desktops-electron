@@ -21,7 +21,7 @@ export default function MedicalAllocationsIndex() {
   const authToken = useAuthHeader()
   const {
     isPending: isPendingViewModel,
-    isError: isErrorViewModel,
+    isError: _isErrorViewModel,
     error: errorViewModel,
     data: ApplicantByDirectorateViewModelData
   } = useQuery({
@@ -36,9 +36,9 @@ export default function MedicalAllocationsIndex() {
   })
 
   const {
-    isPending: isPeningCardCard,
-    isError: isErrorCard,
-    error: errorCard,
+    isPending: _isPeningCardCard,
+    isError: _isErrorCard,
+    error: _errorCard,
     data: ApplicantByDirectorateViewModelDataCard
   } = useQuery({
     queryKey: ['ApplicantByDirectorateViewModel'],
