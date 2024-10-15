@@ -41,6 +41,7 @@ type AccreditedFormValue = z.infer<typeof formSchema>
 
 export default function FormDismissal() {
   // const signIn = useSignIn()
+  const inputRef = React.useRef<HTMLInputElement>(null)
   const { toast } = useToast()
   const { setValue } = useForm()
   const navigate = useNavigate()
@@ -100,6 +101,14 @@ export default function FormDismissal() {
     setTotalPrice(computedPrice)
   }, [totalAmounts, approvedAmounts, number])
 
+  //
+
+  React.useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus()
+    }
+  }, [])
+  //
   const [pharmacy, setPharmacy] = useState<Pharmacy[]>([])
   const [_selectedPharmacy, setSelectedPharmacy] = useState<Pharmacy | null>(null)
   const [showAlert, setShowAlert] = useState<boolean>(false)
@@ -287,6 +296,7 @@ export default function FormDismissal() {
                             البطاقة
                           </label>
                           <input
+                            ref={inputRef}
                             type="text"
                             value={numberOfRfid}
                             onChange={(e) => setNumberOfRfid(e.target.value)}
