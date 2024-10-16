@@ -80,9 +80,11 @@ export type Disease = {
 }
 export default function FormApplicant() {
   const [category, setCategory] = useState<Category[]>([])
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
   const [directorates, setDirectorates] = useState<Governorate[]>([])
   const [selectedDirectorate, setSelectedDirectorate] = useState<Governorate | null>(null)
   const [disease, setDisease] = useState<Disease[]>([])
+  const [selectedDisease, setSelectedDisease] = useState<Disease | null>(null)
   const authToken = useAuthHeader()
   const { toast } = useToast()
   const navigate = useNavigate()
@@ -193,7 +195,21 @@ export default function FormApplicant() {
     } else {
       form.setValue('directorateGlobalId', '')
     }
-  }, [selectedDirectorate])
+
+    if (selectedCategory?.globalId) {
+      console.log('selectedCategory?.globalId', selectedCategory.globalId)
+      form.setValue('categoryGlobalId', selectedCategory.globalId)
+    } else {
+      form.setValue('categoryGlobalId', '')
+    }
+
+    if (selectedDisease?.globalId) {
+      console.log('selectedDisease?.globalId', selectedDisease.globalId)
+      form.setValue('diseaseGlobalId', selectedDisease.globalId)
+    } else {
+      form.setValue('diseaseGlobalId', '')
+    }
+  }, [selectedDirectorate, selectedCategory])
   const onSubmit = async (data: UserFormValue) => {
     mutate(data)
   }
@@ -421,21 +437,14 @@ export default function FormApplicant() {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <SelectTrigger className="">
-                                  <SelectValue placeholder="اختر المرض" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectGroup>
-                                    <SelectLabel>الامراض</SelectLabel>
-                                    {disease.map((diseases) => (
-                                      <SelectItem key={diseases.id} value={diseases.globalId}>
-                                        {diseases.name}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectGroup>
-                                </SelectContent>
-                              </Select>
+                              <Combobox
+                                options={disease}
+                                valueKey="id"
+                                displayKey="name"
+                                placeholder="أختر المرض"
+                                emptyMessage="لم يتم العثور على الأمراض"
+                                onSelect={(diseasies) => setSelectedDisease(diseasies as Disease)}
+                              />
                             </FormControl>
                           </FormItem>
                         )}
@@ -451,20 +460,16 @@ export default function FormApplicant() {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <SelectTrigger className="">
-                                  <SelectValue placeholder="اختر فئة" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectGroup>
-                                    {category.map((category) => (
-                                      <SelectItem key={category.id} value={category.globalId}>
-                                        {category.name}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectGroup>
-                                </SelectContent>
-                              </Select>
+                              <Combobox
+                                options={category}
+                                valueKey="id"
+                                displayKey="name"
+                                placeholder="أختر فئة"
+                                emptyMessage="لم يتم العثور على الفئة"
+                                onSelect={(categories) =>
+                                  setSelectedCategory(categories as Category)
+                                }
+                              />
                             </FormControl>
                           </FormItem>
                         )}

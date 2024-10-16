@@ -25,6 +25,7 @@ import { Pharmacy, Square, applicantType } from '@renderer/types'
 import FileUploader from '@renderer/components/fileUploader'
 import { MoveRight } from 'lucide-react'
 import { FormInput } from '@renderer/components/ui/forms-input'
+import { Combobox } from '@renderer/components/ui/Combobox'
 
 const formSchema = z.object({
   squareGlobalId: z.string(),
@@ -49,8 +50,11 @@ export default function FormAccredited() {
   const authToken = useAuthHeader()
   const queryClient = useQueryClient()
   const [square, setSquare] = useState<Square[]>([])
+  const [selectedSquare, setSelectedSquare] = useState<Square | null>(null)
   const [pharmacy, setPharmacy] = useState<Pharmacy[]>([])
+  const [selectedPharmacy, setSelectedPharmacy] = useState<Pharmacy | null>(null)
   const [applicantType, setApplicantType] = useState<applicantType[]>([])
+  const [selectedApplicantType, setSelectedApplicantType] = useState<applicantType | null>(null)
   const form = useForm<AccreditedFormValue>({
     resolver: zodResolver(formSchema)
   })
@@ -139,7 +143,6 @@ export default function FormAccredited() {
         formData.append('pt', datas.pt)
       }
 
-      
       return postApi('/accredited', formData, {
         headers: {
           Authorization: `${authToken()}`,
@@ -165,8 +168,29 @@ export default function FormAccredited() {
     }
   })
 
+  React.useEffect(() => {
+    if (selectedPharmacy?.globalId) {
+      console.log('selectedPharmacy?.globalId', selectedPharmacy.globalId)
+      form.setValue('pharmacyGlobalId', selectedPharmacy.globalId)
+    } else {
+      form.setValue('pharmacyGlobalId', '')
+    }
+    //
+    if (selectedSquare?.globalId) {
+      console.log('selectedSquare?.globalId', selectedSquare.globalId)
+      form.setValue('squareGlobalId', selectedSquare.globalId)
+    } else {
+      form.setValue('squareGlobalId', '')
+    }
+    //
+    if (selectedApplicantType?.globalId) {
+      console.log('selectedApplicantType?.globalId', selectedApplicantType.globalId)
+      form.setValue('applicantGlobalId', selectedApplicantType.globalId)
+    } else {
+      form.setValue('applicantGlobalId', '')
+    }
+  }, [selectedPharmacy, selectedSquare])
   const onSubmit = async (data: AccreditedFormValue) => {
-    
     mutate(data)
   }
 
@@ -362,21 +386,16 @@ export default function FormAccredited() {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <SelectTrigger className="">
-                                  <SelectValue placeholder="اختر الصيدلية" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectGroup>
-                                    <SelectLabel>صيدلية</SelectLabel>
-                                    {pharmacy.map((pharmacy) => (
-                                      <SelectItem key={pharmacy.globalId} value={pharmacy.globalId}>
-                                        {pharmacy.name}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectGroup>
-                                </SelectContent>
-                              </Select>
+                              <Combobox
+                                options={pharmacy}
+                                valueKey="id"
+                                displayKey="name"
+                                placeholder="أختر الصيدلية"
+                                emptyMessage="لم يتم العثور على الصيدلية"
+                                onSelect={(pharmacies) =>
+                                  setSelectedPharmacy(pharmacies as Pharmacy)
+                                }
+                              />
                             </FormControl>
                           </FormItem>
                         )}
@@ -395,21 +414,14 @@ export default function FormAccredited() {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <SelectTrigger className="">
-                                  <SelectValue placeholder="اخر المربع" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectGroup>
-                                    <SelectLabel>الامراض</SelectLabel>
-                                    {square?.map((square) => (
-                                      <SelectItem key={square.globalId} value={square.globalId}>
-                                        {square.name}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectGroup>
-                                </SelectContent>
-                              </Select>
+                              <Combobox
+                                options={square}
+                                valueKey="id"
+                                displayKey="name"
+                                placeholder="أختر المربع"
+                                emptyMessage="لم يتم العثور على المربع"
+                                onSelect={(squaries) => setSelectedSquare(squaries as Square)}
+                              />
                             </FormControl>
                           </FormItem>
                         )}
@@ -446,24 +458,16 @@ export default function FormAccredited() {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <SelectTrigger className="">
-                                  <SelectValue placeholder="اخر المتقدم" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectGroup>
-                                    <SelectLabel>المتقدمين</SelectLabel>
-                                    {applicantType?.map((applicant) => (
-                                      <SelectItem
-                                        key={applicant.globalId}
-                                        value={applicant.globalId}
-                                      >
-                                        {applicant.name}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectGroup>
-                                </SelectContent>
-                              </Select>
+                              <Combobox
+                                options={applicantType}
+                                valueKey="id"
+                                displayKey="name"
+                                placeholder="أختر المتقدم"
+                                emptyMessage="لم يتم العثور على المتقدم"
+                                onSelect={(applicantTypies) =>
+                                  setSelectedApplicantType(applicantTypies as applicantType)
+                                }
+                              />
                             </FormControl>
                           </FormItem>
                         )}

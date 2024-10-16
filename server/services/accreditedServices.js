@@ -342,14 +342,24 @@ class AccreditedService {
     const globalId = `${process.env.LOCAL_DB_ID}-${uniqueId}-${timestamp}` //remove name artib
     const {
       type,
+      numberOfRfid,
+      formNumber,
 
       prescriptionDate,
       ...rest
     } = AccreditedData
 
+    const accreditexsting=await this.prisma.accredited.findFirst({
+      where: {globalId:id}
+
+    })
+
     const accreited = await this.prisma.accredited.update({
       where: { globalId: id },
       data: {
+        numberOfRfid:numberOfRfid?+numberOfRfid:accreditexsting.numberOfRfid,
+        formNumber:formNumber?+formNumber:accreditexsting.formNumber,
+
         ...rest
       }
     })
@@ -358,9 +368,8 @@ class AccreditedService {
         where: { accreditedGlobalId: accreited.globalId }
       })
       if (atchment) {
-        console.log("🚀 ~ AccreditedService ~ updateAccreditation ~ atchment:", atchment.globalId)
+        console.log('🚀 ~ AccreditedService ~ updateAccreditation ~ atchment:', atchment.globalId)
         const atch = await this.prisma.attachment.update({
-
           where: { globalId: atchment.globalId },
           data: {
             type: type, // Use shorthand property names
@@ -369,7 +378,6 @@ class AccreditedService {
             globalId: `${process.env.LOCAL_DB_ID}-${uuidv4()}-${new Date()}` // Assign the generated global ID
           }
         })
-
       }
     }
 
