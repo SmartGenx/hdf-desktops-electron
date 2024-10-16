@@ -382,25 +382,15 @@ export default function FormApplicant() {
                       <label htmlFor="" className="text-[#A2A1A8]">
                         المديرية
                       </label>
-                      <FormField
-                        control={form.control}
-                        name="directorateGlobalId"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Combobox
-                                options={directorates}
-                                valueKey="id"
-                                displayKey="name"
-                                placeholder="أختر مديرية"
-                                emptyMessage="لم يتم العثور على مديرية"
-                                onSelect={(directorate) =>
-                                  setSelectedDirectorate(directorate as Governorate)
-                                }
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
+                      <Combobox
+                        options={directorates}
+                        valueKey="id"
+                        displayKey="name"
+                        placeholder="أختر مديرية"
+                        emptyMessage="لم يتم العثور على مديرية"
+                        onSelect={(directorate) =>
+                          setSelectedDirectorate(directorate as Governorate)
+                        }
                       />
                     </div>
                     <div className="col-span-1">
@@ -432,49 +422,26 @@ export default function FormApplicant() {
                       <label htmlFor="" className="text-[#A2A1A8]">
                         الأمراض
                       </label>
-                      <FormField
-                        control={form.control}
-                        name="diseaseGlobalId"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Combobox
-                                options={disease}
-                                valueKey="id"
-                                displayKey="name"
-                                placeholder="أختر المرض"
-                                emptyMessage="لم يتم العثور على الأمراض"
-
-                                onSelect={(diseasies) => setSelectedDisease(diseasies as Disease)}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
+                      <Combobox
+                        options={disease}
+                        valueKey="id"
+                        displayKey="name"
+                        placeholder="أختر المرض"
+                        emptyMessage="لم يتم العثور على الأمراض"
+                        onSelect={(diseasies) => setSelectedDisease(diseasies as Disease)}
                       />
                     </div>
                     <div className="col-span-1 ">
                       <label htmlFor="" className="text-[#A2A1A8]">
                         الفئة
                       </label>
-                      <FormField
-                        control={form.control}
-                        name="categoryGlobalId"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Combobox
-                                options={category}
-                                valueKey="id"
-                                displayKey="name"
-                                placeholder="أختر فئة"
-                                emptyMessage="لم يتم العثور على الفئة"
-                                onSelect={(categories) =>
-                                  setSelectedCategory(categories as Category)
-                                }
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
+                      <Combobox
+                        options={category}
+                        valueKey="id"
+                        displayKey="name"
+                        placeholder="أختر فئة"
+                        emptyMessage="لم يتم العثور على الفئة"
+                        onSelect={(categories) => setSelectedCategory(categories as Category)}
                       />
                     </div>
                     <div className="col-span-1 ">

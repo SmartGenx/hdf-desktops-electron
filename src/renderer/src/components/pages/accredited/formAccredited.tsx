@@ -381,25 +381,13 @@ export default function FormAccredited() {
                       <label htmlFor="" className="text-[#A2A1A8]">
                         الصيدلية
                       </label>
-                      <FormField
-                        control={form.control}
-                        name="pharmacyGlobalId"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Combobox
-                                options={pharmacy}
-                                valueKey="id"
-                                displayKey="name"
-                                placeholder="أختر الصيدلية"
-                                emptyMessage="لم يتم العثور على الصيدلية"
-                                onSelect={(pharmacies) =>
-                                  setSelectedPharmacy(pharmacies as Pharmacy)
-                                }
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
+                      <Combobox
+                        options={pharmacy}
+                        valueKey="id"
+                        displayKey="name"
+                        placeholder="أختر الصيدلية"
+                        emptyMessage="لم يتم العثور على الصيدلية"
+                        onSelect={(pharmacies) => setSelectedPharmacy(pharmacies as Pharmacy)}
                       />
                     </div>
                   </div>
@@ -409,23 +397,13 @@ export default function FormAccredited() {
                       <label htmlFor="" className="text-[#A2A1A8]">
                         المربع
                       </label>
-                      <FormField
-                        control={form.control}
-                        name="squareGlobalId"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Combobox
-                                options={square}
-                                valueKey="id"
-                                displayKey="name"
-                                placeholder="أختر المربع"
-                                emptyMessage="لم يتم العثور على المربع"
-                                onSelect={(squaries) => setSelectedSquare(squaries as Square)}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
+                      <Combobox
+                        options={square}
+                        valueKey="id"
+                        displayKey="name"
+                        placeholder="أختر المربع"
+                        emptyMessage="لم يتم العثور على المربع"
+                        onSelect={(squaries) => setSelectedSquare(squaries as Square)}
                       />
                     </div>
                     <div className="col-span-1 ">
@@ -453,25 +431,15 @@ export default function FormAccredited() {
                       <label htmlFor="" className="text-[#A2A1A8]">
                         المتقدم
                       </label>
-                      <FormField
-                        control={form.control}
-                        name="applicantGlobalId"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Combobox
-                                options={applicantType}
-                                valueKey="id"
-                                displayKey="name"
-                                placeholder="أختر المتقدم"
-                                emptyMessage="لم يتم العثور على المتقدم"
-                                onSelect={(applicantTypies) =>
-                                  setSelectedApplicantType(applicantTypies as applicantType)
-                                }
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
+                      <Combobox
+                        options={applicantType}
+                        valueKey="id"
+                        displayKey="name"
+                        placeholder="أختر المتقدم"
+                        emptyMessage="لم يتم العثور على المتقدم"
+                        onSelect={(applicantTypies) =>
+                          setSelectedApplicantType(applicantTypies as applicantType)
+                        }
                       />
                     </div>
                   </div>
