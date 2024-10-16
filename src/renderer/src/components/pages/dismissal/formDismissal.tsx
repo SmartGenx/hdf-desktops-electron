@@ -475,7 +475,7 @@ export default function FormDismissal() {
                         label="ادخل المعتمد"
                         className="h-10 p-0 rounded-xl text-sm"
                         placeholder="المعنمد"
-                        value={name || ''}
+                        value={number?.info[0].applicant.name || ''}
                         disabled
                       />
                     </div>
@@ -548,7 +548,7 @@ export default function FormDismissal() {
                           <>
                             <img
                               src={attachedUrlPrec!}
-                              className="w-full h-full object-contain"
+                              className="w-[80%] h-[80%] mx-auto object-fill"
                               alt=""
                             />
                             <button
@@ -594,7 +594,7 @@ export default function FormDismissal() {
                           // If it's an image, render an img
                           <img
                             src={attachedUrlAttachment!}
-                            className="w-full h-full object-contain"
+                            className="w-[80%] h-[80%] mx-auto object-fill"
                             alt=""
                           />
                         )}

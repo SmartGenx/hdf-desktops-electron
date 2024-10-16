@@ -197,18 +197,20 @@ export default function FormApplicant() {
     }
 
     if (selectedCategory?.globalId) {
-      console.log('selectedDirectorate?.globalId', selectedCategory?.globalId)
-      form.setValue('categoryGlobalId', selectedCategory?.globalId)
+      console.log('selectedCategory?.globalId', selectedCategory.globalId)
+      form.setValue('categoryGlobalId', selectedCategory.globalId)
     } else {
       form.setValue('categoryGlobalId', '')
     }
+
     if (selectedDisease?.globalId) {
-      console.log('selectedDisease?.globalId', selectedDisease?.globalId)
-      form.setValue('diseaseGlobalId', selectedDisease?.globalId)
+      console.log('selectedDisease?.globalId', selectedDisease.globalId)
+      form.setValue('diseaseGlobalId', selectedDisease.globalId)
     } else {
       form.setValue('diseaseGlobalId', '')
     }
-  }, [selectedDirectorate, selectedCategory, selectedDisease])
+  }, [selectedDirectorate, selectedCategory])
+
   const onSubmit = async (data: UserFormValue) => {
     mutate(data)
   }
@@ -441,7 +443,8 @@ export default function FormApplicant() {
                                 valueKey="id"
                                 displayKey="name"
                                 placeholder="أختر المرض"
-                                emptyMessage="لم يتم العثور على المرض"
+                                emptyMessage="لم يتم العثور على الأمراض"
+
                                 onSelect={(diseasies) => setSelectedDisease(diseasies as Disease)}
                               />
                             </FormControl>

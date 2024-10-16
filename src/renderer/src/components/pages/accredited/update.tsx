@@ -142,6 +142,7 @@ export default function UpdateAccredited() {
         state: accredited?.data[0].state
       })
     }
+    form.setValue('applicantGlobalId', accredited?.data[0].applicantGlobalId)
   }, [accredited?.data[0]])
   const [delayedSubmitting, _setDelayedSubmitting] = useState(form.formState.isSubmitting)
 
@@ -493,46 +494,6 @@ export default function UpdateAccredited() {
                   </div>
                   <div className="col-span-1 ">
                     <label htmlFor="" className="text-[#A2A1A8]">
-                      المتقدم
-                    </label>
-                    <FormField
-                      control={form.control}
-                      name="applicantGlobalId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Select
-                              onValueChange={field.onChange}
-                              value={
-                                field.value
-                                  ? String(field.value)
-                                  : String(accredited?.data[0].applicantGlobalId)
-                              }
-                              defaultValue={field.value}
-                            >
-                              <SelectTrigger className="">
-                                <SelectValue placeholder="اخر المتقدم" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectGroup>
-                                  <SelectLabel>المتقدمين</SelectLabel>
-                                  {applicantType?.map((applicant) => (
-                                    <SelectItem key={applicant.globalId} value={applicant.globalId}>
-                                      {applicant.name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectGroup>
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-3 gap-2 mt-3">
-                  <div className="col-span-1 ">
-                    <label htmlFor="" className="text-[#A2A1A8]">
                       نوع الهوية
                     </label>
                     <FormField
@@ -571,6 +532,8 @@ export default function UpdateAccredited() {
                       )}
                     />
                   </div>
+                </div>
+                <div className="grid grid-cols-3 gap-2 mt-3">
                   <div className="col-span-1 ">
                     <label htmlFor="" className="text-[#A2A1A8]">
                       الهوية الشخصية
