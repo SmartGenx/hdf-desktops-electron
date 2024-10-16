@@ -217,6 +217,20 @@ CREATE TABLE "Square" (
     CONSTRAINT "Square_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "BackUp" (
+    "id" SERIAL NOT NULL,
+    "globalId" TEXT NOT NULL,
+    "userName" TEXT NOT NULL,
+    "path" TEXT NOT NULL,
+    "createAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "deleted" BOOLEAN NOT NULL DEFAULT false,
+    "version" INTEGER NOT NULL DEFAULT 1,
+    "lastModified" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "BackUp_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_globalId_key" ON "User"("globalId");
 
@@ -303,6 +317,9 @@ CREATE UNIQUE INDEX "Square_globalId_key" ON "Square"("globalId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Square_id_globalId_key" ON "Square"("id", "globalId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "BackUp_globalId_key" ON "BackUp"("globalId");
 
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_roleGlobalId_fkey" FOREIGN KEY ("roleGlobalId") REFERENCES "Role"("globalId") ON DELETE RESTRICT ON UPDATE CASCADE;
