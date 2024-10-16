@@ -14,6 +14,7 @@ import ProtectedRoute from '../layouts/protected-route'
 import UpdateApplicant from '../pages/Applicants/update'
 import ReportIndex from '../pages/reports'
 import UpdateAccredited from '../pages/accredited/update'
+import BackUpIndex from '../pages/backup'
 
 export const router = createHashRouter([
   {
@@ -87,6 +88,11 @@ export const router = createHashRouter([
       {
         path: '/Reports',
         element: <ProtectedRoute element={<ReportIndex />} />
+        // element: <Login />
+      },
+      {
+        path: '/backup',
+        element: <ProtectedRoute element={<BackUpIndex />} />
         // element: <Login />
       }
     ]
