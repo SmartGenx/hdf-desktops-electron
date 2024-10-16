@@ -19,10 +19,10 @@ import * as z from 'zod'
 import { cn } from '../../../lib/utils'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { axiosInstance, getApi, postApi } from '../../../lib/http'
+import { axiosInstance,  postApi } from '../../../lib/http'
 import { useAuthHeader } from 'react-auth-kit'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { AccreditedRes, ApplicantsInfo, Pharmacy } from '@renderer/types'
+import { useMutation,  useQueryClient } from '@tanstack/react-query'
+import { AccreditedRes,  Pharmacy } from '@renderer/types'
 import Pdf from '@renderer/components/icons/pdf'
 import { AlertCircle } from 'lucide-react'
 import { FormInput } from '@renderer/components/ui/forms-input'
@@ -132,22 +132,22 @@ export default function FormDismissal() {
   //
   const authToken = useAuthHeader()
 
-  const { data: applicant } = useQuery({
-    queryKey: ['applicant'],
-    queryFn: () =>
-      getApi<ApplicantsInfo[]>('/applicant', {
-        headers: {
-          Authorization: authToken()
-        }
-      })
-  })
+  // const { data: applicant } = useQuery({
+  //   queryKey: ['applicant'],
+  //   queryFn: () =>
+  //     getApi<ApplicantsInfo[]>('/applicant', {
+  //       headers: {
+  //         Authorization: authToken()
+  //       }
+  //     })
+  // })
 
   const [delayedSubmitting, _setDelayedSubmitting] = useState(form.formState.isSubmitting)
 
   console.log('numbernumbernumber', number?.info[0].applicant.category.SupportRatio)
-  const name =
-    applicant?.data?.find((applicant) => applicant?.globalId === number?.info[0]?.applicantGlobalId)
-      ?.name || null
+  // const name =
+  //   applicant?.data?.find((applicant) => applicant?.globalId === number?.info[0]?.applicantGlobalId)
+  //     ?.name || null
 
   React.useEffect(() => {
     form.setValue('amountPaid', String(totalPrice))
