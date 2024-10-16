@@ -210,6 +210,7 @@ export default function FormApplicant() {
       form.setValue('diseaseGlobalId', '')
     }
   }, [selectedDirectorate, selectedCategory])
+
   const onSubmit = async (data: UserFormValue) => {
     mutate(data)
   }
@@ -443,6 +444,7 @@ export default function FormApplicant() {
                                 displayKey="name"
                                 placeholder="أختر المرض"
                                 emptyMessage="لم يتم العثور على الأمراض"
+
                                 onSelect={(diseasies) => setSelectedDisease(diseasies as Disease)}
                               />
                             </FormControl>

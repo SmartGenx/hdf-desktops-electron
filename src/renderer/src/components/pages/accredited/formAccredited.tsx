@@ -190,6 +190,7 @@ export default function FormAccredited() {
       form.setValue('applicantGlobalId', '')
     }
   }, [selectedPharmacy, selectedSquare])
+
   const onSubmit = async (data: AccreditedFormValue) => {
     mutate(data)
   }
