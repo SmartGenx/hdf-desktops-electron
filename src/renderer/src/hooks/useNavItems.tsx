@@ -65,6 +65,12 @@ export default function useNavItems() {
           icon: 'report',
           label: 'تهيئة النظام',
           disabled: false
+        },
+        {
+          href: '/backup',
+          icon: 'backup',
+          label: 'النسخ الإحتياطي',
+          disabled: false
         }
       ]
     }
