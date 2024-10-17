@@ -1,23 +1,25 @@
 const jwt = require('jsonwebtoken');
 const { PrismaClient } = require('@prisma/client');
-const  Unauthorized  = require('../errors/Unauthorized');
-const {JWT_SECRET} = require('../secrets');
+const Unauthorized = require('../errors/Unauthorized');
+const { JWT_SECRET } = require('../secrets');
 
 const prisma = new PrismaClient();
 
 const isAuthenticated = async (req, res, next) => {
-    // 1. Get the token from the request headers
-    const token = req.headers.authorization;
-
-    // 2. Check if the token is missing or undefined
-    if (!token || typeof token !== 'string') {
-        return next(new Unauthorized("Unauthorized"));
-    }
-
     try {
+        // 1. Get the token from the request headers
+        const authHeader = req.headers.authorization;
+
+        // 2. Check if the token is missing or undefined
+        if (!authHeader || typeof authHeader !== 'string' || !authHeader.startsWith('Bearer ')) {
+            return next(new Unauthorized("Unauthorized"));
+        }
+
+        // Extract the token from the "Bearer <token>" format
+        const token = authHeader.split(' ')[1];
+
         // 3. Verify and decode the token
         const payload = jwt.verify(token, JWT_SECRET);
-        // Do something with the payload if needed
 
         // Fetch user data from the database
         const user = await prisma.user.findFirst({ where: { id: payload.userId } });
@@ -38,4 +40,4 @@ const isAuthenticated = async (req, res, next) => {
     }
 };
 
-module.exports = {isAuthenticated};
+module.exports = { isAuthenticated };
