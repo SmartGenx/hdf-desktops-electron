@@ -6,12 +6,16 @@ const { databaseService } = require('../database'); // Adjust the import path as
 
 const backupDatabase = async (req, res) => {
   try {
-    const dbName = 'Hdf_electron'
-    const dbUser = 'postgres'
-    const dbPassword = '123'
-    const dbPort = 5432
-    const backupPath = req.body.backupPath
-    const backupName = req.body.backupName
+
+    const dbName = 'Hdf_electron';
+    const dbUser = 'postgres';
+    const dbPassword = 'sami2020';
+    const dbPort = 5432;
+    // const backupPath = req.body.backupPath;
+    const backupPath = 'D:\\backup';
+    const backupName = req.body.backupName;
+
+
 
     if (!dbName || !dbUser || !dbPassword || !backupPath || !backupName) {
       res
