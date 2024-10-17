@@ -484,6 +484,7 @@ export default function UpdateAccredited() {
                             <FormInput
                               type="date"
                               {...field}
+                              lang="en"
                               disabled={delayedSubmitting}
                               className="text-right bg-primary/5"
                             />

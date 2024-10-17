@@ -347,6 +347,7 @@ export default function FormApplicant() {
                                 type="date"
                                 {...field}
                                 disabled={delayedSubmitting}
+                                lang="en"
                                 className="text-right bg-primary/5 "
                               />
                             </FormControl>
@@ -513,6 +514,7 @@ export default function FormApplicant() {
                                 type="date"
                                 {...field}
                                 disabled={delayedSubmitting}
+                                lang="en"
                                 className="text-right bg-primary/5 "
                               />
                             </FormControl>

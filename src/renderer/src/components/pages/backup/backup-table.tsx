@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { ColumnDef } from '@tanstack/react-table'
 import { HdfTable } from '../../tables/hdfTable'
-import { ApplicantByDirectorateViewModelInfo } from '../../../types/index'
 export interface backUps {
   id: number
   globalId: string

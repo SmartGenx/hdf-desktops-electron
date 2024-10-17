@@ -1,7 +1,6 @@
 import BackUpTable from './backup-table'
 import { useQuery } from '@tanstack/react-query'
 import { getApi } from '@renderer/lib/http'
-import { ApplicantByDirectorateViewModel } from '@renderer/types'
 import { useAuthHeader } from 'react-auth-kit'
 import BackupDialog from './backup-dailog'
 
