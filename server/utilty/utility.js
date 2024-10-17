@@ -1,8 +1,10 @@
-const { exec } = require('child_process')
-const path = require('path')
-const fs = require('fs')
 
-const backupDatabase = (req, res) => {
+const { exec } = require('child_process');
+const path = require('path');
+const fs = require('fs');
+const { databaseService } = require('../database'); // Adjust the import path as needed
+
+const backupDatabase = async (req, res) => {
   try {
     const dbName = 'Hdf_electron'
     const dbUser = 'postgres'
@@ -33,40 +35,47 @@ const backupDatabase = (req, res) => {
     const pgDumpPath = 'C:\\Program Files\\PostgreSQL\\15\\bin\\pg_dump'
     const command = `"${pgDumpPath}" -U ${dbUser} -d ${dbName} -p ${dbPort} -f "${outputPath}"`
 
-    exec(command, (error, stdout, stderr) => {
+    exec(command, async (error, stdout, stderr) => {
       // Clear the PGPASSWORD environment variable immediately after use
       delete process.env.PGPASSWORD
 
       if (error) {
-        console.error(`Backup error: ${error}`)
-        res.status(500).json({ error: 'Backup process failed.' })
-        return
+
+        console.error(`Backup error: ${error}`);
+        return res.status(500).json({ error: 'Backup process failed.' });
       }
       if (stderr) {
-        console.error(`Backup stderr: ${stderr}`)
-        res.status(500).json({ error: 'Error during the backup process.' })
-        return
+        console.error(`Backup stderr: ${stderr}`);
+        return res.status(500).json({ error: 'Error during the backup process.' });
       }
       console.log(`Backup successful! Saved to ${outputPath}`)
 
-      // Instead of deleting, move the file to a specified download folder
-      const downloadPath = backupPath
+
+      // Move the file to a specified download folder
+      const downloadPath = backupPath;
       if (!fs.existsSync(downloadPath)) {
         fs.mkdirSync(downloadPath, { recursive: true })
       }
       const downloadOutputPath = path.join(backupPath, filename)
 
-      fs.rename(outputPath, downloadOutputPath, (err) => {
+      fs.rename(outputPath, downloadOutputPath, async (err) => {
         if (err) {
           console.error('Error moving file:', err)
           return res.status(500).send('Could not move the file to the download folder')
         }
-        console.log(`File moved to: ${downloadOutputPath}`)
-        res
-          .status(200)
-          .json({ message: `Backup successfully created and moved to ${downloadOutputPath}` })
-      })
-    })
+
+        console.log(`File moved to: ${downloadOutputPath}`);
+
+        try {
+          const backupServices = databaseService.getbackupServices();
+          await backupServices.createbackup(downloadOutputPath, req.user.name);
+          res.status(200).json({ message: `Backup successfully created and moved to ${downloadOutputPath}` });
+        } catch (dbError) {
+          console.error('Error saving backup info to the database:', dbError);
+          res.status(500).json({ error: 'Backup created but failed to save information to the database.' });
+        }
+      });
+    });
   } catch (error) {
     console.error('Unexpected error:', error)
     res.status(500).json({ error: 'An unexpected error occurred.' })

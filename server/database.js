@@ -17,6 +17,7 @@ const RoleServices = require('../server/services/roleServices') // Adjust this p
 const PrescriptionService = require('../server/services/prescriptionServices') // Adjust this path as necessary
 const AttachmentServiceService = require('../server/services/attachmentServices') // Adjust this path as necessary
 const statisticsServices = require('../server/services/statisticsServices') // Adjust this path as necessary
+const backupServices = require('../server/services/backupServices') // Adjust this path as necessary
 const { v4 } = require('uuid') // Make sure to import uuid
 const bcrypt = require('bcryptjs')
 const fs = require('fs').promises
@@ -33,7 +34,7 @@ class DatabaseService {
     // Initialize both Prisma clients for local and cloud databases
     this.localPrisma = new PrismaClient({
       datasources: {
-        db: { url: 'postgresql://postgres:123@localhost:5432/Hdf_electron?schema=public' }
+        db: { url: 'postgresql://postgres:sami2020@localhost:5432/Hdf_electron?schema=public' }
       }
     })
     // this.cloudPrisma = new PrismaClient({
@@ -75,6 +76,8 @@ class DatabaseService {
     this.PrescriptionService = new PrescriptionService(prisma)
     this.attachmentServiceService = new AttachmentServiceService(prisma)
     this.statisticsServices = new statisticsServices(prisma)
+    this.backupServices = new backupServices(prisma)
+
   }
 
   async switchDatabaseBasedOnConnectivity() {
@@ -202,6 +205,14 @@ class DatabaseService {
       )
     }
     return this.statisticsServices
+  }
+  getbackupServices() {
+    if (!this.backupServices) {
+      throw new Error(
+        'statisticsServices has not been initialized. Please ensure database connectivity is established.'
+      )
+    }
+    return this.backupServices
   }
   async user() {
     try {
