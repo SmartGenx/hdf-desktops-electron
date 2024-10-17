@@ -9,7 +9,8 @@ const backupDatabase = async (req, res) => {
     const dbUser = 'postgres';
     const dbPassword = 'sami2020';
     const dbPort = 5432;
-    const backupPath = req.body.backupPath;
+    // const backupPath = req.body.backupPath;
+    const backupPath = 'D:\\backup';
     const backupName = req.body.backupName;
 
     if (!dbName || !dbUser || !dbPassword || !backupPath || !backupName) {
