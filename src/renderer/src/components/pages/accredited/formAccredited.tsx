@@ -420,6 +420,7 @@ export default function FormAccredited() {
                                 type="date"
                                 {...field}
                                 disabled={delayedSubmitting}
+                                lang="en"
                                 className="text-right bg-primary/5"
                               />
                             </FormControl>

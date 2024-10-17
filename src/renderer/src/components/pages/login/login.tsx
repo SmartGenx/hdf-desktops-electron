@@ -4,7 +4,7 @@ import background from '../../../assets/images/ellipse.svg'
 import maps from '../../../assets/images/maps.svg' // Adjust the path as necessary
 import leaf from '../../../assets/images/leaf.svg' // Adjust the path as necessary
 import people from '../../../assets/images/people.svg' // Adjust the path as necessary
-import { Globe,  Phone } from 'lucide-react'
+import { Globe, Phone } from 'lucide-react'
 import {} from '../../icons/icons'
 import Sms from '@renderer/components/icons/sms'
 
@@ -20,7 +20,10 @@ const Login = () => {
         >
           <img src={maps} alt="Maps" className="absolute left-16 top-20 opacity-20" />
           <div className="flex flex-col items-center justify-center w-80 md:w-96 text-justify text-white gap-5">
-            <img src={leaf} alt="Leaf" />
+            <div>
+              <img src={leaf} alt="Leaf" />
+              <h1 className="text-3xl font-bold">منصة مساعدة المرضى</h1>
+            </div>
             <p className="px-4 md:px-8 text-wrap w-full">
               يعمل المشروع على توفير الأدوية الضرورية للمحتاجين من أصحاب الأمـراض المزمنة لتلبية
               احتياجاتهم الطبية والتخفيف من أعبائهم.ويهدف المشروع الى تقديم الدعم والرعاية للمرضى

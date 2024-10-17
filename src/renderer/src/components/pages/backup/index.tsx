@@ -5,24 +5,35 @@ import { ApplicantByDirectorateViewModel } from '@renderer/types'
 import { useAuthHeader } from 'react-auth-kit'
 import BackupDialog from './backup-dailog'
 
-export default function BackUpIndex() {
+export interface BackUpInfos {
+  id: number
+  globalId: string
+  userName: string
+  path: string
+  createAt: Date
+  deleted: boolean
+  version: number
+  lastModified: Date
+}
 
+export default function BackUpIndex() {
   const authToken = useAuthHeader()
   const {
     isPending: isPendingViewModel,
     isError: _isErrorViewModel,
     error: errorViewModel,
-    data: ApplicantByDirectorateViewModelData
+    data: BackUps
   } = useQuery({
-    queryKey: ['ApplicantByDirectorateViewModel'],
+    queryKey: ['backUp'],
     queryFn: () =>
-      getApi<ApplicantByDirectorateViewModel>('/applicant/ApplicantByDirectorateViewModel', {
+      getApi<BackUpInfos[]>('/backUp', {
         headers: {
           Authorization: authToken()
         }
       })
   })
 
+  console.log('BackUps', BackUps?.data)
   if (isPendingViewModel) return 'Loading...'
   if (errorViewModel) return 'An error has occurred: ' + errorViewModel.message
   return (
@@ -34,10 +45,10 @@ export default function BackUpIndex() {
       </div>
 
       <BackUpTable
-        info={ApplicantByDirectorateViewModelData.data.info || []}
-        page={ApplicantByDirectorateViewModelData.data.page || '1'}
-        pageSize={ApplicantByDirectorateViewModelData.data.pageSize || '5'}
-        total={ApplicantByDirectorateViewModelData.data.total || 10}
+        info={BackUps?.data || []}
+        page={'1'}
+        pageSize={'5'}
+        total={BackUps?.data.length}
       />
     </>
   )

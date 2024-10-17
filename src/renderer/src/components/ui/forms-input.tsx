@@ -24,6 +24,7 @@ const FormInput = React.forwardRef<HTMLInputElement, InputProps>(
           <input
             {...props}
             type={type}
+            lang="en"
             ref={ref}
             className={cn(
               'peer h-[44px] w-full rounded-[5px] border-[1px] border-[#e2e8f0] px-3 py-3 outline-none ',

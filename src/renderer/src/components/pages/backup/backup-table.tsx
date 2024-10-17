@@ -2,30 +2,41 @@ import * as React from 'react'
 import { ColumnDef } from '@tanstack/react-table'
 import { HdfTable } from '../../tables/hdfTable'
 import { ApplicantByDirectorateViewModelInfo } from '../../../types/index'
-
+export interface backUps {
+  id: number
+  globalId: string
+  userName: string
+  path: string
+  createAt: Date
+  deleted: boolean
+  version: number
+  lastModified: Date
+}
 type Props = {
-  info: ApplicantByDirectorateViewModelInfo[]
+  info: backUps[]
   page: string
   pageSize: string
   total: number
 }
 export default function BackUpTable({ info, page, total, pageSize }: Props) {
-  const columns = React.useMemo<ColumnDef<ApplicantByDirectorateViewModelInfo>[]>(
+  const columns = React.useMemo<ColumnDef<backUps>[]>(
     () => [
       {
         accessorKey: ' .',
         header: 'اسم المستخدم',
-        cell: ({ row }) => row.original.name
+        cell: ({ row }) => row.original.userName
       },
       {
         accessorKey: '',
         header: 'تاريخ أنشاء النسخة',
-        cell: ({ row }) => row.original.gender
+        cell: ({ row }) => {
+          return <p>{String(row.original.createAt).split('T')[0]}</p>
+        }
       },
       {
         accessorKey: '',
         header: 'المسار',
-        cell: ({ row }) => row.original.disease
+        cell: ({ row }) => row.original.path
       }
     ],
     [5]
