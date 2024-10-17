@@ -2,6 +2,9 @@
 const { exec } = require('child_process');
 const path = require('path');
 const fs = require('fs');
+const jwt = require('jsonwebtoken')
+const { JWT_SECRET } = require('../secrets')
+
 const { databaseService } = require('../database'); // Adjust the import path as needed
 
 const backupDatabase = async (req, res) => {
@@ -11,9 +14,13 @@ const backupDatabase = async (req, res) => {
     const dbUser = 'postgres';
     const dbPassword = 'sami2020';
     const dbPort = 5432;
-    // const backupPath = req.body.backupPath;
+    const token = req.body.token;
     const backupPath = 'D:\\backup';
     const backupName = req.body.backupName;
+
+    const payload = jwt.verify(token, JWT_SECRET)
+
+
 
 
 
@@ -72,7 +79,7 @@ const backupDatabase = async (req, res) => {
 
         try {
           const backupServices = databaseService.getbackupServices();
-          await backupServices.createbackup(downloadOutputPath, req.user.name);
+          await backupServices.createbackup(downloadOutputPath, payload.name);
           res.status(200).json({ message: `Backup successfully created and moved to ${downloadOutputPath}` });
         } catch (dbError) {
           console.error('Error saving backup info to the database:', dbError);

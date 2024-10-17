@@ -58,7 +58,7 @@ class AuthService {
         throw new Error('Invalid email or password')
       }
 
-      const token = jwt.sign({ userId: existingUser.id }, JWT_SECRET)
+      const token = jwt.sign({ userId: existingUser.id, name: existingUser.name }, JWT_SECRET)
 
       return {
         token,

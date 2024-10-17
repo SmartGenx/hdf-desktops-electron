@@ -19,14 +19,18 @@ async function ensureProfileDirExists(profileDir) {
     }
   }
 }
-
+const corsOptions = {
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
 async function ExpressApp() {
   try {
     await databaseService.switchDatabaseBasedOnConnectivity()
     await databaseService.user()
 
     const expressApp = express()
-    expressApp.use(cors())
+    expressApp.use(cors(corsOptions));
     expressApp.use(express.json())
     expressApp.use(bodyParser.json())
 
