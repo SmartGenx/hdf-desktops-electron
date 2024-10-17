@@ -1,15 +1,7 @@
 import * as React from 'react'
 import { ColumnDef } from '@tanstack/react-table'
-import { MoreVertical } from 'lucide-react'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from '../../ui/dropdown-menu'
 import { HdfTable } from '../../tables/hdfTable'
 import { DismissalInfo } from '../../../types/index'
-import { Button } from '../../ui/button'
 
 import { Month } from '../../../types/enums'
 type Props = {

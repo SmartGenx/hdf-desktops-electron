@@ -365,6 +365,7 @@ export default function UpdateApplicant() {
                             <FormControl>
                               <FormInput
                                 type="date"
+                                lang="en"
                                 {...field}
                                 disabled={delayedSubmitting}
                                 className="text-right bg-primary/5 "
@@ -610,6 +611,7 @@ export default function UpdateApplicant() {
                             <FormControl>
                               <FormInput
                                 type="date"
+                                lang="en"
                                 {...field}
                                 disabled={delayedSubmitting}
                                 className="text-right bg-primary/5 "
