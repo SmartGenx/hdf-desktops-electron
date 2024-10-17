@@ -20,10 +20,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { postApi } from '@renderer/lib/http'
 import { Form, FormControl, FormField, FormItem } from '@renderer/components/ui/form' // Corrected
 import { FormInput } from '@renderer/components/ui/forms-input'
+import { useEffect } from 'react'
 
 const formSchema = z.object({
   backupName: z.string(),
-  backupPath: z.string() // Ensure this matches your usage
+  token: z.string()
 })
 
 type BackUpFormValue = z.infer<typeof formSchema>
@@ -36,6 +37,13 @@ export default function BackupDialog() {
   const form = useForm<BackUpFormValue>({
     resolver: zodResolver(formSchema)
   })
+  const getTokenFromLocalStorage = () => {
+    // Replace 'auth_token_key' with the actual key used to store the token
+    return localStorage.getItem('_auth')
+  }
+  // Example usage
+  const token = getTokenFromLocalStorage()
+  console.log('token:', token)
 
   const { mutate } = useMutation({
     mutationKey: ['uploadBackUp'],
@@ -44,7 +52,7 @@ export default function BackupDialog() {
         '/backUp',
         {
           backupName: datas.backupName,
-          backupPath: datas.backupPath
+          token:token
         },
         {
           headers: {
@@ -61,6 +69,7 @@ export default function BackupDialog() {
       queryClient.invalidateQueries({ queryKey: ['ApplicantByDirectorateViewModel'] })
       navigate('/backup')
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       // Added type for error
       toast({
@@ -70,7 +79,9 @@ export default function BackupDialog() {
       })
     }
   })
-
+  useEffect(() => {
+    form.setValue('token', token || '')
+  },[])
   const onSubmit = (datas: BackUpFormValue) => {
     mutate(datas)
   }
@@ -115,26 +126,7 @@ export default function BackupDialog() {
                   )}
                 />
               </div>
-              <div className="grid grid-cols-1 items-center gap-4">
-                <Label htmlFor="username" className="text-right">
-                  امتداد الملف
-                </Label>
-                <FormField
-                  control={form.control}
-                  name="backupPath"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <FormInput
-                          className="h-10 py-5 px-0  rounded-xl text-sm"
-                          placeholder="امتداد الملف"
-                          {...field}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
+
             </div>
             <DialogFooter className="flex gap-2">
               <DialogClose asChild>

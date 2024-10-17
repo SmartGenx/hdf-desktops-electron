@@ -1,13 +1,13 @@
 const Router = require("express");
 const backUpRouter = Router();
 const backUpController = require("../controllers/backUpControllers"); // Ensure you have a backUpController
-const {isAuthenticated}= require('../middleware/auth')
+// const {isAuthenticated}= require('../middleware/auth')
 
 
 
 const { backupDatabase } = require('../utilty/utility');
 
-backUpRouter.post('/', isAuthenticated,backupDatabase);
+backUpRouter.post('/',backupDatabase);
 backUpRouter.get('/', backUpController.getbackup);
 backUpRouter.post('/craete', backUpController.getcreate);
 
