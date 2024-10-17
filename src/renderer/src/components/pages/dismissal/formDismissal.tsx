@@ -283,7 +283,7 @@ export default function FormDismissal() {
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
               <AlertDescription>
-                الصيدلية لا تستغني حاليًا. يرجى اختيار صيدلية مختلفة.
+                الصرف في هذه الصيدلية غير متاح حالياً.
               </AlertDescription>
             </Alert>
           )}
