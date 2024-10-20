@@ -37,7 +37,7 @@ export default function WaitingList() {
     error: _errorCard,
     data: applicantsReportCategoryPrint
   } = useQuery({
-    queryKey: ['applicantsReportCategory'],
+    queryKey: ['applicantsReportCategoryCard'],
     queryFn: () =>
       getApi<applicantsReportCategory[]>('/applicant/applicantsReportCategory', {
         headers: {

@@ -99,7 +99,7 @@ const Statistsidebar: React.FC<StatistSidebarProps> = ({ isExpended }) => {
   return (
     <>
       {isExpended === true ? (
-        <div className="flex w-[450px] ">
+        <div className="flex w-[450px] justify-end">
           <Card className="bg-blue-900 text-white w-full p-6 rounded-lg shadow-lg  h-[755px]">
             <CardHeader>
               <CardTitle className="text-lg font-bold mb-4 text-center">
@@ -131,7 +131,7 @@ const Statistsidebar: React.FC<StatistSidebarProps> = ({ isExpended }) => {
           </Card>
         </div>
       ) : (
-        <div className="flex w-full">
+        <div className="flex w-full justify-end">
           <Card className="bg-blue-900 text-white p-6 rounded-lg shadow-lg w-[350px] h-[755px]">
             <CardHeader>
               <CardTitle className="text-lg font-bold mb-4">عدد المستفيدين حسب المربعات</CardTitle>

@@ -41,7 +41,7 @@ export default function MedicalAllocationsIndex() {
     error: _errorCard,
     data: ApplicantByDirectorateViewModelDataCard
   } = useQuery({
-    queryKey: ['ApplicantByDirectorateViewModel'],
+    queryKey: ['ApplicantByDirectorateViewModelCard'],
     queryFn: () =>
       getApi<ApplicantByDirectorateViewModelInfo[]>('/applicant/ApplicantByDirectorateViewModel', {
         headers: {
