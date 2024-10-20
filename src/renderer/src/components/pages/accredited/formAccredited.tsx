@@ -315,7 +315,7 @@ export default function FormAccredited() {
                         <div className="col-span-1 translate-y-6">
                           <Button
                             // variant="keep"
-                            className="w-[104px] h-[42px] bg-[#196CB0] hover:bg-[#2b4d68]"
+                            className="w-[80px] h-[42px] flex justify-center bg-[#196CB0] hover:bg-[#2b4d68]"
                             onClick={generateRfid}
                             type="button"
                           >
@@ -487,7 +487,7 @@ export default function FormAccredited() {
                           <FormItem>
                             <FormControl>
                               <FileUploader
-                                title=" ارفق الهوية الشخصية"
+
                                 setValue={form.setValue}
                                 inputId="pt"
                                 onChange={async (files) => {
@@ -516,7 +516,7 @@ export default function FormAccredited() {
                           <FormItem>
                             <FormControl>
                               <FileUploader
-                                title="ارفق الوصفة الطبية"
+
                                 setValue={form.setValue}
                                 inputId="atch"
                                 onChange={async (files) => {
