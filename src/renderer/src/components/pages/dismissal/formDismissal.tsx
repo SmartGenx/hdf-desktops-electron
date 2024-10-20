@@ -19,10 +19,10 @@ import * as z from 'zod'
 import { cn } from '../../../lib/utils'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { axiosInstance,  postApi } from '../../../lib/http'
+import { axiosInstance, postApi } from '../../../lib/http'
 import { useAuthHeader } from 'react-auth-kit'
-import { useMutation,  useQueryClient } from '@tanstack/react-query'
-import { AccreditedRes,  Pharmacy } from '@renderer/types'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { AccreditedRes, Pharmacy } from '@renderer/types'
 import Pdf from '@renderer/components/icons/pdf'
 import { AlertCircle } from 'lucide-react'
 import { FormInput } from '@renderer/components/ui/forms-input'
@@ -44,7 +44,7 @@ export default function FormDismissal() {
   const [modalPtOpen, setModalPtOpen] = useState(false)
   const inputRef = React.useRef<HTMLInputElement>(null)
   const { toast } = useToast()
-  const { setValue } = useForm()
+  // const { setValue } = useForm()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const form = useForm<AccreditedFormValue>({
@@ -58,6 +58,14 @@ export default function FormDismissal() {
   const [number, setNumber] = useState<AccreditedRes>()
 
   const generateRfid = async () => {
+    if (numberOfRfid === '') {
+      toast({
+        title: 'يرجى ادخل رقم البطاقة',
+        variant: 'destructive'
+      })
+      return // Early return to prevent further execution
+    }
+
     try {
       const response = await axiosInstance.get(
         `/accredited?page=1&pageSize=4&include[prescription]=true&numberOfRfid=${numberOfRfid}&include[applicant][include]=category&include[attachment]=true`,
@@ -68,26 +76,53 @@ export default function FormDismissal() {
         }
       )
 
-      // Handle the response as necessary
-      console.log('Data fetched:', response.data)
-      setNumber(response.data)
+      // Check if the response has the expected structure
+      if (response.data && response.data.info && response.data.info.length > 0) {
+        setNumber(response.data)
+        setShowAlert(false) // Hide any previous alerts
+      } else {
+        // Handle cases where data is not as expected
+        setNumber(undefined)
+        toast({
+          title: 'رقم البطاقة غير صالح',
+          description: 'لم يتم العثور على البيانات المتعلقة برقم البطاقة المدخل.',
+          variant: 'destructive'
+        })
+      }
     } catch (error) {
       console.error('Error fetching RFID data:', error)
+      toast({
+        title: 'حدث خطأ',
+        description: 'فشل في جلب بيانات RFID. يرجى المحاولة لاحقاً.',
+        variant: 'destructive'
+      })
     }
   }
+
   const [approvedAmounts, setApprovedAmounts] = useState<number>(0)
-  console.log(
-    'number?.info[0].attachment[0].attachmentFile',
-    number?.info[0].attachment[0].attachmentFile
-  )
   const [totalAmounts, setTotalAmounts] = useState<number>(0)
   const [totalPrice, setTotalPrice] = useState<number>(0)
 
+  console.log('totalPrice', totalPrice)
   React.useEffect(() => {
     if (number && number.info.length > 0) {
-      const supportRatio = number.info[0].applicant.category.SupportRatio
-      setApprovedAmounts(supportRatio!)
+      const applicant = number.info[0].applicant
+      if (applicant && applicant.category && applicant.category.SupportRatio !== undefined) {
+        setApprovedAmounts(applicant.category.SupportRatio)
+      } else {
+        // Handle cases where applicant or SupportRatio is undefined
+        setApprovedAmounts(0)
+        toast({
+          title: 'بيانات غير كاملة',
+          description: 'لا توجد معلومات كافية حول الدعم لهذا الرقم.',
+          variant: 'destructive'
+        })
+      }
+    } else {
+      // Handle cases where info array is empty or number is undefined
+      setApprovedAmounts(0)
     }
+
     let computedPrice = 0
 
     if (totalAmounts > 50000) {
@@ -95,10 +130,12 @@ export default function FormDismissal() {
       const approvedPercentage = (50000 * approvedAmounts) / 100
       const reducedAmount = 50000 - approvedPercentage
       computedPrice = reducedAmount + excessAmount
+      console.log('totalAmounts', totalAmounts)
+      console.log('approvedAmounts', approvedAmounts)
     } else {
       computedPrice = totalAmounts - (totalAmounts * approvedAmounts) / 100
     }
-
+    console.log('computedPrice', computedPrice)
     setTotalPrice(computedPrice)
   }, [totalAmounts, approvedAmounts, number])
 
@@ -144,19 +181,23 @@ export default function FormDismissal() {
 
   const [delayedSubmitting, _setDelayedSubmitting] = useState(form.formState.isSubmitting)
 
-  console.log('numbernumbernumber', number?.info[0].applicant.category.SupportRatio)
+  console.log('numbernumbernumber', number?.info[0].applicant?.category.SupportRatio)
   // const name =
   //   applicant?.data?.find((applicant) => applicant?.globalId === number?.info[0]?.applicantGlobalId)
   //     ?.name || null
 
   React.useEffect(() => {
-    form.setValue('amountPaid', String(totalPrice))
-    form.setValue('accreditedGlobalId', number?.info?.[0]?.globalId ?? 'No URL available')
-    form.setValue('pharmacyGlobalId', number?.info?.[0]?.pharmacyGlobalId ?? 'No URL available')
-    form.setValue(
-      'approvedAmount',
-      String(number?.info[0].applicant.category.SupportRatio) ?? 'No URL available'
-    )
+    if (number && number.info.length > 0) {
+      const applicant = number.info[0].applicant
+      form.setValue('amountPaid', String(totalPrice))
+      form.setValue('accreditedGlobalId', number.info[0].globalId || 'No URL available')
+      form.setValue('pharmacyGlobalId', number.info[0].pharmacyGlobalId || 'No URL available')
+      form.setValue('approvedAmount', String(applicant?.category?.SupportRatio || 0))
+    } else {
+      // Reset form values if number is undefined or info is empty
+      form.reset()
+    }
+
     const fetchPharmacyDirectorate = async () => {
       try {
         const response = await axiosInstance.get('/pharmacy', {
@@ -166,22 +207,17 @@ export default function FormDismissal() {
         })
         setPharmacy(response.data)
       } catch (error) {
-        console.error('Error fetching data:', error)
+        console.error('Error fetching pharmacy data:', error)
+        toast({
+          title: 'حدث خطأ',
+          description: 'فشل في جلب بيانات الصيدليات. يرجى المحاولة لاحقاً.',
+          variant: 'destructive'
+        })
       }
     }
 
     fetchPharmacyDirectorate()
-  }, [
-    number?.info?.[0]?.globalId,
-    number?.info[0].applicant.category.SupportRatio,
-    totalPrice,
-    setValue
-  ])
-
-  console.log(
-    'number?.info?.[0]?.attachment[0].attachmentFile',
-    number?.info?.[0]?.attachment[0].attachmentFile
-  )
+  }, [number, totalPrice, form])
 
   // const imagePath = `${number?.info?.[0]?.prescription[0].attachedUrl}`
   // const encodedPath = encodeURI(imagePath)
@@ -225,7 +261,7 @@ export default function FormDismissal() {
   })
 
   const openModal = () => {
-    if (number?.info?.[0]?.prescription[0].attachedUrl) {
+    if (number?.info?.[0]?.prescription[0]?.attachedUrl) {
       setModalOpen(true)
     }
   }
@@ -234,13 +270,13 @@ export default function FormDismissal() {
     setModalOpen(false)
   }
 
-  const attachedUrlPrec = number?.info?.[0]?.prescription?.[0]?.attachedUrl ?? null
+  const attachedUrlPrec = number?.info?.[0]?.prescription?.[0]?.attachedUrl ?? 'لايوجد'
   const isPDF = attachedUrlPrec?.toLowerCase().endsWith('.pdf')
   //
-  const attachedUrlAttachment = number?.info?.[0]?.attachment?.[0]?.attachmentFile ?? null
+  const attachedUrlAttachment = number?.info?.[0]?.attachment?.[0]?.attachmentFile ?? 'لايوجد'
   const isPDFAtta = attachedUrlPrec?.toLowerCase().endsWith('.pdf')
   const openPtModal = () => {
-    if (number?.info?.[0]?.attachment[0].attachmentFile) {
+    if (number?.info?.[0]?.attachment[0]?.attachmentFile) {
       setModalPtOpen(true)
     }
   }
@@ -282,9 +318,7 @@ export default function FormDismissal() {
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>
-                الصرف في هذه الصيدلية غير متاح حالياً.
-              </AlertDescription>
+              <AlertDescription>الصرف في هذه الصيدلية غير متاح حالياً.</AlertDescription>
             </Alert>
           )}
 
@@ -452,7 +486,7 @@ export default function FormDismissal() {
                                   const newAmount =
                                     inputValue !== '' && !isNaN(parsedValue)
                                       ? parsedValue
-                                      : (number?.info[0].applicant.category.SupportRatio ?? 0)
+                                      : (number?.info[0].applicant?.category.SupportRatio ?? 0)
 
                                   setApprovedAmounts(newAmount)
                                   field.onChange(newAmount) // Pass the numeric value
@@ -475,7 +509,7 @@ export default function FormDismissal() {
                         label="ادخل المعتمد"
                         className="h-10 p-0 rounded-xl text-sm"
                         placeholder="المعنمد"
-                        value={number?.info[0].applicant.name || ''}
+                        value={number?.info[0].applicant?.name || ''}
                         disabled
                       />
                     </div>
