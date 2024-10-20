@@ -230,13 +230,13 @@ const FilterDrawer = () => {
           <label className="text-black font-bold pr-6">حسب المربعات</label>
           <div className="grid grid-cols-3 gap-4">
             {squares?.data.map((square) => (
-              <div key={square.globalId} className="flex items-center space-x-2">
+              <div key={square.globalId} className="flex items-center mr-6 space-x-2">
                 <input
                   type="checkbox"
                   value={square.globalId}
                   checked={selectedSquares.includes(square.globalId)}
                   onChange={() => handleSquareCheckboxChange(square.globalId)}
-                  className="mr-2"
+                  className="ml-2"
                 />
                 <label
                   className="text-sm truncate"

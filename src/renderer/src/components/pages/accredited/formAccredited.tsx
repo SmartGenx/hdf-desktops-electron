@@ -55,6 +55,7 @@ export default function FormAccredited() {
   const [selectedPharmacy, setSelectedPharmacy] = useState<Pharmacy | null>(null)
   const [applicantType, setApplicantType] = useState<applicantType[]>([])
   const [selectedApplicantType, setSelectedApplicantType] = useState<applicantType | null>(null)
+  console.log('asdas', selectedApplicantType)
   const form = useForm<AccreditedFormValue>({
     resolver: zodResolver(formSchema)
   })
@@ -189,7 +190,7 @@ export default function FormAccredited() {
     } else {
       form.setValue('applicantGlobalId', '')
     }
-  }, [selectedPharmacy, selectedSquare])
+  }, [selectedPharmacy, selectedSquare, selectedApplicantType])
 
   const onSubmit = async (data: AccreditedFormValue) => {
     mutate(data)

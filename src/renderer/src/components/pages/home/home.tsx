@@ -122,12 +122,12 @@ const Home = () => {
               />
             </div>
           </div>
-          <div className="flex gap-[105px] mt-4 w-full ">
-            <div className="flex flex-col gap-2">
+          <div className="flex flex-col md:flex-row gap-4 mt-4 w-full">
+            <div className="flex flex-col gap-2 md:w-1/2">
               <StatistChartCard />
               <StatistchartTowCard />
             </div>
-            <div>
+            <div className="md:w-1/2 md:flex md:justify-end">
               <Statistsidebar isExpended={true} />
             </div>
           </div>
@@ -168,13 +168,13 @@ const Home = () => {
               />
             </div>
           </div>
-          <div className="flex gap-8 mt-4 w-full ">
-            <div className="flex flex-col gap-2">
+          <div className="flex flex-col md:flex-row gap-4 mt-4 w-full">
+            <div className="flex flex-col gap-2 md:w-1/2">
               <StatistChartCard />
               <StatistchartTowCard />
             </div>
-            <div>
-              <Statistsidebar />
+            <div className="md:w-1/2 md:flex md:justify-end">
+              <Statistsidebar  />
             </div>
           </div>
         </>

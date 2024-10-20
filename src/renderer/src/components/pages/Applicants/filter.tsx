@@ -216,7 +216,7 @@ const FilterDrawer = () => {
         <div className="p-6 overflow-y-auto">
           {/* Governorates Filter */}
           <div className="mb-6">
-            <h3 className="text-sm font-medium mb-2">حسب المحافظة</h3>
+            <h3 className="text-sm font-medium mb-2">حسب المديريه</h3>
             <div className="grid grid-cols-3 gap-4">
               {governorateData?.data.map((governorate) => (
                 <div key={governorate.globalId} className="flex items-center space-x-2">
@@ -225,7 +225,7 @@ const FilterDrawer = () => {
                     value={governorate.globalId}
                     checked={selectedGovernorates.includes(governorate.globalId)}
                     onChange={() => handleGovernorateChange(governorate.globalId)}
-                    className="mr-2"
+                    className="ml-2"
                   />
                   <label
                     className="text-sm truncate"
@@ -251,7 +251,7 @@ const FilterDrawer = () => {
                     value={category.globalId}
                     checked={selectedCategories.includes(category.globalId)}
                     onChange={() => handleCategoryChange(category.globalId)}
-                    className="mr-2"
+                    className="ml-2"
                   />
                   <label
                     className="text-sm truncate"

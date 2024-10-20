@@ -37,7 +37,7 @@ export default function FollowTheRecipes() {
     error: _errorCard,
     data: AllAccreditedsForPdfPrint
   } = useQuery({
-    queryKey: ['AllAccreditedsForPdf'],
+    queryKey: ['AllAccreditedsForPdfCard'],
     queryFn: () =>
       getApi<AllAccreditedsForPdfInfo[]>('/accredited/AllAccreditedsForPdf', {
         headers: {
