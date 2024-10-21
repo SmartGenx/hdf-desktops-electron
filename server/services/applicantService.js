@@ -17,6 +17,7 @@ class ApplicantService {
   }
 
   async getAllApplicants(dataFillter) {
+    console.log('🚀 ~ ApplicantService ~ getAllApplicants ~ dataFillter:', dataFillter)
     try {
       const page = dataFillter?.page
       const pageSize = dataFillter?.pageSize
@@ -37,11 +38,18 @@ class ApplicantService {
       } else {
         dataFillter = {}
       }
+      console.log('🚀 ~ ApplicantService ~ getAllApplicants ~ dataFillter:', dataFillter)
+
       if (page && pageSize) {
         const skip = (+page - 1) * +pageSize
         const take = +pageSize
         const applicant = await this.prisma.applicant.findMany({
-          where: { ...dataFillter, deleted: false, accredited: false },
+          where: {
+            ...dataFillter,
+           
+            deleted: false,
+            accredited: false
+          },
           include,
           skip: +skip,
           take: +take,
