@@ -5,8 +5,8 @@ generator client {
 datasource db {
   provider = "postgresql"
 
-  // url      = "postgresql://postgres:123456789@3.108.217.185:5432/Hdf_electron?schema=public"
-  url = "postgresql://postgres:sami2020@localhost:5432/Hdf_electron?schema=public"
+  url      = "postgresql://postgres:123456789@3.108.217.185:5432/hdf-web?schema=public"
+  // url = "postgresql://postgres:sami2020@localhost:5432/Hdf_electron?schema=public"
 }
 
 model User {
