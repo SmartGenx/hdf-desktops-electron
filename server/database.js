@@ -37,9 +37,10 @@ class DatabaseService {
         db: { url: 'postgresql://postgres:sami2020@localhost:5432/Hdf_electron?schema=public' }
       }
     })
-    // this.cloudPrisma = new PrismaClient({
-    //     datasources: { db: { url: "postgresql://postgres:123456789@smartgenx.cvo4o480qqmw.ap-south-1.rds.amazonaws.com:5432/hdf_platform?schema=public"} },
-    // });
+    this.cloudPrisma = new PrismaClient({
+        datasources: { db: { url:"postgresql://postgres:123456789@3.108.217.185:5432/hdf-web?schema=public"} },
+    });
+    
     this.authService = null
     // Directly initialize services to use the correct Prisma client based on connectivity
     this.initializeServices().catch(console.error)
@@ -55,10 +56,8 @@ class DatabaseService {
   }
 
   async getPrismaClient() {
-    // return this.localPrisma;
     return this.localPrisma
   }
-
   async initializeServices() {
     const prisma = await this.getPrismaClient()
     this.authService = new AuthService(prisma)
@@ -80,8 +79,6 @@ class DatabaseService {
   }
 
   async switchDatabaseBasedOnConnectivity() {
-    // This function now effectively ensures services use the correct database connection
-    // by re-initializing them with the correct Prisma client based on connectivity status.
     await this.initializeServices()
   }
 
