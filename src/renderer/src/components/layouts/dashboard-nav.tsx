@@ -36,7 +36,7 @@ export default function DashboardNav({ items, expanded = true, itemSetting }: Da
 
   return (
     <>
-      <nav className="grid items-start gap-6">
+      <nav className="grid items-start gap-6  overflow-x-hidden">
         {items.map((item, index) => (
           <div key={index}>
             {item.title && (
@@ -71,7 +71,11 @@ export default function DashboardNav({ items, expanded = true, itemSetting }: Da
                         >
                           <Icon className="mx-2 h-5 w-5" />
                           {expanded && (
-                            <span className="min-w-max text-lg font-medium flex items-center justify-between w-full">
+                            <span
+                              className={
+                                'min-w-max text-lg  font-medium flex items-center justify-between w-full'
+                              }
+                            >
                               {nav.label}
                             </span>
                           )}
@@ -126,7 +130,7 @@ export default function DashboardNav({ items, expanded = true, itemSetting }: Da
                               if (nav.label === 'تسجيل الخروج') signOut()
                             }}
                           >
-                            <Icon className="mx-2 h-5 w-5" />
+                            <Icon className="mx-3 -translate-x-2 h-5 w-5" />
                             {expanded && (
                               <span className="min-w-max text-lg font-medium flex items-center justify-between w-full">
                                 {nav.label}
@@ -134,6 +138,7 @@ export default function DashboardNav({ items, expanded = true, itemSetting }: Da
                             )}
                           </Link>
                         </TooltipTrigger>
+
                         {!expanded && (
                           <TooltipContent side="left">
                             <div>{nav.label}</div>

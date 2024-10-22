@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { ColumnDef } from '@tanstack/react-table'
-import { HdfTable } from '../../tables/hdfTable'
+import { BackUpTablePen } from '@renderer/components/tables/back-up-tablePen'
 export interface backUps {
   id: number
   globalId: string
@@ -41,7 +41,7 @@ export default function BackUpTable({ info, page, total, pageSize }: Props) {
     [5]
   )
   return (
-    <HdfTable
+    <BackUpTablePen
       columns={columns}
       data={info}
       page={page.toString()}

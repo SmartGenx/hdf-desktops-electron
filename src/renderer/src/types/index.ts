@@ -30,6 +30,17 @@ export type ApplicantByDirectorateViewModelInfo = {
   supportRatio: string
   approvedAmount: number
 }
+export type PrintApplication = {
+  name: string
+  gender: string
+  disease: string
+  directorate: string
+  phoneNumber: string
+  state: string
+  totalAmount: number
+  supportRatio: string
+  approvedAmount: number
+}
 export type ApplicantByDirectorateViewModel = {
   info: ApplicantByDirectorateViewModelInfo[]
   total: number
@@ -61,6 +72,25 @@ export type applicantsReportCategory = {
   phoneNumber: string
   submissionDate: Date
   category: string
+}
+export type Print = {
+  name: string
+  disease: string
+  directorate: string
+  phoneNumber: string
+  submissionDate: Date
+  category: string
+}
+export type PrintFollowing = {
+  name: string
+  disease: string
+  directorate: string
+  phoneNumber: string
+  orescriptionDate: Date
+  renewalDate: Date
+  days: number
+  Months: number
+  state: string
 }
 export type applicantsReportCategoryInfo = {
   info: applicantsReportCategory[]

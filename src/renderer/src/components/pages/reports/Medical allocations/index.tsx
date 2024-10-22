@@ -1,34 +1,37 @@
 import Boutton from '@renderer/components/Boutton'
 import SearchInput from '@renderer/components/searchInput'
-import { Link, useSearchParams } from 'react-router-dom'
+import {  useSearchParams } from 'react-router-dom'
 import FilterDrawer from './filter'
 import { useAuthHeader } from 'react-auth-kit'
 import { useQuery } from '@tanstack/react-query'
 import { getApi } from '@renderer/lib/http'
 import {
   ApplicantByDirectorateViewModel,
-  ApplicantByDirectorateViewModelInfo
+  ApplicantByDirectorateViewModelInfo,
+  PrintApplication
 } from '@renderer/types'
 import MedicalTable from './medicalTable'
 import ReactToPrint from 'react-to-print'
 import { Printer } from 'lucide-react'
 import ComponentToPrint from './ComponentToPrint'
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import * as XLSX from 'xlsx'
 
 export default function MedicalAllocationsIndex() {
+  const [dataPrint, setDataPrint] = useState<PrintApplication[] | any[]>([])
   const [searchParams] = useSearchParams()
   const page = searchParams.get('page')
   const authToken = useAuthHeader()
   const {
     isPending: isPendingViewModel,
-    isError: _isErrorViewModel,
+    isError: isErrorViewModel,
     error: errorViewModel,
     data: ApplicantByDirectorateViewModelData
   } = useQuery({
     queryKey: ['ApplicantByDirectorateViewModel', page],
     queryFn: () =>
       getApi<ApplicantByDirectorateViewModel>('/applicant/ApplicantByDirectorateViewModel', {
-        params: { page: page || 1, pageSize: 1 },
+        params: { page: page || 1, pageSize: 5 },
         headers: {
           Authorization: authToken()
         }
@@ -36,8 +39,8 @@ export default function MedicalAllocationsIndex() {
   })
 
   const {
-    isPending: _isPeningCardCard,
-    isError: _isErrorCard,
+    isPending: isPeningCardCard,
+    isError: isErrorCard,
     error: _errorCard,
     data: ApplicantByDirectorateViewModelDataCard
   } = useQuery({
@@ -49,14 +52,42 @@ export default function MedicalAllocationsIndex() {
         }
       })
   })
+  useEffect(() => {
+    if (ApplicantByDirectorateViewModelDataCard?.data) {
+      const dataToExport = ApplicantByDirectorateViewModelDataCard?.data.map((item) => {
+        return {
+          الأسم: item.name,
+          '	الجنس': item.gender,
+          'تصنيف المرض': item.disease,
+          المنطقة: item.directorate,
+          الجوال: item.phoneNumber,
+          الحاله: item.state,
+          'تكلفة العلاج': item.totalAmount,
+          'نسبة الخصم': item.supportRatio,
+          '	مساهمة المريض': item.approvedAmount
+        }
+      })
+
+      setDataPrint(dataToExport)
+    }
+  }, [ApplicantByDirectorateViewModelDataCard])
+  //
+  const ExportCvs = () => {
+    const workbook = XLSX.utils.book_new()
+    const worksheet = XLSX.utils.json_to_sheet(dataPrint)
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1')
+
+    const fileName = 'تقرير المخصصات العلاجية.xlsx'
+    XLSX.writeFile(workbook, fileName)
+  }
 
   const componentRef = useRef<HTMLTableElement>(null)
-  if (isPendingViewModel) return 'Loading...'
-  if (errorViewModel) return 'An error has occurred: ' + errorViewModel.message
+  if (isPendingViewModel && isPeningCardCard) return 'Loading...'
+  if (isErrorViewModel && isErrorCard) return 'An error has occurred: ' + errorViewModel.message
 
   return (
     <>
-      <div className="flex  gap-5 mt-[85px] items-center justify-between   mb-7">
+      <div className="flex  gap-5 mt-[20px] items-center justify-between   mb-7">
         <div className="w-fit">
           <h1 className="text-2xl font-medium">جدول المخصصات العلاجية</h1>
         </div>
@@ -75,25 +106,24 @@ export default function MedicalAllocationsIndex() {
           <div className="hidden">
             <ComponentToPrint
               ref={componentRef}
-              data={ApplicantByDirectorateViewModelDataCard?.data!}
+              data={ApplicantByDirectorateViewModelDataCard?.data || []}
             />
           </div>
 
-          <Link to={'/formDismissal'}>
-            <Boutton
-              icon="addaccredited"
-              title={'تصدير'}
-              className="bg-[#92A709] hover:bg-[#5b6806] focus:ring-[#92A709]"
-            />
-          </Link>
+          <Boutton
+            icon="addaccredited"
+            title={'تصدير'}
+            className="bg-[#92A709] hover:bg-[#5b6806] focus:ring-[#92A709]"
+            onClick={ExportCvs}
+          />
         </div>
       </div>
 
       <MedicalTable
-        info={ApplicantByDirectorateViewModelData.data.info || []}
-        page={ApplicantByDirectorateViewModelData.data.page || '1'}
-        pageSize={ApplicantByDirectorateViewModelData.data.pageSize || '5'}
-        total={ApplicantByDirectorateViewModelData.data.total || 10}
+        info={ApplicantByDirectorateViewModelData?.data.info || []}
+        page={ApplicantByDirectorateViewModelData?.data.page || '1'}
+        pageSize={ApplicantByDirectorateViewModelData?.data.pageSize || '5'}
+        total={ApplicantByDirectorateViewModelData?.data.total || 10}
       />
     </>
   )

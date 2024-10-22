@@ -76,17 +76,11 @@ const Dismissal = () => {
           <StatistCardWithImage
             title={'المستفيدين'}
             value={statist?.totalDismissals}
-            subtitle={'مستفيد'}
             image={LackOfAir}
           />
         </div>
         <div className="col-span-1 ">
-          <StatistCard
-            title={'الصيدليات'}
-            value={statist?.totalPharmacies}
-            subtitle={'صيدلية'}
-            icon={'house'}
-          />
+          <StatistCard title={'الصيدليات'} value={statist?.totalPharmacies} icon={'house'} />
         </div>
       </div>
       <div className="flex  gap-5 mt-[85px] items-center justify-between  ">

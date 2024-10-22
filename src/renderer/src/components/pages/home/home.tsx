@@ -91,9 +91,8 @@ const Home = () => {
           <div className=" grid grid-cols-4 gap-2">
             <div className=" col-span-1 ">
               <StatistCardWithImage
-                title={'المرض'}
+                title={'الامراض'}
                 value={statist?.diseaseCount ?? 0}
-                subtitle={'مستفيد'}
                 image={LackOfAir}
               />
             </div>
@@ -101,7 +100,6 @@ const Home = () => {
               <StatistCardWithImage
                 title={'مديرية'}
                 value={statist?.directoratecount ?? 0}
-                subtitle={'مستفيد'}
                 image={LocationPin}
               />
             </div>
@@ -109,7 +107,6 @@ const Home = () => {
               <StatistCardWithImage
                 title={'المربع'}
                 value={statist?.squareCount ?? 0}
-                subtitle={'مستفيد'}
                 image={map}
               />
             </div>
@@ -117,7 +114,6 @@ const Home = () => {
               <StatistCardWithImage
                 title={'محافظة'}
                 value={statist?.GovernorateCount ?? 0}
-                subtitle={'مستفيد'}
                 image={yemen}
               />
             </div>
@@ -137,33 +133,29 @@ const Home = () => {
           <div className=" grid grid-cols-4 gap-2">
             <div className=" col-span-1 ">
               <StatistCardWithImage
-                title={'المرض'}
+                title={'الامراض'}
                 value={statist?.diseaseCount ?? 0}
-                subtitle={'مستفيد'}
                 image={LackOfAir}
               />
             </div>
             <div className="col-span-1 ">
               <StatistCardWithImage
-                title={'مديرية'}
+                title={'المديريات'}
                 value={statist?.directoratecount ?? 0}
-                subtitle={'مستفيد'}
                 image={LocationPin}
               />
             </div>
             <div className="col-span-1 ">
               <StatistCardWithImage
-                title={'المربع'}
+                title={'المربعات'}
                 value={statist?.squareCount ?? 0}
-                subtitle={'مستفيد'}
                 image={map}
               />
             </div>
             <div className="col-span-1 ">
               <StatistCardWithImage
-                title={'محافظة'}
+                title={'المحافظات'}
                 value={statist?.GovernorateCount ?? 0}
-                subtitle={'مستفيد'}
                 image={yemen}
               />
             </div>
@@ -174,7 +166,7 @@ const Home = () => {
               <StatistchartTowCard />
             </div>
             <div className="md:w-1/2 md:flex md:justify-end">
-              <Statistsidebar  />
+              <Statistsidebar />
             </div>
           </div>
         </>

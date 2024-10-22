@@ -77,7 +77,7 @@ const Home = () => {
           <StatistCardWithImage
             title={'المعتمدين'}
             value={statist?.count}
-            subtitle={'مستفيد'}
+       
             image={LackOfAir}
           />
         </div>

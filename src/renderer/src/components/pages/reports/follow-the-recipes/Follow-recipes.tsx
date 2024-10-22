@@ -3,7 +3,6 @@ import { ColumnDef } from '@tanstack/react-table'
 import { HdfTable } from '../../../tables/hdfTable'
 import { AllAccreditedsForPdfInfo } from '../../../../types/index'
 
-
 type Props = {
   info: AllAccreditedsForPdfInfo[]
   page: string

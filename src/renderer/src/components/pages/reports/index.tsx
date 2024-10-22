@@ -25,18 +25,18 @@ const subTabs = [
 export default function ReportIndex() {
   const [activeTab, setActiveTab] = useState<string>(subTabs[0].value)
   return (
-    <div className="flex flex-col gap-6 ">
-      <div className="flex  flex-col justify-center px-6 gap-16 bg-white rounded-[8px] pb-20">
+    <div className="flex flex-col gap-6  ">
+      <div className="flex  flex-col justify-center px-6 gap-5  rounded-[8px] pb-20 ">
         <div className="border-[#DADADA80]/50 border-b-2 ">
-          <div className="w-fit border-[#196CB0] border-b-2 pb-4 pt-2">
-            <h1 className="text-xl font-bold  text-[#196CB0]   "> التقاريـــر الصرف</h1>
+          <div className="w-fit border-[#196CB0] border-b-2  pt-2">
+            <h1 className="text-xl font-bold  text-[#196CB0]   "> تقاريـــر الصرف</h1>
           </div>
         </div>
-        <section className="rounded-xl bg-background">
+        <section className="rounded-xl bg-background  ">
           <Tabs
             defaultValue={activeTab}
             onValueChange={(value) => setActiveTab(value)}
-            className="mt-6 dark:bg-[#09090b]"
+            className=" dark:bg-[#09090b]"
           >
             <TabsList className="p-0 flex justify-start">
               {subTabs.map((tab) => (
@@ -46,7 +46,7 @@ export default function ReportIndex() {
               ))}
             </TabsList>
             {subTabs.map((tab) => (
-              <TabsContent key={tab.value} value={tab.value} className="p-4 pt-8">
+              <TabsContent key={tab.value} value={tab.value} className="p-4 ">
                 {tab.content}
               </TabsContent>
             ))}
