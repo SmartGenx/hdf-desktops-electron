@@ -47,8 +47,10 @@ class AuthService {
   async login(email, password) {
     try {
       const existingUser = await this.prisma.user.findUnique({
-        where: { email }
+        where: { email },
+        include: { role: true }
       })
+      console.log("🚀 ~ AuthService ~ login ~ existingUser:", existingUser)
       if (!existingUser) {
         throw new Error('Invalid email')
       }
@@ -63,6 +65,7 @@ class AuthService {
       return {
         token,
         user: {
+          role: existingUser.role.name,
           name: existingUser.name,
           email: existingUser.email,
           profileImage: existingUser.profileImage
