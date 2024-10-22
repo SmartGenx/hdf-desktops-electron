@@ -158,6 +158,7 @@ export default function FormAccredited() {
         variant: 'success'
       })
       queryClient.invalidateQueries({ queryKey: ['accredited'] })
+      queryClient.invalidateQueries({ queryKey: ['applicant'] })
       navigate('/accredited')
     },
     onError: (error) => {
@@ -487,7 +488,6 @@ export default function FormAccredited() {
                           <FormItem>
                             <FormControl>
                               <FileUploader
-
                                 setValue={form.setValue}
                                 inputId="pt"
                                 onChange={async (files) => {
@@ -516,7 +516,6 @@ export default function FormAccredited() {
                           <FormItem>
                             <FormControl>
                               <FileUploader
-
                                 setValue={form.setValue}
                                 inputId="atch"
                                 onChange={async (files) => {

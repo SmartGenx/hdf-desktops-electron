@@ -74,12 +74,7 @@ const Home = () => {
     <div>
       <div className="grid grid-cols-4 gap-2">
         <div className=" col-span-1 ">
-          <StatistCardWithImage
-            title={'المتقدمين'}
-            value={statist?.count}
-            subtitle={'مستفيد'}
-            image={LackOfAir}
-          />
+          <StatistCardWithImage title={'المتقدمين'} value={statist?.count} image={LackOfAir} />
         </div>
       </div>
       <div className="flex  gap-5 mt-[85px] items-center justify-between  ">

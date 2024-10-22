@@ -5,18 +5,12 @@ import { Card, CardHeader, CardTitle, CardContent } from './ui/card'
 type StatistCardProps = {
   title: string
   value?: number
-  subtitle: string
+
   image: string // URL or path to the image
   className?: string
 }
 
-const StatistCardWithImage = ({
-  title,
-  value = 0,
-  subtitle,
-  image,
-  className
-}: StatistCardProps) => {
+const StatistCardWithImage = ({ title, value = 0, image, className }: StatistCardProps) => {
   return (
     <Card
       className={cn(
@@ -31,7 +25,6 @@ const StatistCardWithImage = ({
         </CardHeader>
         <CardContent>
           <CardTitle className="text-xl font-bold text-blue-600">{value}</CardTitle>
-          <p className="text-sm text-start text-gray-500">{subtitle}</p>
         </CardContent>
       </div>
 

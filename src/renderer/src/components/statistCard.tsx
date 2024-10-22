@@ -5,7 +5,7 @@ import { Icons } from '@renderer/components/icons/icons'
 type proptype = {
   title: string
   value?: number
-  subtitle: string
+  subtitle?: string
   icon: keyof typeof Icons
   className?: string
 }

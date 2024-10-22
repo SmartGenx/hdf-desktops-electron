@@ -9,15 +9,15 @@ type Props = {
   onClick?: () => void
 }
 
-const Boutton = ({ icon, title, className}: Props) => {
+const Boutton = ({ icon, title, className, onClick }: Props) => {
   const Icon = icon ? Icons[icon] : undefined
   return (
     <Button
-
       className={cn(
         'flex items-center justify-center w-[120px] bg-[#196CB0] text-white rounded-lg px-4 py-2 hover:bg-[#346186] focus:outline-none focus:ring-2 focus:ring-blue-300',
         className
       )}
+      onClick={onClick}
     >
       <div className="flex items-center justify-between gap-2">
         {Icon && <Icon className="w-5 h-5" />}
