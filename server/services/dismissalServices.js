@@ -104,6 +104,14 @@ class DismissalService {
     }
 
     try {
+      const accreditedExists = await this.prisma.accredited.findFirst({
+        where: { globalId: data.accreditedGlobalId,state: 'موقف' }
+      })
+      if (accreditedExists) {
+        throw new ('لايمكن صرف عليك مراجعة الادارة')
+      }
+
+
       const accredited = await this.prisma.dismissal.findFirst({
         where: { accreditedGlobalId: data.accreditedGlobalId }
       })

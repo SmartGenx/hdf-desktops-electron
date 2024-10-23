@@ -288,7 +288,9 @@ class AccreditedController {
       const accrediteds = await AccreditedService.getAllAccreditations()
       let card = []
       for (const data of accrediteds) {
-        card.push({ number: data.numberOfRfid })
+        card.push({ number: data.numberOfRfid,
+          formNumber: data.formNumber
+         })
       }
       res.status(200).json(card)
       console.log('🚀 ~ AccreditedController ~ exportAllBarcodeCardToPDF ~ card:', card)
