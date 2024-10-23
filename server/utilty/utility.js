@@ -12,7 +12,7 @@ const backupDatabase = async (req, res) => {
 
     const dbName = 'Hdf_electron';
     const dbUser = 'postgres';
-    const dbPassword = 'sami2020';
+    const dbPassword = '123';
     const dbPort = 5432;
     const token = req.body.token;
     const backupPath = 'D:\\backup';

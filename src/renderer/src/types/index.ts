@@ -10,6 +10,7 @@ export type NavItem = {
     icon?: keyof typeof Icons
     label: string
     description?: string
+    roles?: string[]
     subLinks?: { href: string; label: string; disabled?: boolean }[]
   }>
 }
@@ -356,6 +357,12 @@ export interface AccreditedRes {
   total: number
   page: string
   pageSize: string
+}
+export interface user {
+  email: string
+  name: string
+  profileImage: null
+  role: string
 }
 export interface NavItemWithChildren extends NavItem {
   items: NavItemWithChildren[]

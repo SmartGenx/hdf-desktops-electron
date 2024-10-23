@@ -7,7 +7,8 @@ export default function useNavItems() {
         {
           href: '/',
           icon: 'dashboard',
-          label: 'الصفحة الرئيسية'
+          label: 'الصفحة الرئيسية',
+          roles: ['Admin', 'Coordinator',"Pharmacist"]
         }
       ]
     },
@@ -18,13 +19,15 @@ export default function useNavItems() {
           href: '/applicants',
           icon: 'user',
           label: 'إدارة المتقدمين',
-          disabled: false
+          disabled: false,
+          roles: ['Admin', 'Coordinator']
         },
         {
           href: '/accredited',
           icon: 'accredit',
           label: 'إدارة الاعتماد',
-          disabled: false
+          disabled: false,
+          roles: ['Admin', 'Coordinator']
         }
       ]
     },
@@ -36,7 +39,8 @@ export default function useNavItems() {
           href: '/dismissal',
           icon: 'dismiss',
           label: 'إدارة الصرف',
-          disabled: false
+          disabled: false,
+          roles: ['Admin', 'Pharmacist']
         }
       ]
     },
@@ -47,7 +51,8 @@ export default function useNavItems() {
           href: '/Reports',
           icon: 'report',
           label: 'التقارير ',
-          disabled: false
+          disabled: false,
+          roles: ['Admin', 'Coordinator']
         }
       ]
     },
@@ -58,19 +63,22 @@ export default function useNavItems() {
           href: '/knowledge',
           icon: 'settings',
           label: 'إدارة المستخدمين ',
-          disabled: true
+          disabled: true,
+          roles: ['Admin', 'Coordinator']
         },
         {
           href: '/Initialization',
           icon: 'report',
           label: 'تهيئة النظام',
-          disabled: false
+          disabled: false,
+          roles: ['Admin', 'Coordinator']
         },
         {
           href: '/backup',
           icon: 'backup',
           label: 'النسخ الإحتياطي',
-          disabled: false
+          disabled: false,
+          roles: ['Admin', 'Coordinator']
         }
       ]
     }

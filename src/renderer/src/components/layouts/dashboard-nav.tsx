@@ -1,3 +1,6 @@
+// components/DashboardNav.tsx
+
+import  { useEffect, useState } from 'react'
 import {
   Tooltip,
   TooltipContent,
@@ -18,15 +21,26 @@ interface DashboardNavProps {
 }
 
 export default function DashboardNav({ items, expanded = true, itemSetting }: DashboardNavProps) {
+  const [user, setUser] = useState<{ role: string } | null>(null)
+
+  useEffect(() => {
+    const authState = localStorage.getItem('_auth_state')
+    if (authState) {
+      try {
+        const authData = JSON.parse(authState)
+        if (authData && authData.user) {
+          setUser(authData.user)
+        }
+      } catch (error) {
+        console.error('Error parsing auth state:', error)
+      }
+    }
+  }, [])
   const signOut = useSignOut()
   const location = useLocation()
   const path = location.pathname
 
   const isSelected = (href: string) => {
-    if (href === '/dashboard') {
-      return path === href
-    }
-
     return path === href
   }
 
@@ -34,10 +48,30 @@ export default function DashboardNav({ items, expanded = true, itemSetting }: Da
     return null
   }
 
+  const filterNavItemsByRole = (navItems: NavItem[]) => {
+    return navItems
+      .map((item) => {
+        const filteredList = item.list.filter((nav) => {
+          if (nav.roles) {
+            return user && nav.roles.includes(user.role)
+          }
+          return true // If no roles specified, show to all users
+        })
+        if (filteredList.length === 0) {
+          return null
+        }
+        return { ...item, list: filteredList }
+      })
+      .filter(Boolean) as NavItem[] // Remove nulls
+  }
+
+  const filteredItems = filterNavItemsByRole(items)
+  const filteredItemSetting = filterNavItemsByRole(itemSetting)
+
   return (
     <>
-      <nav className="grid items-start gap-6  overflow-x-hidden">
-        {items.map((item, index) => (
+      <nav className="grid items-start gap-6 overflow-x-hidden">
+        {filteredItems.map((item, index) => (
           <div key={index}>
             {item.title && (
               <h5
@@ -71,11 +105,7 @@ export default function DashboardNav({ items, expanded = true, itemSetting }: Da
                         >
                           <Icon className="mx-2 h-5 w-5" />
                           {expanded && (
-                            <span
-                              className={
-                                'min-w-max text-lg  font-medium flex items-center justify-between w-full'
-                              }
-                            >
+                            <span className="min-w-max text-lg font-medium flex items-center justify-between w-full">
                               {nav.label}
                             </span>
                           )}
@@ -95,7 +125,7 @@ export default function DashboardNav({ items, expanded = true, itemSetting }: Da
           </div>
         ))}
         <div className="mt-10">
-          {itemSetting.map((item, index) => (
+          {filteredItemSetting.map((item, index) => (
             <div key={index}>
               {item.title && (
                 <h5
@@ -127,7 +157,9 @@ export default function DashboardNav({ items, expanded = true, itemSetting }: Da
                             )}
                             onClick={(e) => {
                               if (nav.disabled) e.preventDefault()
-                              if (nav.label === 'تسجيل الخروج') signOut()
+                              if (nav.label === 'تسجيل الخروج') {
+                                signOut()
+                              }
                             }}
                           >
                             <Icon className="mx-3 -translate-x-2 h-5 w-5" />

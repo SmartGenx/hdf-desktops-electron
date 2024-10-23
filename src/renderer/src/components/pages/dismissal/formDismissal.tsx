@@ -242,19 +242,22 @@ export default function FormDismissal() {
           }
         }
       ),
-    onSuccess: () => {
+    onSuccess: (data: any) => {
+      const successMessage = data?.data?.message || 'تمت الاضافة بنجاح'
+
       toast({
         title: 'تمت العملية',
-        description: 'تمت الاضافة بنجاح',
+        description: successMessage,
         variant: 'success'
       })
       queryClient.invalidateQueries({ queryKey: ['dismissal'] })
       navigate('/dismissal')
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'حدث خطأ ما'
       toast({
         title: 'لم تتم العملية',
-        description: error.message,
+        description: errorMessage,
         variant: 'destructive'
       })
     }
@@ -333,12 +336,7 @@ export default function FormDismissal() {
           </Alert> */}
           <div>
             <Form {...form}>
-              {process.env.NODE_ENV === 'development' && (
-                <>
-                  <p>Ignore it, it just in dev mode</p>
-                  <div>{JSON.stringify(form.formState.errors)}</div>
-                </>
-              )}
+              
               <form
                 id="formId"
                 onSubmit={form.handleSubmit(onSubmit)}
