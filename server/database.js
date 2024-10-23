@@ -39,8 +39,15 @@ class DatabaseService {
       }
     })
     this.cloudPrisma = new PrismaClient({
-        datasources: { db: { url:"postgresql://postgres:123456789@3.108.217.185:5432/hdf-web?schema=public"} },
-    });
+      datasources: {
+        db: { url: 'postgresql://postgres:123456789@3.108.217.185:5432/hdf-web?schema=public' }
+      },
+      __internal: {
+        engine: {
+          maxConnections: 20, // Adjust as needed
+        },
+      },
+    })
 
     this.authService = null
     // Directly initialize services to use the correct Prisma client based on connectivity
@@ -287,30 +294,25 @@ class DatabaseService {
   }
 
   async synchronizeTable(modelName) {
-    const online = await this.isOnline();
+    const online = await this.isOnline()
     if (!online) {
-      return;
+      return
     }
     try {
       const localRecords = await this.localPrisma[modelName].findMany({
         // Include conditions to select records that need synchronization
-      });
+      })
 
       // Use interactive transaction
       await this.cloudPrisma.$transaction(async (prisma) => {
         for (const record of localRecords) {
           const cloudRecord = await prisma[modelName].findUnique({
-            where: { globalId: record.globalId },
-
-          });
-
+            where: { globalId: record.globalId }
+          })
 
           // Only synchronize if the cloud record is missing or outdated
-          if (
-            !cloudRecord ||
-            (cloudRecord && cloudRecord.version < record.version)
-          ) {
-            const { id, ...dataForSync } = record; // Exclude local id from synchronization data
+          if (!cloudRecord || (cloudRecord && cloudRecord.version < record.version)) {
+            const { id, ...dataForSync } = record // Exclude local id from synchronization data
             if (cloudRecord) {
               // Update cloud record if it exists but is outdated
               await prisma[modelName].update({
@@ -318,73 +320,68 @@ class DatabaseService {
                 data: {
                   ...dataForSync,
                   version: record.version,
-                  lastModified: new Date(),
-                },
-              });
+                  lastModified: new Date()
+                }
+              })
             } else {
               // Insert new record into cloud if it doesn't exist
               await prisma[modelName].create({
                 data: {
                   ...dataForSync,
-                  globalId: record.globalId, // Ensure globalId is included
-                },
-              });
+                  globalId: record.globalId // Ensure globalId is included
+                }
+              })
             }
           }
         }
-      });
+      })
     } catch (error) {
-      console.error(`Synchronization failed for ${modelName}:`, error);
+      console.error(`Synchronization failed for ${modelName}:`, error)
     }
   }
 
-
   async fetchUpdatesFromServer(modelName) {
-    const online = await this.isOnline();
+    const online = await this.isOnline()
     if (!online) {
-      return;
+      return
     }
     try {
       const updates = await this.cloudPrisma[modelName].findMany({
         // Include conditions to select updated records, possibly based on version or timestamps
-      });
+      })
 
       // Use interactive transaction
       await this.localPrisma.$transaction(async (prisma) => {
         for (const update of updates) {
           const existingRecord = await prisma[modelName].findUnique({
-            where: { globalId: update.globalId },
-          });
+            where: { globalId: update.globalId }
+          })
 
           // Only apply update if it's a newer version
-          if (
-            !existingRecord ||
-            (existingRecord && existingRecord.version < update.version)
-          ) {
-            const { id, ...dataForUpdate } = update; // Exclude cloud id from update data
+          if (!existingRecord || (existingRecord && existingRecord.version < update.version)) {
+            const { id, ...dataForUpdate } = update // Exclude cloud id from update data
             if (existingRecord) {
               // Update local record if it exists but is outdated
               await prisma[modelName].update({
                 where: { globalId: update.globalId },
-                data: dataForUpdate,
-              });
+                data: dataForUpdate
+              })
             } else {
               // Insert new record locally if it doesn't exist
               await prisma[modelName].create({
                 data: {
                   ...dataForUpdate,
-                  globalId: update.globalId, // Ensure globalId is included
-                },
-              });
+                  globalId: update.globalId // Ensure globalId is included
+                }
+              })
             }
           }
         }
-      });
+      })
     } catch (error) {
-      console.error(`Failed to fetch updates for ${modelName}:`, error.message);
+      console.error(`Failed to fetch updates for ${modelName}:`, error.message)
     }
   }
-
 
   async synchronizeLocalToS3() {
     try {

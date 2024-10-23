@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const util = require('util');
 const path = require('path');
+const { fork } = require('child_process');
 require('dotenv').config();
 
 const mkdir = util.promisify(fs.mkdir); // Promisify mkdir here globally if it's used elsewhere too
@@ -27,31 +28,31 @@ const corsOptions = {
 };
 
 // Define the synchronizeAllTables function
-const synchronizeAllTables = async () => {
-  const tables = [
-    'Role',
-    'User',
-    'Category',
-    'Governorate',
-    'Directorate',
-    'Square',
-    'Disease',
-    'Applicant',
-    'Pharmacy',
-    'Accredited',
-    'DiseasesApplicants',
-    'Prescription',
-    'Attachment',
-    'Dismissal',
-  ];
-  for (const table of tables) {
-    await databaseService.synchronizeTable(table);
-    await databaseService.fetchUpdatesFromServer(table);
-    // Uncomment the following lines if needed
-    // await databaseService.synchronizeLocalToS3();
-    // await databaseService.synchronizeS3ToLocal();
-  }
-};
+// const synchronizeAllTables = async () => {
+//   const tables = [
+//     'Role',
+//     'User',
+//     'Category',
+//     'Governorate',
+//     'Directorate',
+//     'Square',
+//     'Disease',
+//     'Applicant',
+//     'Pharmacy',
+//     'Accredited',
+//     'DiseasesApplicants',
+//     'Prescription',
+//     'Attachment',
+//     'Dismissal',
+//   ];
+//   for (const table of tables) {
+//     await databaseService.synchronizeTable(table);
+//     await databaseService.fetchUpdatesFromServer(table);
+//     // Uncomment the following lines if needed
+//     // await databaseService.synchronizeLocalToS3();
+//     // await databaseService.synchronizeS3ToLocal();
+//   }
+// };
 
 async function ExpressApp() {
   try {
@@ -59,10 +60,11 @@ async function ExpressApp() {
     await databaseService.user();
 
     // Run synchronizeAllTables once at startup
-    await synchronizeAllTables();
 
     // Then schedule it to run every hour
-    setInterval(synchronizeAllTables, 3600000); // 3600000 milliseconds = 1 hour
+    // await synchronizeAllTables();
+    // setInterval(synchronizeAllTables, 3600000); // 3600000 milliseconds = 1 hour
+    const syncProcess = fork(path.join(__dirname, 'syncProcess.js'));
 
     const expressApp = express();
     expressApp.use(cors(corsOptions));
