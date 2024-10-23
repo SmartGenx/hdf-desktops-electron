@@ -108,7 +108,7 @@ class DismissalService {
         where: { globalId: data.accreditedGlobalId,state: 'موقف' }
       })
       if (accreditedExists) {
-        throw new Error('لايمكن صرف عليك مراجعة الادارة')
+        throw new ('لايمكن صرف عليك مراجعة الادارة')
       }
 
 

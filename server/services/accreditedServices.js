@@ -37,8 +37,13 @@ class AccreditedService {
 
       return newDate
     }
-    const threeMonthsFromNow = getDateMonthsFromNow(3)
-    const sixMonthsFromNow = getDateMonthsFromNow(6)
+    const threeMonthsFromNow = getDateMonthsFromNow(0)
+    console.log(
+      '🚀 ~ AccreditedService ~ searchAccreditations ~ threeMonthsFromNow:',
+      threeMonthsFromNow
+    )
+    const dataOfDay = getDateMonthsFromNow(0)
+
     try {
       const accreditations = await this.prisma.accredited.findMany({
         include: {
@@ -78,16 +83,28 @@ class AccreditedService {
           where: { accreditedGlobalId: accredited.globalId }
         })
 
-        const dateToDay = dismissal?.dateToDay
+        const datedismissal = dismissal?.dateToDay
         const renewalDate = prescriptions[0]?.renewalDate
-        let newState
+        const originalRenewalDate = new Date(renewalDate)
+        const originalDatedismissal = new Date(datedismissal)
 
-        if (renewalDate > sixMonthsFromNow || dateToDay > threeMonthsFromNow) {
+        const threeMonthsFromRenewalDate = new Date(originalRenewalDate)
+
+        threeMonthsFromRenewalDate.setMonth(threeMonthsFromRenewalDate.getMonth() + 3)
+        const threeMonthsFromDatedismissal = new Date(originalDatedismissal)
+
+        threeMonthsFromRenewalDate.setMonth(threeMonthsFromRenewalDate.getMonth() + 3)
+        console.log("🚀 ~ AccreditedService ~ accreditations.map ~ threeMonthsFromRenewalDate:", threeMonthsFromRenewalDate)
+
+        let newState
+        console.log("🚀 ~ AccreditedService ~ accreditations.map ~ renewalDate:", renewalDate)
+
+        if (threeMonthsFromRenewalDate < dataOfDay || threeMonthsFromDatedismissal < dataOfDay) {
           newState = 'موقف'
-        } else if (renewalDate > threeMonthsFromNow && !(dateToDay > threeMonthsFromNow)) {
-          newState = 'مستمر'
-        } else {
+        } else if (renewalDate < dataOfDay) {
           newState = 'منتهي'
+        } else {
+          newState = 'مستمر'
         }
 
         await this.prisma.accredited.update({
@@ -98,6 +115,8 @@ class AccreditedService {
           }
         })
       })
+
+
 
       const page = dataFillter?.page
       const pageSize = dataFillter?.pageSize
@@ -349,16 +368,15 @@ class AccreditedService {
       ...rest
     } = AccreditedData
 
-    const accreditexsting=await this.prisma.accredited.findFirst({
-      where: {globalId:id}
-
+    const accreditexsting = await this.prisma.accredited.findFirst({
+      where: { globalId: id }
     })
 
     const accreited = await this.prisma.accredited.update({
       where: { globalId: id },
       data: {
-        numberOfRfid:numberOfRfid?+numberOfRfid:accreditexsting.numberOfRfid,
-        formNumber:formNumber?+formNumber:accreditexsting.formNumber,
+        numberOfRfid: numberOfRfid ? +numberOfRfid : accreditexsting.numberOfRfid,
+        formNumber: formNumber ? +formNumber : accreditexsting.formNumber,
 
         ...rest
       }
@@ -381,7 +399,7 @@ class AccreditedService {
       }
     }
 
-    const renewalDate = new Date()
+    const renewalDate = new Date(prescriptionDate)
     renewalDate.setMonth(renewalDate.getMonth() + 6)
     if (filePt) {
       const prescription = await this.prisma.prescription.findFirst({

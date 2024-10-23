@@ -24,6 +24,8 @@ class DismissalController {
       const DismissalService = databaseService.getDismissalService();
       const DismissalData = req.body
       const dismissals = await DismissalService.createDismissal(DismissalData);
+      
+
       res.status(201).json(dismissals);
     } catch (error) {
       console.error(error);
