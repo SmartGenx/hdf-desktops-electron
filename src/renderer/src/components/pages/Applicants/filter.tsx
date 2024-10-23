@@ -56,8 +56,12 @@ const FilterDrawer = () => {
     { value: 'M', label: 'ذكر' },
     { value: 'F', label: 'انثى' }
   ])
-  const [date, setDate] = React.useState<Date | undefined>(new Date())
-  const [clan, setClan] = React.useState<boolean>(false)
+  const [dateFrom, setDateFrom] = React.useState<Date | undefined>(new Date())
+  const [dateTo, setDateTo] = React.useState<Date | undefined>(new Date())
+  console.log('dateFrom', dateFrom?.toISOString())
+  console.log('dateTo', dateTo?.toISOString())
+  const [clanFrom, setClanFrom] = React.useState<boolean>(false)
+  const [clanTo, setClanTo] = React.useState<boolean>(false)
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const authToken = useAuthHeader()
@@ -184,6 +188,12 @@ const FilterDrawer = () => {
 
     if (selectedState) {
       params.set('state', selectedState)
+    }
+    if (dateFrom) {
+      params.set('craeteAt[gte]', dateFrom?.toISOString())
+    }
+    if (dateTo) {
+      params.set('craeteAt[lte]', dateTo?.toISOString())
     }
 
     if (selectedGender) {
@@ -312,18 +322,26 @@ const FilterDrawer = () => {
               <CheckboxWithLabel label="تحديد الفترة" />
             </div>
             <div className="grid grid-cols-2 gap-2 mb-4">
-              <Button className="bg-blue-600 text-white " onClick={() => setClan(!clan)}>
+              <Button className="bg-blue-600 text-white " onClick={() => setClanFrom(!clanFrom)}>
                 من
               </Button>
-              <Button className="bg-blue-600 text-white" onClick={() => setClan(!clan)}>
+              <Button className="bg-blue-600 text-white" onClick={() => setClanTo(!clanTo)}>
                 إلى
               </Button>
             </div>
-            {clan ? (
+            {clanFrom ? (
               <Calendar
                 mode="single"
-                selected={date}
-                onSelect={setDate}
+                selected={dateFrom}
+                onSelect={setDateFrom}
+                className="rounded-md border "
+              />
+            ) : null}
+            {clanTo ? (
+              <Calendar
+                mode="single"
+                selected={dateTo}
+                onSelect={setDateTo}
                 className="rounded-md border "
               />
             ) : null}
