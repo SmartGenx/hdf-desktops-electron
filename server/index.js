@@ -1,12 +1,14 @@
-const express = require('express')
-const cors = require('cors')
-const { rootRouter } = require('../server/routes/index') // Ensure the path is correct
-const { databaseService } = require('./database') // Adjust the path as necessary
-const bodyParser = require('body-parser')
-const fs = require('fs')
-const util = require('util')
-const path = require('path')
-require('dotenv').config()
+const express = require('express');
+const cors = require('cors');
+const { rootRouter } = require('../server/routes/index'); // Ensure the path is correct
+const { databaseService } = require('./database'); // Adjust the path as necessary
+const bodyParser = require('body-parser');
+const fs = require('fs');
+const util = require('util');
+const path = require('path');
+const { fork } = require('child_process');
+require('dotenv').config();
+
 
 const mkdir = util.promisify(fs.mkdir) // Promisify mkdir here globally if it's used elsewhere too
 
@@ -59,10 +61,12 @@ async function ExpressApp() {
     await databaseService.user()
 
     // Run synchronizeAllTables once at startup
-    // await synchronizeAllTables()
 
     // Then schedule it to run every hour
-    // setInterval(synchronizeAllTables, 3600000) // 3600000 milliseconds = 1 hour
+    // await synchronizeAllTables();
+    // setInterval(synchronizeAllTables, 3600000); // 3600000 milliseconds = 1 hour
+    const syncProcess = fork(path.join(__dirname, 'syncProcess.js'));
+
 
     const expressApp = express()
     expressApp.use(cors(corsOptions))
