@@ -44,6 +44,8 @@ export default function LoginForm() {
       const response = await axiosInstance.post<typeRespons>('/auth/login', payload)
 
       if (response.status === 200 || response.status === 201) {
+        localStorage.setItem('token', response.data.token)
+        localStorage.setItem('user', JSON.stringify(response.data.user))
         const singInResult = singIn({
           token: response.data.token,
           expiresIn: 10080,

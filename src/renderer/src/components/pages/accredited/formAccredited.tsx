@@ -227,12 +227,6 @@ export default function FormAccredited() {
 
           <div>
             <Form {...form}>
-              {process.env.NODE_ENV === 'development' && (
-                <>
-                  <p>Ignore it, it just in dev mode</p>
-                  <div>{JSON.stringify(form.formState.errors)}</div>
-                </>
-              )}
               <form
                 id="formId"
                 onSubmit={form.handleSubmit(onSubmit)}
