@@ -8,6 +8,7 @@ const convertEqualsToInt = require('../utilty/convertToInt')
 const convertTopLevelStringBooleans = require('../utilty/convertTopLevelStringBooleans')
 const { info } = require('console')
 
+
 // Promisify fs methods to use async/await
 
 class AccreditedService {
@@ -396,16 +397,19 @@ class AccreditedService {
             globalId: `${process.env.LOCAL_DB_ID}-${uuidv4()}-${new Date()}` // Assign the generated global ID
           }
         })
+
       }
     }
 
     const renewalDate = new Date(prescriptionDate)
     renewalDate.setMonth(renewalDate.getMonth() + 6)
     if (filePt) {
+
       const prescription = await this.prisma.prescription.findFirst({
         where: { accreditedGlobalId: accreited.globalId }
       })
       if (prescription) {
+
         const pt = await this.prisma.prescription.update({
           where: { globalId: prescription.globalId },
           data: {
@@ -416,6 +420,7 @@ class AccreditedService {
             globalId: `${process.env.LOCAL_DB_ID}-${uuidv4()}-${new Date()}` // Assign the generated global ID
           }
         })
+
       }
     }
     const app = await this.prisma.applicant.update({

@@ -71,6 +71,7 @@ CREATE TABLE "Applicant" (
     "state" TEXT NOT NULL,
     "version" INTEGER NOT NULL DEFAULT 1,
     "lastModified" TIMESTAMP(3) NOT NULL,
+    "craeteAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Applicant_pkey" PRIMARY KEY ("id")
 );

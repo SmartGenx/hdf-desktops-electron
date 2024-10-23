@@ -36,17 +36,19 @@ const copyFileToProfileDir = () => async (req, res, next) => {
     await fs.mkdir(profileDir, { recursive: true })
     if (req.files) {
       if (req.files.atch) {
+        const uniqueId = uuidv4()
         const ext = path.extname(req.files.atch[0].originalname)
-        fileName = `${req.files.atch[0].originalname}${ext}`
+        fileName = `${uniqueId}${req.files.atch[0].originalname}`
         destPath = path.join(profileDir, fileName)
         console.log(':rocket: ~ copyFileToProfileDir ~ destPath:', destPath)
         req.atch = destPath
         await fs.writeFile(destPath, req.files.atch[0].buffer)
       }
       if (req.files.pt) {
+        const uniqueId = uuidv4()
         console.log(':rocket: ~ copyFileToProfileDir ~ req.files.pt:', req.files.pt)
         const ext = path.extname(req.files.pt[0].originalname)
-        fileName = `${req.files.pt[0].originalname}${ext}`
+        fileName = `${uniqueId}${req.files.pt[0].originalname}`
         destPath = path.join(profileDir, fileName)
         console.log(':rocket: ~ copyFileToProfileDir ~ destPath:', destPath)
         req.pt = destPath
@@ -56,6 +58,7 @@ const copyFileToProfileDir = () => async (req, res, next) => {
 
     // Write the buffer to a new file in the profile directory
     if (req.file) {
+
       const ext = path.extname(req.file.originalname)
       fileName = `${uuidv4()}-Approved attachments${ext}` // توليد اسم فريد جديد مع الامتداد الأصلي
 
