@@ -9,14 +9,15 @@ const path = require('path');
 const { fork } = require('child_process');
 require('dotenv').config();
 
-const mkdir = util.promisify(fs.mkdir); // Promisify mkdir here globally if it's used elsewhere too
+
+const mkdir = util.promisify(fs.mkdir) // Promisify mkdir here globally if it's used elsewhere too
 
 async function ensureProfileDirExists(profileDir) {
   try {
-    await mkdir(profileDir);
+    await mkdir(profileDir)
   } catch (error) {
     if (error.code !== 'EEXIST') {
-      throw error;
+      throw error
     }
   }
 }
@@ -24,8 +25,8 @@ async function ensureProfileDirExists(profileDir) {
 const corsOptions = {
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-};
+  allowedHeaders: ['Content-Type', 'Authorization']
+}
 
 // Define the synchronizeAllTables function
 // const synchronizeAllTables = async () => {
@@ -56,8 +57,8 @@ const corsOptions = {
 
 async function ExpressApp() {
   try {
-    await databaseService.switchDatabaseBasedOnConnectivity();
-    await databaseService.user();
+    await databaseService.switchDatabaseBasedOnConnectivity()
+    await databaseService.user()
 
     // Run synchronizeAllTables once at startup
 
@@ -66,24 +67,25 @@ async function ExpressApp() {
     // setInterval(synchronizeAllTables, 3600000); // 3600000 milliseconds = 1 hour
     const syncProcess = fork(path.join(__dirname, 'syncProcess.js'));
 
-    const expressApp = express();
-    expressApp.use(cors(corsOptions));
-    expressApp.use(express.json());
-    expressApp.use(bodyParser.json());
 
-    expressApp.use('/api', rootRouter);
+    const expressApp = express()
+    expressApp.use(cors(corsOptions))
+    expressApp.use(express.json())
+    expressApp.use(bodyParser.json())
 
-    const profileDir = path.join('C:', 'Profiles');
+    expressApp.use('/api', rootRouter)
 
-    const PORT = process.env.PORT || 5050;
+    const profileDir = path.join('C:', 'Profiles')
+
+    const PORT = process.env.PORT || 5050
     expressApp.listen(PORT, async () => {
       // It's generally a good practice to ensure prerequisites before starting the server
-      await ensureProfileDirExists(profileDir);
+      await ensureProfileDirExists(profileDir)
       // Initialize role - user
-    });
+    })
   } catch (error) {
-    console.error('Failed to initialize the database service or server:', error);
+    console.error('Failed to initialize the database service or server:', error)
   }
 }
 
-ExpressApp();
+ExpressApp()
