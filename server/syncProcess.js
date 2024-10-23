@@ -23,6 +23,9 @@ const synchronizeAllTables = async () => {
   for (const table of tables) {
     await databaseService.synchronizeTable(table);
     await databaseService.fetchUpdatesFromServer(table);
+    await databaseService.synchronizeLocalToS3();
+    await databaseService.synchronizeS3ToLocal();
+
   }
 };
 
