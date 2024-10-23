@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card'
 import { useAuthHeader } from 'react-auth-kit'
 import { useQuery } from '@tanstack/react-query'
 import { getApi } from '@renderer/lib/http'
-
+import { ChartOptions } from 'chart.js'
 export interface StaticsPer {
   applicantMonthlyGenderCountsWithSquareCount: ApplicantMonthlyGenderCountsWithSquareCount
 }
@@ -37,48 +37,48 @@ export interface Result {
 // Registering the required components from chart.js
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
-const barData = {
-  labels: [
-    'يناير',
-    'فبراير',
-    'مارس',
-    'أبريل',
-    'مايو',
-    'يونيو',
-    'يوليو',
-    'أغسطس',
-    'سبتمبر',
-    'أكتوبر',
-    'نوفمبر',
-    'ديسمبر'
-  ],
-  datasets: [
-    {
-      data: [50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160],
-      backgroundColor: '#ffffff',
-      borderRadius: 10,
-      barPercentage: 0.5
-    }
-  ]
-}
+// const barData = {
+//   labels: [
+//     'يناير',
+//     'فبراير',
+//     'مارس',
+//     'أبريل',
+//     'مايو',
+//     'يونيو',
+//     'يوليو',
+//     'أغسطس',
+//     'سبتمبر',
+//     'أكتوبر',
+//     'نوفمبر',
+//     'ديسمبر'
+//   ],
+//   datasets: [
+//     {
+//       data: [50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160],
+//       backgroundColor: '#ffffff',
+//       borderRadius: 10,
+//       barPercentage: 0.5
+//     }
+//   ]
+// }
 
-const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'right' as const, // Positioning the legend to the right
-      display: false
-    }
-  },
-  scales: {
-    x: {
-      display: false
-    },
-    y: {
-      display: false
-    }
-  }
-}
+// const options = {
+//   responsive: true,
+//   plugins: {
+//     legend: {
+//       position: 'right' as const, // Positioning the legend to the right
+//       display: false
+//     }
+//   },
+//   scales: {
+//     x: {
+//       display: false
+//     },
+//     y: {
+//       display: false
+//     }
+//   }
+// }
 
 interface StatistSidebarProps {
   isExpended?: boolean
@@ -95,7 +95,58 @@ const Statistsidebar: React.FC<StatistSidebarProps> = ({ isExpended }) => {
         }
       })
   })
-  console.log('staticsPer', staticsPer?.data)
+  console.log('staticsPer', staticsPer?.data.applicantMonthlyGenderCountsWithSquareCount.monthlyCounts)
+
+  const labels = [
+    'يناير',
+    'فبراير',
+    'مارس',
+    'أبريل',
+    'مايو',
+    'يونيو',
+    'يوليو',
+    'أغسطس',
+    'سبتمبر',
+    'أكتوبر',
+    'نوفمبر',
+    'ديسمبر'
+  ]
+
+  const data =
+    staticsPer?.data.applicantMonthlyGenderCountsWithSquareCount.monthlyCounts.map(
+      (monthData) => monthData.males + monthData.females
+    )
+
+  const barData = {
+    labels: labels,
+    datasets: [
+      {
+        data: data,
+        backgroundColor: '#ffffff',
+        borderRadius: 10,
+        barPercentage: 0.5
+      }
+    ]
+  }
+
+  // Use 'as const' for the position property
+  const options: ChartOptions<'bar'> = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'right', // TypeScript now knows this is a specific literal type
+        display: false
+      }
+    },
+    scales: {
+      x: {
+        display: false
+      },
+      y: {
+        display: false
+      }
+    }
+  }
   return (
     <>
       {isExpended === true ? (

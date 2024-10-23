@@ -41,7 +41,19 @@ const ComponentToPrint = React.forwardRef<HTMLDivElement, Props>(function Compon
             <td>{String(item.renewalDate)}</td>
             <td>{item.days}</td>
             <td>{item.Months}</td>
-            <td className="translate-x-4">{item.state}</td>
+            <td
+              className={
+                item.state === 'موقف'
+                  ? 'translate-x-4 inline-block bg-[#FFDAA0]/[.35] rounded-3xl px-2 py-1 text-sm font-semibold text-[#CEA461] mt-2'
+                  : item.state === 'مستمر'
+                    ? 'translate-x-4 inline-block bg-[#C5FFBC]/[.35] rounded-3xl px-2 py-1 text-sm font-semibold text-[#69DB57] mt-2'
+                    : item.state === 'منتهي'
+                      ? 'translate-x-4 inline-block bg-[#ffe0e0] rounded-3xl px-2 py-1 text-sm font-semibold text-[#ff0000] mt-2'
+                      : ''
+              }
+            >
+              {item.state}
+            </td>
           </tr>
         ))}
       </table>

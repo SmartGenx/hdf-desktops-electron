@@ -38,7 +38,19 @@ const ComponentToPrint = React.forwardRef<HTMLDivElement, Props>(function Compon
             <td>{item.disease}</td>
             <td>{item.directorate}</td>
             <td>{item.phoneNumber}</td>
-            <td>{item.state}</td>
+            <td
+              className={
+                item.state === 'موقف'
+                  ? 'inline-block bg-[#FFDAA0]/[.35] rounded-3xl px-2 py-1 text-sm font-semibold text-[#CEA461] mt-2'
+                  : item.state === 'مستمر'
+                    ? 'inline-block bg-[#C5FFBC]/[.35] rounded-3xl px-2 py-1 text-sm font-semibold text-[#69DB57] mt-2'
+                    : item.state === 'منتهي'
+                      ? 'inline-block bg-[#ffe0e0] rounded-3xl px-2 py-1 text-sm font-semibold text-[#ff0000] mt-2'
+                      : ''
+              }
+            >
+              {item.state}
+            </td>
             <td>{item.totalAmount}</td>
             <td>{item.supportRatio}</td>
             <td>{item.approvedAmount}</td>

@@ -3,7 +3,6 @@ import { ColumnDef } from '@tanstack/react-table'
 import { HdfTable } from '../../../tables/hdfTable'
 import { ApplicantByDirectorateViewModelInfo } from '../../../../types/index'
 
-
 type Props = {
   info: ApplicantByDirectorateViewModelInfo[]
   page: string
@@ -41,7 +40,23 @@ export default function MedicalTable({ info, page, total, pageSize }: Props) {
       {
         accessorKey: '',
         header: 'الحاله',
-        cell: ({ row }) => row.original.state
+        cell: ({ row }) => {
+          return (
+            <p
+              className={
+                row.original.state === 'موقف'
+                  ? 'inline-block bg-[#FFDAA0]/[.35] rounded-3xl px-2 py-1 text-sm font-semibold text-[#CEA461] mt-2'
+                  : row.original.state === 'مستمر'
+                    ? 'inline-block bg-[#C5FFBC]/[.35] rounded-3xl px-2 py-1 text-sm font-semibold text-[#69DB57] mt-2'
+                    : row.original.state === 'منتهي'
+                      ? 'inline-block bg-[#ffe0e0] rounded-3xl px-2 py-1 text-sm font-semibold text-[#ff0000] mt-2'
+                      : ''
+              }
+            >
+              {row.original.state}
+            </p>
+          )
+        }
       },
       {
         accessorKey: '',
