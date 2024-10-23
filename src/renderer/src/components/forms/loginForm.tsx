@@ -125,9 +125,9 @@ export default function LoginForm() {
                             className="absolute left-3 top-1/2 -translate-y-1/2 transform cursor-pointer p-2 text-lg"
                           >
                             {showPassword ? (
-                              <EyeOff size={23} color="#434749" />
-                            ) : (
                               <Eye size={23} color="#434749" />
+                            ) : (
+                              <EyeOff size={23} color="#434749" />
                             )}
                           </button>
                         </div>
