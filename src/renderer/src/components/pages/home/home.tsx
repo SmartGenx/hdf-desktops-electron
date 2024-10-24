@@ -1,7 +1,7 @@
 import StatistChartCard from './statistChartCard'
 import StatistchartTowCard from './statistchartTowCard'
 import Statistsidebar from './statistsidebar'
-import { axiosInstance } from '@renderer/lib/http'
+import { axiosInstance, getApi } from '@renderer/lib/http'
 import { useAuthHeader } from 'react-auth-kit'
 import { useEffect, useRef, useState } from 'react'
 import StatistCardWithImage from '@renderer/components/statistCardWithImage'
@@ -9,6 +9,7 @@ import LackOfAir from '../../../assets/images/lack-of-air.png'
 import LocationPin from '../../../assets/images/location-pin.png'
 import map from '../../../assets/images/map.png'
 import yemen from '../../../assets/images/yemen.png'
+import { useQuery } from '@tanstack/react-query'
 export type statistCardInfo = {
   diseaseCount: number
   GovernorateCount: number
@@ -18,7 +19,7 @@ export type statistCardInfo = {
 
 const Home = () => {
   const authToken = useAuthHeader()
-  const [statist, setStatist] = useState<statistCardInfo | undefined>()
+  // const [statist, setStatist] = useState<statistCardInfo | undefined>()
   const divRef = useRef<HTMLDivElement>(null)
 
   // Custom hook to get screen size
@@ -68,21 +69,34 @@ const Home = () => {
     }
   }, [divWidth]) // Depend only on divWidth
 
-  useEffect(() => {
-    const fetchStatist = async () => {
-      try {
-        const response = await axiosInstance.get('/statistics/Initialization', {
-          headers: {
-            Authorization: `${authToken()}`
-          }
-        })
-        setStatist(response.data)
-      } catch (error) {
-        console.error('Error fetching data:', error)
-      }
-    }
-    fetchStatist()
-  }, [])
+  // useEffect(() => {
+  //   const fetchStatist = async () => {
+  //     try {
+  //       const response = await axiosInstance.get('/statistics/Initialization', {
+  //         headers: {
+  //           Authorization: `${authToken()}`
+  //         }
+  //       })
+  //       setStatist(response.data)
+  //     } catch (error) {
+  //       console.error('Error fetching data:', error)
+  //     }
+  //   }
+  //   fetchStatist()
+  // }, [])
+  const {
+    isPending,
+    error,
+    data: statist
+  } = useQuery({
+    queryKey: ['Initialization'],
+    queryFn: () =>
+      getApi<statistCardInfo>('/statistics/Initialization', {
+        headers: {
+          Authorization: authToken()
+        }
+      })
+  })
 
   return (
     <div ref={divRef}>
@@ -92,28 +106,28 @@ const Home = () => {
             <div className=" col-span-1 ">
               <StatistCardWithImage
                 title={'الامراض'}
-                value={statist?.diseaseCount ?? 0}
+                value={statist?.data?.diseaseCount ?? 0}
                 image={LackOfAir}
               />
             </div>
             <div className="col-span-1 ">
               <StatistCardWithImage
                 title={'مديرية'}
-                value={statist?.directoratecount ?? 0}
+                value={statist?.data?.directoratecount ?? 0}
                 image={LocationPin}
               />
             </div>
             <div className="col-span-1 ">
               <StatistCardWithImage
                 title={'المربع'}
-                value={statist?.squareCount ?? 0}
+                value={statist?.data?.squareCount ?? 0}
                 image={map}
               />
             </div>
             <div className="col-span-1 ">
               <StatistCardWithImage
                 title={'محافظة'}
-                value={statist?.GovernorateCount ?? 0}
+                value={statist?.data?.GovernorateCount ?? 0}
                 image={yemen}
               />
             </div>
@@ -134,28 +148,28 @@ const Home = () => {
             <div className=" col-span-1 ">
               <StatistCardWithImage
                 title={'الامراض'}
-                value={statist?.diseaseCount ?? 0}
+                value={statist?.data?.diseaseCount ?? 0}
                 image={LackOfAir}
               />
             </div>
             <div className="col-span-1 ">
               <StatistCardWithImage
                 title={'المديريات'}
-                value={statist?.directoratecount ?? 0}
+                value={statist?.data?.directoratecount ?? 0}
                 image={LocationPin}
               />
             </div>
             <div className="col-span-1 ">
               <StatistCardWithImage
                 title={'المربعات'}
-                value={statist?.squareCount ?? 0}
+                value={statist?.data?.squareCount ?? 0}
                 image={map}
               />
             </div>
             <div className="col-span-1 ">
               <StatistCardWithImage
                 title={'المحافظات'}
-                value={statist?.GovernorateCount ?? 0}
+                value={statist?.data?.GovernorateCount ?? 0}
                 image={yemen}
               />
             </div>
