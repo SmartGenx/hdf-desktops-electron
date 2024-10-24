@@ -1,24 +1,24 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import icon from '../../resources/مؤسسة التنمية الصحية 2.png?asset'
+
 import { spawn } from 'child_process'
 function createWindow(): void {
+  const iconPath = join(__dirname, '../../resources/logo.ico')
   const mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
     show: false,
     autoHideMenuBar: true,
-    
-    ...(process.platform === 'linux' ? { icon } : {}),
+
+    ...(process.platform === 'linux' ? { iconPath } : {}),
     title: 'مؤسسة التنمية الصحية',
-    icon: join(__dirname, '../../resources/مؤسسة التنمية الصحية 2.png'),
+    icon: iconPath,
 
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
-      webSecurity: false, // Disable web security to allow local file access
-
+      webSecurity: false // Disable web security to allow local file access
     }
   })
 
@@ -52,13 +52,13 @@ app.whenReady().then(() => {
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
-  
-  let serverPath ='';
+
+  let serverPath = ''
 
   if (is.dev) {
-    serverPath = join(__dirname, '../../server/index.js');
+    serverPath = join(__dirname, '../../server/index.js')
   } else {
-    serverPath = join(__dirname, '../../../server/index.js');
+    serverPath = join(__dirname, '../../../server/index.js')
   }
   // }
 
