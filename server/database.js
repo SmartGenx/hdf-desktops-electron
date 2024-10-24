@@ -23,8 +23,8 @@ const bcrypt = require('bcryptjs')
 const fs = require('fs').promises
 const AWS = require('aws-sdk')
 const path = require('path')
-const { uploadFileToS3, checkFileInS3, downloadFileFromS3 } = require('../server/middleware/upload') // Ensure you have an AttachmentController
-
+const { uploadFileToS3, checkFileInS3,checkFileExistenceInS3,listFilesInS3Bucket,downloadFileFromS3 } = require('../server/middleware/upload') // Ensure you have an AttachmentController
+const sanitize = require('sanitize-filename');
 const dotenv = require('dotenv')
 
 dotenv.config()
@@ -45,10 +45,9 @@ class DatabaseService {
       },
       __internal: {
         engine: {
-          maxConnections: 20, // Adjust as needed
-        },
-      },
-
+          maxConnections: 20 // Adjust as needed
+        }
+      }
     })
 
     this.authService = null
@@ -385,61 +384,106 @@ class DatabaseService {
     }
   }
 
-  async synchronizeLocalToS3() {
+  async  synchronizeS3ToLocal() {
     try {
-      const profileDir = 'C:Profiles' // Adjust the path to your directory
-      const files = await fs.readdir(profileDir)
+      const prisma = await this.getPrismaClient()
+      const profileDir = 'D:\\Profiles'; // Adjust the path to your directory
+
+      // Fetch the list of files from S3
+      const s3Files = await listFilesInS3Bucket('hdf-app');
+
+      const downloadPromises = s3Files.map(async (file) => {
+        try {
+          const sanitizedFileName = sanitize(file.Key);
+          const localFilePath = path.join(profileDir, sanitizedFileName);
+
+          console.log(`Processing file: ${file.Key}`);
+
+          // Check if the file name exists in the Attachment or Prescription tables
+          const attachmentExists = await prisma.attachment.findUnique({
+            where: { attachmentFile: file.Key },
+          });
+
+          const prescriptionExists = await prisma.prescription.findUnique({
+            where: { attachedUrl: file.Key },
+          });
+
+          // If the file does not exist in either table, download it from S3
+          if (!attachmentExists && !prescriptionExists) {
+            // If downloadFileFromS3 writes the file directly
+            await downloadFileFromS3('hdf-app', file.Key, localFilePath);
+            console.log(`File "${file.Key}" downloaded to local directory.`);
+          } else {
+            console.log(`File "${file.Key}" exists in the database. Skipping download.`);
+          }
+        } catch (fileError) {
+          console.error(`Failed to download file: ${file.Key}`, fileError);
+        }
+      });
+
+      await Promise.all(downloadPromises);
+    } catch (error) {
+      console.error('Failed to synchronize S3 files to local directory:', error);
+    }
+  }
+
+
+  async  synchronizeLocalToS3() {
+    try {
+      const prisma = await this.getPrismaClient()
+      const profileDir = 'D:\\Profiles'; // Adjust the path to your directory
+      const files = await fs.readdir(profileDir);
 
       const uploadPromises = files.map(async (file) => {
         try {
-          const filePath = path.join(profileDir, file)
-          const fileBuffer = await fs.readFile(filePath)
-          const mimeType = 'application/octet-stream' // Set to a default MIME type
-          await uploadFileToS3('smartgenx', file, fileBuffer, mimeType)
-        } catch (fileError) {
-          console.error(`Failed to upload file: ${file}`, fileError)
-        }
-      })
+          const filePath = path.join(profileDir, file);
+          const fileBuffer = await fs.readFile(filePath);
 
-      Promise.all(uploadPromises)
+          // Check if the file name exists in S3
+          const isFileExistInS3 = await checkFileExistenceInS3('hdf-app', file);
+
+          if (!isFileExistInS3) {
+            // Check if the file name exists in the Attachment or Prescription tables
+            const attachmentExists = await prisma.attachment.findFirst({
+              where: { attachmentFile: file },
+            });
+
+            const prescriptionExists = await prisma.prescription.findFirst({
+              where: { attachedUrl: file },
+            });
+
+            // If the file does not exist in either table, upload it to S3
+            if (!attachmentExists && !prescriptionExists) {
+              const mimeType = 'application/octet-stream'; // Set to a default MIME type
+              await uploadFileToS3('hdf-app', file, fileBuffer, mimeType);
+              console.log(`File "${file}" uploaded to S3.`);
+            } else {
+              console.log(`File "${file}" exists in the database. Skipping upload.`);
+            }
+          } else {
+            console.log(`File "${file}" already exists in S3. Skipping upload.`);
+          }
+        } catch (fileError) {
+          console.error(`Failed to process file: ${file}`, fileError);
+        }
+      });
+
+      await Promise.all(uploadPromises);
     } catch (error) {
-      console.error('Failed to synchronize local files to S3:', error)
+      console.error('Failed to synchronize local files to S3:', error);
     }
   }
 
-  async synchronizeS3ToLocal() {
-    try {
-      AWS.config.update({
-        region: 'ap-south-1',
-        accessKeyId: 'AKIAXHPAJTZ3RVODGSAL',
-        secretAccessKey: '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'
-      })
-      const s3 = new AWS.S3()
-      const bucketName = 'smartgenx'
-      const profileDir = 'C:Profiles' // Adjust the path to your directory
 
-      // List objects in the S3 bucket
-      const listParams = {
-        Bucket: bucketName
-      }
-      const data = await s3.listObjectsV2(listParams).promise()
-      const files = data.Contents.map((item) => item.Key)
 
-      const downloadPromises = files.map(async (file) => {
-        try {
-          const downloadPath = path.join(profileDir, file)
-          await downloadFileFromS3(bucketName, file, downloadPath)
-        } catch (fileError) {
-          console.error(`Failed to download file: ${file}`, fileError)
-        }
-      })
 
-      Promise.all(downloadPromises)
-    } catch (error) {
-      console.error('Failed to synchronize S3 files to local:', error)
-    }
-  }
+
+
+
+
 }
+
+
 const databaseService = new DatabaseService()
 
 module.exports = {
