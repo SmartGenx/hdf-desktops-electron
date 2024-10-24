@@ -285,10 +285,11 @@ export type typeRespons = {
   token: string
   user: User
 }
-type User = {
+export type User = {
   name: string
   email: string
   profileImage: string
+  role: string
 }
 
 export interface AccreditedInfos {

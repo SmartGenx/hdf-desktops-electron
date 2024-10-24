@@ -1,6 +1,5 @@
 // components/DashboardNav.tsx
 
-import  { useEffect, useState } from 'react'
 import {
   Tooltip,
   TooltipContent,
@@ -12,7 +11,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { Icons } from '../icons/icons'
 import { NavItem } from '@renderer/types'
 import { Separator } from '../ui/separator'
-import { useSignOut } from 'react-auth-kit'
+import {  useSignOut, useAuthUser } from 'react-auth-kit'
 
 interface DashboardNavProps {
   items: NavItem[]
@@ -21,21 +20,25 @@ interface DashboardNavProps {
 }
 
 export default function DashboardNav({ items, expanded = true, itemSetting }: DashboardNavProps) {
-  const [user, setUser] = useState<{ role: string } | null>(null)
+  // const [user, setUser] = useState<{ role: string } | null>(null)
+  const authUser = useAuthUser()
+  const user = authUser()
 
-  useEffect(() => {
-    const authState = localStorage.getItem('_auth_state')
-    if (authState) {
-      try {
-        const authData = JSON.parse(authState)
-        if (authData && authData.user) {
-          setUser(authData.user)
-        }
-      } catch (error) {
-        console.error('Error parsing auth state:', error)
-      }
-    }
-  }, [])
+  console.log('user', user)
+  console.log('authToken', authUser())
+  // useEffect(() => {
+  //   const authState = localStorage.getItem('_auth_state')
+  //   if (authState) {
+  //     try {
+  //       const authData = JSON.parse(authState)
+  //       if (authData && authData.user) {
+  //         setUser(authData.user)
+  //       }
+  //     } catch (error) {
+  //       console.error('Error parsing auth state:', error)
+  //     }
+  //   }
+  // }, [])
   const signOut = useSignOut()
   const location = useLocation()
   const path = location.pathname
@@ -47,13 +50,14 @@ export default function DashboardNav({ items, expanded = true, itemSetting }: Da
   if (!items?.length) {
     return null
   }
+  console.log('user', user?.role)
 
   const filterNavItemsByRole = (navItems: NavItem[]) => {
     return navItems
       .map((item) => {
         const filteredList = item.list.filter((nav) => {
           if (nav.roles) {
-            return user && nav.roles.includes(user.role)
+            return user && nav.roles.includes(user?.role)
           }
           return true // If no roles specified, show to all users
         })

@@ -50,7 +50,7 @@ export default function LoginForm() {
           token: response.data.token,
           expiresIn: 10080,
           tokenType: 'Beaere',
-          authState: response.data
+          authState: response.data.user
         })
         if (singInResult) {
           toast({
