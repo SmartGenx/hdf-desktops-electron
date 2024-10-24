@@ -535,13 +535,13 @@ export default function UpdateAccredited() {
                     </label>
                     <FormField
                       control={form.control}
-                      name="pt"
+                      name="atch"
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
                             <FileUploader
                               setValue={form.setValue}
-                              inputId="pt"
+                              inputId="atch"
                               onChange={async (files) => {
                                 try {
                                   if (!files?.[0]) return
@@ -563,13 +563,13 @@ export default function UpdateAccredited() {
                     </label>
                     <FormField
                       control={form.control}
-                      name="atch"
+                      name="pt"
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
                             <FileUploader
                               setValue={form.setValue}
-                              inputId="atch"
+                              inputId="pt"
                               onChange={async (files) => {
                                 try {
                                   if (!files?.[0]) return

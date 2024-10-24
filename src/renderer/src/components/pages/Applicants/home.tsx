@@ -21,6 +21,8 @@ const Home = () => {
   const directorateGlobalId = searchParams.get('directorateGlobalId')
   const state = searchParams.get('state')
   const gender = searchParams.get('gender')
+  const fromDate = searchParams.get('craeteAt[gte]')
+  const toDate = searchParams.get('craeteAt[lte]')
 
   const query = searchParams.get('query')
   const page = searchParams.get('page')
@@ -31,7 +33,7 @@ const Home = () => {
     error,
     data: applicants
   } = useQuery({
-    queryKey: ['applicant', page, query, directorateGlobalId, categoryGlobalId, state, gender],
+    queryKey: ['applicant', page, query, directorateGlobalId,fromDate,toDate, categoryGlobalId, state, gender],
     queryFn: () =>
       getApi<Applicants>('/applicant', {
         params: {
@@ -39,6 +41,8 @@ const Home = () => {
           'include[category]': true,
           'include[diseasesApplicants]': true,
           'name[contains]': query,
+          "craeteAt[gte]":fromDate,
+          "craeteAt[lte]":toDate,
           directorateGlobalId: directorateGlobalId,
           categoryGlobalId: categoryGlobalId,
           state: state,
