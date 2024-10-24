@@ -1,7 +1,7 @@
 import StatistChartCard from './statistChartCard'
 import StatistchartTowCard from './statistchartTowCard'
 import Statistsidebar from './statistsidebar'
-import { axiosInstance, getApi } from '@renderer/lib/http'
+import {  getApi } from '@renderer/lib/http'
 import { useAuthHeader } from 'react-auth-kit'
 import { useEffect, useRef, useState } from 'react'
 import StatistCardWithImage from '@renderer/components/statistCardWithImage'
@@ -84,11 +84,7 @@ const Home = () => {
   //   }
   //   fetchStatist()
   // }, [])
-  const {
-    isPending,
-    error,
-    data: statist
-  } = useQuery({
+  const { data: statist } = useQuery({
     queryKey: ['Initialization'],
     queryFn: () =>
       getApi<statistCardInfo>('/statistics/Initialization', {
