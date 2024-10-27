@@ -24,7 +24,20 @@ class DismissalController {
       const DismissalService = databaseService.getDismissalService();
       const DismissalData = req.body
       const dismissals = await DismissalService.createDismissal(DismissalData);
-      
+
+
+      res.status(201).json(dismissals);
+    } catch (error) {
+      console.error(error);
+      next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
+    }
+  }
+  async checkDismissal(req, res, next) {
+    try {
+      const DismissalService = databaseService.getDismissalService();
+      const DismissalData = req.body
+      const dismissals = await DismissalService.checkDismissal(DismissalData);
+
 
       res.status(201).json(dismissals);
     } catch (error) {

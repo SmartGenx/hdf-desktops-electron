@@ -8,6 +8,7 @@ dismissalRouter.put('/:id', DismissalController.updateDismissal)
 // Get all dismissals
 dismissalRouter.get('/', DismissalController.getAllDismissals)
 dismissalRouter.post('', DismissalController.createDismissal)
+dismissalRouter.post('/check', DismissalController.checkDismissal)
 
 // Get a dismissal by ID
 dismissalRouter.get('/:id', DismissalController.getDismissalById)

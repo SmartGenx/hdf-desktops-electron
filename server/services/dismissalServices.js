@@ -232,6 +232,134 @@ class DismissalService {
       }
     }
   }
+  async checkDismissal(DismissalData) {
+    // const pharmacyGlobalId = DismissalData.pharmacyGlobalId;
+    const {  ...data } = DismissalData
+    const timestamp = Date.now()
+    const uniqueId = uuidv4() // Ensure uuidv4 is imported
+    const globalId = `${process.env.LOCAL_DB_ID}-${uniqueId}-${timestamp}`
+    const currentDate = new Date()
+    const currentMonth = currentDate.getMonth() + 1 // Normalize month
+    const currentYear = currentDate.getFullYear() // Get full year
+
+    const currentMonthStr = String(currentMonth)
+    const currentYearStr = currentYear.toString()
+    function isDateBetween(targetDate, startDate, endDate) {
+      const target = new Date(targetDate)
+
+      return target >= startDate && endDate <= endDate
+    }
+
+    try {
+      const accreditedExists = await this.prisma.accredited.findFirst({
+        where: { numberOfRfid: data.numberOfRfid, state: 'موقف' }
+      })
+      if (accreditedExists) {
+        return { message: 'لايمكن صرف عليك مراجعة الادارة'}
+      }
+      const accredited = await this.prisma.accredited.findFirst({
+        where: { numberOfRfid: data.numberOfRfid }
+      })
+
+
+
+      const checkdismissals = await this.prisma.dismissal.findFirst({
+        where: { accreditedGlobalId: accredited.globalId, month: currentMonthStr }
+      })
+
+      if (!checkdismissals) {
+        const checkdismissal = await this.prisma.dismissal.findFirst({
+          where: { accreditedGlobalId: data.accreditedGlobalId }
+        })
+        await this.prisma.dismissal.update({
+          where: {
+            id: checkdismissal.id // Ensure the same record is updated
+          },
+          data: {
+            openDismissal: true
+
+            // Increment version for conflict resolution
+          }
+        })
+      }
+      const pharmacy = await this.prisma.pharmacy.findFirst({
+        where: { globalId: accredited.pharmacyGlobalId }
+      })
+
+      // Check if pharmacy exists
+      if (!pharmacy) {
+        throw new NotFoundError(`Pharmacy with id ${accredited.pharmacyGlobalId} not found.`)
+      }
+
+      // Convert start and end dispense dates from pharmacy object
+      const start = pharmacy.startDispenseDate
+      const end = pharmacy.endispenseDate
+      const today = new Date()
+      const day = today.getDate()
+
+      // Use the isDateBetween function to check if today's date is within the range
+      const result = isDateBetween(day, start, end)
+      const existingAccredited = await this.prisma.accredited.findFirst({
+        where: { globalId: data.accreditedGlobalId }
+      })
+
+      if (!existingAccredited) {
+        throw new NotFoundError('Accredited does not exist.')
+      }
+
+      if (result) {
+        const dismissaed = await this.prisma.dismissal.findFirst({
+          where: {
+            openDismissal: true,
+            accreditedGlobalId: accredited.globalId
+          }
+        })
+        if (dismissaed) {
+          return null
+        } else {
+          return { message: 'تم الصرف مسبقا' }
+        }
+      } else {
+        return { massage: 'ليس وقت الصرف في هذي الصيدلية' }
+      }
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        throw error
+      } else {
+        throw new DatabaseError('Error creating new dismissal.', error)
+        // Convert start and end dispense dates from pharmacy object
+        //   const start = pharmacy.startDispenseDate;
+        //   const end = pharmacy.endispenseDate;
+        //   const today = new Date();
+        //   const day = today.getDate();
+        //   // Use the isDateBetween function to check if today's date is within the range
+        //   const result = isDateBetween(day, start, end);
+
+        //   if (result) {
+        //     // const dismissal = await this.prisma.dismissal.findUnique({
+        //     //   where: { AND: [{ month }, { year }, { globalId }] },
+        //     // });
+        //     const { year, month } = getYearAndMonth(new Date());
+        //     return await this.prisma.dismissal.create({
+        //       data: {
+        //         ...dismissalData,
+        //         dateToDay: new Date(),
+        //         month: month.toString(),
+        //         year: year.toString(),
+        //         globalId,
+        //       },
+        //     });
+        //   } else {
+        //     // Handle the case where the date is not within the range
+        //     return null; // Or throw an error or return a specific value indicating the issue
+        //   }
+        // }
+        // catch (error) {
+        //   throw new DatabaseError("Error retrieving dismissal.", error);
+        // }
+      }
+    }
+  }
 
   //////////////////////////////////////////////////////////////////////////
 
