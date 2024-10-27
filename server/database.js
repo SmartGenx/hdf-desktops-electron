@@ -23,8 +23,14 @@ const bcrypt = require('bcryptjs')
 const fs = require('fs').promises
 const AWS = require('aws-sdk')
 const path = require('path')
-const { uploadFileToS3, checkFileInS3,checkFileExistenceInS3,listFilesInS3Bucket,downloadFileFromS3 } = require('../server/middleware/upload') // Ensure you have an AttachmentController
-const sanitize = require('sanitize-filename');
+const {
+  uploadFileToS3,
+  checkFileInS3,
+  checkFileExistenceInS3,
+  listFilesInS3Bucket,
+  downloadFileFromS3
+} = require('../server/middleware/upload') // Ensure you have an AttachmentController
+const sanitize = require('sanitize-filename')
 const dotenv = require('dotenv')
 
 dotenv.config()
@@ -34,7 +40,7 @@ class DatabaseService {
     // Initialize both Prisma clients for local and cloud databases
     this.localPrisma = new PrismaClient({
       datasources: {
-        db: { url: 'postgresql://postgres:123@localhost:5432/Hdf_electron?schema=public' }
+        db: { url: 'postgresql://postgres:sami2020@localhost:5432/Hdf_electron?schema=public' }
 
         // db: { url: 'postgresql://postgres:123456789@3.108.217.185:5432/hdf-web?schema=public' }
       }
@@ -384,105 +390,101 @@ class DatabaseService {
     }
   }
 
-  async  synchronizeS3ToLocal() {
+  async synchronizeS3ToLocal() {
     try {
       const prisma = await this.getPrismaClient()
-      const profileDir = 'D:\\Profiles'; // Adjust the path to your directory
+      const profileDir = 'D:\\Profiles' // Adjust the path to your directory
 
       // Fetch the list of files from S3
-      const s3Files = await listFilesInS3Bucket('hdf-app');
+      const s3Files = await listFilesInS3Bucket('hdf-app')
 
       const downloadPromises = s3Files.map(async (file) => {
         try {
-          const sanitizedFileName = sanitize(file.Key);
-          const localFilePath = path.join(profileDir, sanitizedFileName);
+          const sanitizedFileName = sanitize(file.Key)
+          const localFilePath = path.join(profileDir, sanitizedFileName)
 
-          console.log(`Processing file: ${file.Key}`);
+          console.log(`Processing file: ${file.Key}`)
 
           // Check if the file name exists in the Attachment or Prescription tables
-          const attachmentExists = await prisma.attachment.findUnique({
-            where: { attachmentFile: file.Key },
-          });
+          const attachmentExists = await prisma.attachment.findFirst({
+            where: { attachmentFile: `D:\\Profiles\\${file.Key}` }
+          })
+          console.log("🚀 ~ DatabaseService ~ downloadPromises ~ attachmentExists:", attachmentExists)
 
-          const prescriptionExists = await prisma.prescription.findUnique({
-            where: { attachedUrl: file.Key },
-          });
+          const prescriptionExists = await prisma.prescription.findFirst({
+            where: { attachedUrl: `D:\\Profiles\\${file.Key}` }
+          })
 
           // If the file does not exist in either table, download it from S3
-          if (!attachmentExists && !prescriptionExists) {
+          if (attachmentExists || prescriptionExists) {
             // If downloadFileFromS3 writes the file directly
-            await downloadFileFromS3('hdf-app', file.Key, localFilePath);
-            console.log(`File "${file.Key}" downloaded to local directory.`);
+            await downloadFileFromS3('hdf-app', file.Key, localFilePath)
+            console.log(`File "${file.Key}" downloaded to local directory.`)
           } else {
-            console.log(`File "${file.Key}" exists in the database. Skipping download.`);
+            console.log(`File "${file.Key}" exists in the database. Skipping download.`)
           }
         } catch (fileError) {
-          console.error(`Failed to download file: ${file.Key}`, fileError);
+          console.error(`Failed to download file: ${file.Key}`, fileError)
         }
-      });
+      })
 
-      await Promise.all(downloadPromises);
+
+      await Promise.all(downloadPromises)
     } catch (error) {
-      console.error('Failed to synchronize S3 files to local directory:', error);
+      console.error('Failed to synchronize S3 files to local directory:', error)
     }
   }
 
-
-  async  synchronizeLocalToS3() {
+  async synchronizeLocalToS3() {
     try {
       const prisma = await this.getPrismaClient()
-      const profileDir = 'D:\\Profiles'; // Adjust the path to your directory
-      const files = await fs.readdir(profileDir);
+      const profileDir = 'D:\\Profiles' // Adjust the path to your directory
+      const files = await fs.readdir(profileDir)
 
       const uploadPromises = files.map(async (file) => {
         try {
-          const filePath = path.join(profileDir, file);
-          const fileBuffer = await fs.readFile(filePath);
+          const filePath = path.join(profileDir, file)
+          const fileBuffer = await fs.readFile(filePath)
 
           // Check if the file name exists in S3
-          const isFileExistInS3 = await checkFileExistenceInS3('hdf-app', file);
+          const isFileExistInS3 = await checkFileExistenceInS3('hdf-app', file)
 
-          if (!isFileExistInS3) {
-            // Check if the file name exists in the Attachment or Prescription tables
-            const attachmentExists = await prisma.attachment.findFirst({
-              where: { attachmentFile: file },
-            });
+          // if (!isFileExistInS3) {
+          // Check if the file name exists in the Attachment or Prescription tables
+          const attachmentExists = await prisma.attachment.findFirst({
+            where: { attachmentFile: `D:\\Profiles\\${file}` }
+          })
 
-            const prescriptionExists = await prisma.prescription.findFirst({
-              where: { attachedUrl: file },
-            });
+          const prescriptionExists = await prisma.prescription.findFirst({
+            where: { attachedUrl: `D:\\Profiles\\${file}` }
+          })
+          console.log(
+            '🚀 ~ DatabaseService ~ uploadPromises ~ prescriptionExists:',
+            prescriptionExists
+          )
 
-            // If the file does not exist in either table, upload it to S3
-            if (!attachmentExists && !prescriptionExists) {
-              const mimeType = 'application/octet-stream'; // Set to a default MIME type
-              await uploadFileToS3('hdf-app', file, fileBuffer, mimeType);
-              console.log(`File "${file}" uploaded to S3.`);
-            } else {
-              console.log(`File "${file}" exists in the database. Skipping upload.`);
-            }
+          // If the file does not exist in either table, upload it to S3
+          if (attachmentExists || prescriptionExists) {
+            const mimeType = 'application/octet-stream' // Set to a default MIME type
+            await uploadFileToS3('hdf-app', file, fileBuffer, mimeType)
+            console.log(`File "${file}" uploaded to S3.`)
           } else {
-            console.log(`File "${file}" already exists in S3. Skipping upload.`);
+            console.log(`File "${file}" not exists in the database. Skipping upload.`)
           }
+          // } else {
+          //   console.log(`File "${file}" already exists in S3. Skipping upload.`);
+          // }
         } catch (fileError) {
-          console.error(`Failed to process file: ${file}`, fileError);
+          console.error(`Failed to process file: ${file}`, fileError)
         }
-      });
+      })
 
-      await Promise.all(uploadPromises);
+      await Promise.all(uploadPromises)
     } catch (error) {
-      console.error('Failed to synchronize local files to S3:', error);
+      console.error('Failed to synchronize local files to S3:', error)
     }
   }
-
-
-
-
-
-
-
-
 }
-
 
 const databaseService = new DatabaseService()
 
