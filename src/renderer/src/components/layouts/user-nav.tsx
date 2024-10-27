@@ -1,5 +1,5 @@
 import { ChevronDown } from 'lucide-react'
-import { useIsAuthenticated, useSignOut } from 'react-auth-kit'
+import { useAuthUser, useIsAuthenticated, useSignOut } from 'react-auth-kit'
 import { Button } from '../ui/button'
 import {
   DropdownMenu,
@@ -24,7 +24,10 @@ export type userData = {
 export default function UserNav() {
   const issAuthenticated = useIsAuthenticated()
   const signOut = useSignOut()
+  const authUser = useAuthUser()
+  const user = authUser()
 
+  console.log('user', user)
   if (issAuthenticated()) {
     return (
       <DropdownMenu>
@@ -39,8 +42,8 @@ export default function UserNav() {
 
             <div className="flex  space-y-1">
               <div>
-                <p className="text-sm font-medium leading-none">{'Unknown User'}</p>
-                <p className="text-xs leading-none text-muted-foreground">{'Unknown User'}</p>
+                <p className="text-sm font-medium leading-none">{user?.name}</p>
+                <p className="text-xs leading-none text-muted-foreground">{user?.role}</p>
               </div>
               <div>
                 <ChevronDown size={15} />

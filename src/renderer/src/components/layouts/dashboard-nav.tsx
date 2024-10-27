@@ -11,7 +11,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { Icons } from '../icons/icons'
 import { NavItem } from '@renderer/types'
 import { Separator } from '../ui/separator'
-import {  useSignOut, useAuthUser } from 'react-auth-kit'
+import { useSignOut, useAuthUser } from 'react-auth-kit'
 
 interface DashboardNavProps {
   items: NavItem[]
@@ -24,8 +24,8 @@ export default function DashboardNav({ items, expanded = true, itemSetting }: Da
   const authUser = useAuthUser()
   const user = authUser()
 
-  console.log('user', user)
-  console.log('authToken', authUser())
+  // console.log('user', user)
+  // console.log('authToken', authUser())
   // useEffect(() => {
   //   const authState = localStorage.getItem('_auth_state')
   //   if (authState) {
