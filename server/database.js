@@ -40,7 +40,7 @@ class DatabaseService {
     // Initialize both Prisma clients for local and cloud databases
     this.localPrisma = new PrismaClient({
       datasources: {
-        db: { url: 'postgresql://postgres:sami2020@localhost:5432/Hdf_electron?schema=public' }
+        db: { url: 'postgresql://postgres:123@localhost:5432/Hdf_electron?schema=public' }
 
         // db: { url: 'postgresql://postgres:123456789@3.108.217.185:5432/hdf-web?schema=public' }
       }
@@ -409,7 +409,10 @@ class DatabaseService {
           const attachmentExists = await prisma.attachment.findFirst({
             where: { attachmentFile: `D:\\Profiles\\${file.Key}` }
           })
-          console.log("🚀 ~ DatabaseService ~ downloadPromises ~ attachmentExists:", attachmentExists)
+          console.log(
+            '🚀 ~ DatabaseService ~ downloadPromises ~ attachmentExists:',
+            attachmentExists
+          )
 
           const prescriptionExists = await prisma.prescription.findFirst({
             where: { attachedUrl: `D:\\Profiles\\${file.Key}` }
@@ -427,7 +430,6 @@ class DatabaseService {
           console.error(`Failed to download file: ${file.Key}`, fileError)
         }
       })
-
 
       await Promise.all(downloadPromises)
     } catch (error) {

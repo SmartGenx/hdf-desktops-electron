@@ -568,7 +568,7 @@ export default function FormDismissal() {
                 </div>
                 {/*  */}
                 <div className="flex justify-start gap-4  h-40 ">
-                  <h1 className="mb-5 text-[#8B8D97]">عرض البيانات الشخصية</h1>
+                  <h1 className="mb-5 text-[#8B8D97]">عرض ملف الوصفة الطبية</h1>
                   <a onClick={openModal} className="cursor-pointer">
                     <Pdf />
                   </a>
@@ -616,7 +616,7 @@ export default function FormDismissal() {
                     </div>
                   )}
 
-                  <h1 className="mb-5 text-[#8B8D97]">عرض ملف الوصفة الطبية</h1>
+                  <h1 className="mb-5 text-[#8B8D97]">عرض البيانات الشخصية</h1>
 
                   <a onClick={openPtModal} className="cursor-pointer">
                     <Pdf />
@@ -627,29 +627,39 @@ export default function FormDismissal() {
                       onClick={closePtModal}
                     >
                       <div
-                        className="relative w-auto max-w-[90vw] max-h-[90vh] bg-white flex justify-center items-center p-4"
+                        className="relative w-[100%] h-[100%] overflow-hidden"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        <button
-                          onClick={closePtModal}
-                          className="absolute top-4 right-4 p-2 rounded-full bg-white text-black hover:bg-gray-200"
-                        >
-                          &times;
-                        </button>
-                        {isPDFAtta ? (
+                        {isPDF ? (
                           // If it's a PDF, render an iframe
-                          <iframe
-                            src={attachedUrlAttachment!}
-                            className="w-full h-full"
-                            frameBorder="0"
-                          ></iframe>
+                          <>
+                            <iframe
+                              src={attachedUrlAttachment!}
+                              className="w-full h-full"
+                              frameBorder="0"
+                            ></iframe>
+                            <button
+                              onClick={closePtModal}
+                              className="absolute top-4 right-4 p-2 rounded-full bg-white text-black hover:bg-gray-200"
+                            >
+                              &times;
+                            </button>
+                          </>
                         ) : (
                           // If it's an image, render an img
-                          <img
-                            src={attachedUrlAttachment!}
-                            className="w-[80%] h-[80%] mx-auto object-fill"
-                            alt=""
-                          />
+                          <>
+                            <img
+                              src={attachedUrlAttachment!}
+                              className="w-[80%] h-[80%] mx-auto object-fill"
+                              alt=""
+                            />
+                            <button
+                              onClick={closePtModal}
+                              className="absolute top-4 right-4 p-2 rounded-full bg-white text-black hover:bg-gray-200"
+                            >
+                              &times;
+                            </button>
+                          </>
                         )}
                       </div>
                     </div>
