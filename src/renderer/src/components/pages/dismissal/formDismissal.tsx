@@ -536,6 +536,18 @@ export default function FormDismissal() {
                   <div className="grid grid-cols-3 gap-2">
                     <div className="col-span-1">
                       <label htmlFor="" className="text-[#A2A1A8]">
+                        رقم المعتمد
+                      </label>
+                      <FormInput
+                        label="ادخل رقم المعتمد"
+                        className="h-10 p-0 rounded-xl text-sm"
+                        placeholder="المعنمد"
+                        value={number?.info[0].applicant?.phoneNumber || ''}
+                        disabled
+                      />
+                    </div>
+                    <div className="col-span-1">
+                      <label htmlFor="" className="text-[#A2A1A8]">
                         الحاله
                       </label>
                       <FormField
