@@ -4,7 +4,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 
 import { spawn } from 'child_process'
 function createWindow(): void {
-  const iconPath = join(__dirname, '../../resources/logo.ico')
+  const iconPath = join(__dirname, '../../../resources/logo.ico')
   const mainWindow = new BrowserWindow({
     width: 900,
     height: 670,

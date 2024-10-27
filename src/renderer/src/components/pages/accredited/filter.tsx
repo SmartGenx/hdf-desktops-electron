@@ -100,7 +100,7 @@ const FilterDrawer = () => {
   }
   const authToken = useAuthHeader()
   const { data: Accrediteds } = useQuery({
-    queryKey: ['Accredited'],
+    queryKey: ['AccreditedFilter'],
     queryFn: () =>
       getApi<AccreditedInfo[]>('/accredited', {
         headers: {

@@ -94,7 +94,7 @@ class AccreditedService {
         threeMonthsFromRenewalDate.setMonth(threeMonthsFromRenewalDate.getMonth() + 3)
         const threeMonthsFromDatedismissal = new Date(originalDatedismissal)
 
-        threeMonthsFromRenewalDate.setMonth(threeMonthsFromRenewalDate.getMonth() + 3)
+        threeMonthsFromDatedismissal.setMonth(threeMonthsFromDatedismissal.getMonth() + 3)
         console.log("🚀 ~ AccreditedService ~ accreditations.map ~ threeMonthsFromRenewalDate:", threeMonthsFromRenewalDate)
 
         let newState

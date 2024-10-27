@@ -33,12 +33,10 @@ class DismissalService {
       if (include) {
         const convertTopLevel = convertTopLevelStringBooleans(include)
         include = convertTopLevel
-        console.log('🚀 ~ DismissalService ~ getAllDismissals ~ include:', include);
-
+        console.log('🚀 ~ DismissalService ~ getAllDismissals ~ include:', include)
       } else {
         include = {}
       }
-
 
       if (page && pageSize) {
         const skip = (+page - 1) * +pageSize
@@ -105,12 +103,11 @@ class DismissalService {
 
     try {
       const accreditedExists = await this.prisma.accredited.findFirst({
-        where: { globalId: data.accreditedGlobalId,state: 'موقف' }
+        where: { globalId: data.accreditedGlobalId, state: 'موقف' }
       })
       if (accreditedExists) {
-        throw new ('لايمكن صرف عليك مراجعة الادارة')
+        return { message: 'لايمكن صرف عليك مراجعة الادارة'}
       }
-
 
       const accredited = await this.prisma.dismissal.findFirst({
         where: { accreditedGlobalId: data.accreditedGlobalId }
@@ -195,7 +192,7 @@ class DismissalService {
           return { message: 'تم الصرف مسبقا' }
         }
       } else {
-        return { massage: 'ليس وقت الصر في هذي الصيدلية' }
+        return { massage: 'ليس وقت الصرف في هذي الصيدلية' }
       }
     } catch (error) {
       if (error instanceof NotFoundError) {

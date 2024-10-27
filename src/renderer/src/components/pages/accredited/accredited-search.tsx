@@ -20,7 +20,7 @@ const AccreditedSearch = () => {
   const pathname = location.pathname
   const selectedVal = searchParams.get('query')
   const { data: accredited } = useQuery({
-    queryKey: ['accredited'],
+    queryKey: ['accreditedSearch'],
     queryFn: () =>
       getApi<Accrediteds[]>('/accredited', {
         params: {
