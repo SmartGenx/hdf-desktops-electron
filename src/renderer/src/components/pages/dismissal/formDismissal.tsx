@@ -250,7 +250,29 @@ export default function FormDismissal() {
         description: successMessage,
         variant: 'success'
       })
+      if (successMessage === 'لايمكن صرف عليك مراجعة الادارة') {
+        toast({
+          title: 'تمت العملية',
+          description: successMessage,
+          variant: 'destructive'
+        })
+      }
+      if (successMessage === 'تم الصرف مسبقا') {
+        toast({
+          title: 'تمت العملية',
+          description: successMessage,
+          variant: 'destructive'
+        })
+      }
+      if (successMessage === 'ليس وقت الصرف في هذي الصيدلية') {
+        toast({
+          title: 'تمت العملية',
+          description: successMessage,
+          variant: 'destructive'
+        })
+      }
       queryClient.invalidateQueries({ queryKey: ['dismissal'] })
+      queryClient.invalidateQueries({ queryKey: ['accredited'] })
       navigate('/dismissal')
     },
     onError: (error: any) => {
@@ -336,7 +358,6 @@ export default function FormDismissal() {
           </Alert> */}
           <div>
             <Form {...form}>
-              
               <form
                 id="formId"
                 onSubmit={form.handleSubmit(onSubmit)}

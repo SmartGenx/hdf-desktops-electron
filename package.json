@@ -1,5 +1,5 @@
 {
-  "name": "electron_app",
+  "name": "HDF",
   "version": "1.0.0",
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
@@ -125,6 +125,9 @@
     "vite": "^5.3.1"
   },
   "build": {
+    "win": {
+      "icon": "resources/logo.ico"
+    },
     "files": [
       "dist/**/*",
       "out/**/*",
@@ -151,6 +154,13 @@
       {
         "from": "prisma",
         "to": "prisma",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "resources",
+        "to": "resources",
         "filter": [
           "**/*"
         ]
