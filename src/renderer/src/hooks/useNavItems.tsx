@@ -59,13 +59,13 @@ export default function useNavItems() {
     {
       title: 'الأعدادات ',
       list: [
-        {
-          href: '/knowledge',
-          icon: 'settings',
-          label: 'إدارة المستخدمين ',
-          disabled: true,
-          roles: ['Admin', 'Coordinator']
-        },
+        // {
+        //   href: '/knowledge',
+        //   icon: 'settings',
+        //   label: 'إدارة المستخدمين ',
+        //   disabled: true,
+        //   roles: ['Admin', 'Coordinator']
+        // },
         {
           href: '/Initialization',
           icon: 'report',

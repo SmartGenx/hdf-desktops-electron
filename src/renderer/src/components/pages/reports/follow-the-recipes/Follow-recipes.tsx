@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { ColumnDef } from '@tanstack/react-table'
-import { HdfTable } from '../../../tables/hdfTable'
 import { AllAccreditedsForPdfInfo } from '../../../../types/index'
+import { ReportsTable } from '@renderer/components/tables/report-table'
 
 type Props = {
   info: AllAccreditedsForPdfInfo[]
@@ -83,7 +83,7 @@ export default function FollowReceiptTable({ info, page, total, pageSize }: Prop
     [5]
   )
   return (
-    <HdfTable
+    <ReportsTable
       columns={columns}
       data={info}
       page={page.toString()}

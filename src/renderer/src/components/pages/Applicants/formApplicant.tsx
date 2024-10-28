@@ -519,7 +519,7 @@ export default function FormApplicant() {
                   </div>
                 </div>
                 <Button type="submit" className="w-[120px] bg-[#196CB0] hover:bg-[#2b4d68]">
-                  حفظ
+                  إظافة
                 </Button>
               </form>
             </Form>

@@ -49,11 +49,7 @@ export default function StateTable({ info, page, total, pageSize }: Props) {
       },
       {
         id: 'actions',
-        header: () => (
-          <div>
-            <MoreVertical />
-          </div>
-        ),
+
 
         cell: ({ row }) => (
           <DropdownMenu>
