@@ -65,11 +65,6 @@ export default function AccreditedTable({ info, page, total, pageSize }: Props) 
       },
       {
         id: 'actions',
-        header: () => (
-          <div>
-            <MoreVertical />
-          </div>
-        ),
 
         cell: ({ row }) => (
           <DropdownMenu>
@@ -81,11 +76,7 @@ export default function AccreditedTable({ info, page, total, pageSize }: Props) 
             <DropdownMenuContent align="end" className="h-17 -mt-[70px] ml-7 min-w-[84.51px] p-0">
               <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                 <ReactToPrint
-                  trigger={() => (
-                    <button className=" flex items-center text-[#000] rounded-lg hover:bg-[#2d5372] px-3 focus:ring-[#2d5372]">
-                      طباعة
-                    </button>
-                  )}
+                  trigger={() => <button>طباعة</button>}
                   content={() => componentRef.current}
                 />
                 <div className="hidden">

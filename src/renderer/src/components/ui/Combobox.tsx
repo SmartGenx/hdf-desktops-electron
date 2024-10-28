@@ -61,7 +61,7 @@ export function Combobox({
           <CommandInput placeholder={`أبحث...`} />
           <CommandList>
             <CommandEmpty>{emptyMessage}</CommandEmpty>
-            <CommandGroup>
+            <CommandGroup className=" h-40 overflow-y-scroll">
               {options.map((option) => (
                 <CommandItem
                   key={option[valueKey]}
@@ -70,8 +70,8 @@ export function Combobox({
                 >
                   <Check
                     className={cn(
-                      'mr-2 h-4 w-4',
-                      value?.[valueKey] === option[valueKey] ? 'opacity-100' : 'opacity-0'
+                      'mr-2 h-4 w-4 ',
+                      value?.[valueKey] === option[valueKey] ? 'opacity-100 ' : 'opacity-0 '
                     )}
                   />
                   {localize ? localize[option[displayKey]] : option[displayKey]}

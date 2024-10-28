@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { ColumnDef } from '@tanstack/react-table'
-import { HdfTable } from '../../../tables/hdfTable'
 import { ApplicantByDirectorateViewModelInfo } from '../../../../types/index'
+import { MedicalTables } from '@renderer/components/tables/medical-table'
 
 type Props = {
   info: ApplicantByDirectorateViewModelInfo[]
@@ -20,7 +20,9 @@ export default function MedicalTable({ info, page, total, pageSize }: Props) {
       {
         accessorKey: '',
         header: 'الجنس',
-        cell: ({ row }) => row.original.gender
+        cell: ({ row }) => {
+          return row.original.gender === 'M' ? 'ذكر' : 'انثى'
+        }
       },
       {
         accessorKey: '',
@@ -59,25 +61,28 @@ export default function MedicalTable({ info, page, total, pageSize }: Props) {
         }
       },
       {
-        accessorKey: '',
+        accessorKey: 'totalAmount',
         header: 'تكلفة العلاج',
-        cell: ({ row }) => row.original.totalAmount
+        cell: ({ row }) => row.original.totalAmount + 'ريال'
       },
       {
         accessorKey: '',
         header: 'نسبة الخصم',
-        cell: ({ row }) => row.original.supportRatio
+        cell: ({ row }) => {
+          return row.original.supportRatio
+        }
       },
       {
-        accessorKey: '',
+        accessorKey: 'approvedAmount',
         header: 'مساهمة المريض',
-        cell: ({ row }) => row.original.approvedAmount
+        cell: ({ row }) => row.original.approvedAmount + 'ريال'
       }
     ],
     [5]
   )
+
   return (
-    <HdfTable
+    <MedicalTables
       columns={columns}
       data={info}
       page={page.toString()}

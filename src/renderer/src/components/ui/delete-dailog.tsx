@@ -13,7 +13,6 @@ import { deleteApi } from '../../lib/http'
 import { useToast } from './use-toast'
 import { useAuthHeader } from 'react-auth-kit'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Trash } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 
@@ -76,12 +75,11 @@ export default function DeleteDialog({ url, disabled = false, keys, path }: Dele
   return (
     <AlertDialog>
       <AlertDialogTrigger
-        className={`m-0 flex w-full items-center gap-1 rounded px-2 py-1.5 text-right text-red-500 hover:bg-gray-100 ${
+        className={`m-0 flex w-full items-center gap-1 rounded  py-1.5 text-center text-red-500 hover:bg-gray-100 ${
           disabled ? 'cursor-not-allowed opacity-50' : ''
         }`}
         disabled={disabled}
       >
-        <Trash fill="#ef4444" size={15} />
         حذف
       </AlertDialogTrigger>
       <AlertDialogContent>

@@ -86,7 +86,7 @@ interface StatistSidebarProps {
 
 const Statistsidebar: React.FC<StatistSidebarProps> = ({ isExpended }) => {
   const authToken = useAuthHeader()
-  const { data: staticsPer } = useQuery({
+  const { data: staticsPer, isPending } = useQuery({
     queryKey: ['staticsPer'],
     queryFn: () =>
       getApi<StaticsPer>('/applicant/ApplicantMonthlyGenderCount', {
@@ -95,7 +95,10 @@ const Statistsidebar: React.FC<StatistSidebarProps> = ({ isExpended }) => {
         }
       })
   })
-  console.log('staticsPer', staticsPer?.data.applicantMonthlyGenderCountsWithSquareCount.monthlyCounts)
+  console.log(
+    'staticsPer',
+    staticsPer?.data.applicantMonthlyGenderCountsWithSquareCount.monthlyCounts
+  )
 
   const labels = [
     'يناير',
@@ -112,10 +115,9 @@ const Statistsidebar: React.FC<StatistSidebarProps> = ({ isExpended }) => {
     'ديسمبر'
   ]
 
-  const data =
-    staticsPer?.data.applicantMonthlyGenderCountsWithSquareCount.monthlyCounts.map(
-      (monthData) => monthData.males + monthData.females
-    )
+  const data = staticsPer?.data.applicantMonthlyGenderCountsWithSquareCount.monthlyCounts.map(
+    (monthData) => monthData.males + monthData.females
+  )
 
   const barData = {
     labels: labels,
@@ -146,6 +148,9 @@ const Statistsidebar: React.FC<StatistSidebarProps> = ({ isExpended }) => {
         display: false
       }
     }
+  }
+  if (isPending) {
+    return 'Loading...'
   }
   return (
     <>

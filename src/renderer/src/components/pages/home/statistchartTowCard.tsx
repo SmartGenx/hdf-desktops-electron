@@ -65,7 +65,7 @@ const options = {
 
 const StatistchartTowCard = () => {
   const authToken = useAuthHeader()
-  const { data: staticsPer } = useQuery({
+  const { data: staticsPer, isPending } = useQuery({
     queryKey: ['staticsPer'],
     queryFn: () =>
       getApi<StaticsPer>('/applicant/ApplicantMonthlyGenderCount', {
@@ -176,7 +176,9 @@ const StatistchartTowCard = () => {
       ]
     })
   }, [])
-  console.log('🚀 ~ StatistchartTowCard ~ chartData:', chartData)
+  if (isPending) {
+    return 'Loading...'
+  }
 
   return (
     <div className="h-[400px] w-[836px]">
