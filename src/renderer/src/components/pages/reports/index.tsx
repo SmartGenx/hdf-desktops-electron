@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs'
 
 import MedicalAllocationsIndex from './Medical allocations'
@@ -22,8 +22,15 @@ const subTabs = [
     content: <WaitingList />
   }
 ]
+
 export default function ReportIndex() {
   const [activeTab, setActiveTab] = useState<string>(subTabs[0].value)
+  const firstTabRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    // Focus the first tab when the component mounts
+    firstTabRef.current?.focus()
+  }, [])
   return (
     <div className="flex flex-col gap-6  ">
       <div className="flex  flex-col justify-center px-6 gap-5  rounded-[8px] pb-20 ">
@@ -39,8 +46,13 @@ export default function ReportIndex() {
             className=" dark:bg-[#09090b]"
           >
             <TabsList className="p-0 flex justify-start">
-              {subTabs.map((tab) => (
-                <TabsTrigger key={tab.value} value={tab.value} className="gap-x-2 ">
+              {subTabs.map((tab,index) => (
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  className="gap-x-2 "
+                  ref={index === 0 ? firstTabRef : null}
+                >
                   {tab.title}
                 </TabsTrigger>
               ))}

@@ -1,6 +1,6 @@
 import Boutton from '@renderer/components/Boutton'
 import SearchInput from '@renderer/components/searchInput'
-import {  useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import FilterDrawer from './filter'
 import { useAuthHeader } from 'react-auth-kit'
 import { useQuery } from '@tanstack/react-query'
@@ -81,6 +81,16 @@ export default function MedicalAllocationsIndex() {
     XLSX.writeFile(workbook, fileName)
   }
 
+  const totalAmountSum = ApplicantByDirectorateViewModelDataCard?.data.reduce(
+    (acc, current) => acc + (current.totalAmount || 0),
+    0
+  )
+
+  const totalApprovedAmount = ApplicantByDirectorateViewModelDataCard?.data.reduce(
+    (acc, current) => acc + (current.approvedAmount || 0),
+    0
+  )
+
   const componentRef = useRef<HTMLTableElement>(null)
   if (isPendingViewModel && isPeningCardCard) return 'Loading...'
   if (isErrorViewModel && isErrorCard) return 'An error has occurred: ' + errorViewModel.message
@@ -125,6 +135,23 @@ export default function MedicalAllocationsIndex() {
         pageSize={ApplicantByDirectorateViewModelData?.data.pageSize || '5'}
         total={ApplicantByDirectorateViewModelData?.data.total || 10}
       />
+
+      <div className="flex  gap-5 mt-[20px] items-center justify-between bg-[#E5F0FF] p-2 text-gray-500 rounded-lg  mb-7">
+        <div className="w-fit">
+          <h1 className="text-2xl font-medium">الاجمالي</h1>
+        </div>
+        <div className="flex gap-5  ">
+          <div>
+            <p>اجمالي تكلفة العلاج</p>
+            <p>{totalAmountSum}</p>
+          </div>
+
+          <div>
+            <p>مساهمة المريض</p>
+            <p>{totalApprovedAmount}</p>
+          </div>
+        </div>
+      </div>
     </>
   )
 }

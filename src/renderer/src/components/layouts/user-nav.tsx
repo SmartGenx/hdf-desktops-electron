@@ -4,7 +4,6 @@ import { Button } from '../ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -31,7 +30,7 @@ export default function UserNav() {
   if (issAuthenticated()) {
     return (
       <DropdownMenu>
-        <DropdownMenuTrigger asChild className="justify-between w-44 border">
+        <DropdownMenuTrigger asChild className="justify-end w-44 border">
           <Button variant="ghost" className="relative flex gap-1">
             <Avatar className="" />
             {/* <img
@@ -40,10 +39,18 @@ export default function UserNav() {
               alt={auth?.name ?? 'Unknown User'}
             /> */}
 
-            <div className="flex  space-y-1">
+            <div className="flex  space-y-1 ">
               <div>
-                <p className="text-sm font-medium leading-none">{user?.name}</p>
-                <p className="text-xs leading-none text-muted-foreground">{user?.role}</p>
+                <p className="text-base leading-none text-muted-foreground">
+                  {user?.role === 'Admin'
+                    ? 'مدير'
+                    : user?.role === 'Coordinator'
+                      ? 'منسق'
+                      : user?.role === 'Pharmacist'
+                        ? 'صيدلاني'
+                        : ''}
+                </p>
+                <p className="text-xs font-medium leading-none">{user?.email}</p>
               </div>
               <div>
                 <ChevronDown size={15} />
@@ -54,10 +61,7 @@ export default function UserNav() {
         <DropdownMenuContent className="w-56" align="end" forceMount>
           <DropdownMenuLabel className="font-normal"></DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem disabled>الملف الشخصي</DropdownMenuItem>
-            <DropdownMenuItem disabled>الإعدادات</DropdownMenuItem>
-          </DropdownMenuGroup>
+
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => signOut()}>تسجيل الخروج</DropdownMenuItem>
         </DropdownMenuContent>

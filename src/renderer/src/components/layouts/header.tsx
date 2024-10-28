@@ -2,7 +2,6 @@ import { useState } from 'react'
 // import ThemeToggle from "@/components/layout/ThemeToggle/theme-toggle";
 import useCurrentNav from '@renderer/hooks/useCurrentNav'
 import { MenuIcon, X } from 'lucide-react'
-import NotificationIcon from '../icons/notification'
 import UserNav from './user-nav'
 
 export default function Header() {
@@ -33,9 +32,6 @@ export default function Header() {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="rounded-xl bg-[#f3eef7] w-12 h-12 flex justify-center items-center">
-              <NotificationIcon />
-            </div>
             {/* <ThemeToggle /> */}
             <UserNav />
           </div>
