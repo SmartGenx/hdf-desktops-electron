@@ -57,46 +57,95 @@ export default function FormDismissal() {
   const [numberOfRfid, setNumberOfRfid] = useState('')
   const [number, setNumber] = useState<AccreditedRes>()
 
-  const generateRfid = async () => {
-    if (numberOfRfid === '') {
-      toast({
-        title: 'يرجى ادخل رقم البطاقة',
-        variant: 'destructive'
-      })
-      return // Early return to prevent further execution
-    }
+  // const checkNumOf = () => {
+  //   const { data: checkNoo, isSuccess } = useQuery({
+  //     queryKey: ['checkNoo'],
+  //     queryFn: () =>
+  //       getApi('/dismissal/check', {
+  //         params: { numberOfRfid },
+  //         headers: {
+  //           Authorization: authToken()
+  //         }
+  //       })
+  //   })
 
-    try {
-      const response = await axiosInstance.get(
-        `/accredited?page=1&pageSize=4&include[prescription]=true&numberOfRfid=${numberOfRfid}&include[applicant][include]=category&include[attachment]=true`,
+  //   if (isSuccess) {
+  //     console.log('isSuccess')
+  //   }
+  // }
+  const [checkNum, setCheckNum] = useState('')
+  const { mutate: checkMutation } = useMutation({
+    // mutationKey: ['AccreditedInfo'],
+    mutationFn: () =>
+      postApi(
+        '/dismissal/check',
+        {
+          numberOfRfid: +numberOfRfid
+        },
         {
           headers: {
             Authorization: `${authToken()}`
           }
         }
-      )
+      ),
+    onSuccess: async (data: any) => {
+      if (data.data === null) {
+        if (numberOfRfid === '') {
+          toast({
+            title: 'يرجى ادخل رقم البطاقة',
+            variant: 'destructive'
+          })
+          return // Early return to prevent further execution
+        }
 
-      // Check if the response has the expected structure
-      if (response.data && response.data.info && response.data.info.length > 0) {
-        setNumber(response.data)
-        setShowAlert(false) // Hide any previous alerts
+        try {
+          const response = await axiosInstance.get(
+            `/accredited?page=1&pageSize=4&include[prescription]=true&numberOfRfid=${numberOfRfid}&include[applicant][include]=category&include[attachment]=true`,
+            {
+              headers: {
+                Authorization: `${authToken()}`
+              }
+            }
+          )
+
+          // Check if the response has the expected structure
+          if (response.data && response.data.info && response.data.info.length > 0) {
+            setNumber(response.data)
+            setShowAlert(false) // Hide any previous alerts
+          } else {
+            // Handle cases where data is not as expected
+            setNumber(undefined)
+            toast({
+              title: 'رقم البطاقة غير صالح',
+              description: 'لم يتم العثور على البيانات المتعلقة برقم البطاقة المدخل.',
+              variant: 'destructive'
+            })
+          }
+        } catch (error) {
+          console.error('Error fetching RFID data:', error)
+          toast({
+            title: 'حدث خطأ',
+            description: 'فشل في جلب بيانات RFID. يرجى المحاولة لاحقاً.',
+            variant: 'destructive'
+          })
+        }
+        queryClient.invalidateQueries({ queryKey: ['accredited'] })
       } else {
-        // Handle cases where data is not as expected
-        setNumber(undefined)
-        toast({
-          title: 'رقم البطاقة غير صالح',
-          description: 'لم يتم العثور على البيانات المتعلقة برقم البطاقة المدخل.',
-          variant: 'destructive'
-        })
+        setCheckNum(data.data.message)
       }
-    } catch (error) {
-      console.error('Error fetching RFID data:', error)
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'حدث خطأ ما'
       toast({
-        title: 'حدث خطأ',
-        description: 'فشل في جلب بيانات RFID. يرجى المحاولة لاحقاً.',
+        title: 'لم تتم العملية',
+        description: errorMessage,
         variant: 'destructive'
       })
     }
+  })
+
+  const handleCheck = () => {
+    checkMutation()
   }
 
   const [approvedAmounts, setApprovedAmounts] = useState<number>(0)
@@ -147,6 +196,7 @@ export default function FormDismissal() {
     }
   }, [])
   //
+
   const [pharmacy, setPharmacy] = useState<Pharmacy[]>([])
   const [_selectedPharmacy, setSelectedPharmacy] = useState<Pharmacy | null>(null)
   const [showAlert, setShowAlert] = useState<boolean>(false)
@@ -299,7 +349,7 @@ export default function FormDismissal() {
   const isPDF = attachedUrlPrec?.toLowerCase().endsWith('.pdf')
   //
   const attachedUrlAttachment = number?.info?.[0]?.attachment?.[0]?.attachmentFile ?? 'لايوجد'
-  const isPDFAtta = attachedUrlPrec?.toLowerCase().endsWith('.pdf')
+  // const isPDFAtta = attachedUrlPrec?.toLowerCase().endsWith('.pdf')
   const openPtModal = () => {
     if (number?.info?.[0]?.attachment[0]?.attachmentFile) {
       setModalPtOpen(true)
@@ -308,6 +358,9 @@ export default function FormDismissal() {
 
   const closePtModal = () => {
     setModalPtOpen(false)
+  }
+  const handleClose = () => {
+    setCheckNum('')
   }
   const onSubmit = async (data: AccreditedFormValue) => {
     mutate(data)
@@ -346,7 +399,30 @@ export default function FormDismissal() {
               <AlertDescription>الصرف في هذه الصيدلية غير متاح حالياً.</AlertDescription>
             </Alert>
           )}
-
+          {checkNum && (
+            <div className="fixed  inset-0 bg-transparent z-50 flex items-center justify-center p-4">
+              <Alert className="max-w-md relative top-20 z-50  w-full  shadow-lg p-4 flex flex-col sm:flex-row sm:items-start">
+                <div className="flex-shrink-0">
+                  <AlertCircle className="h-10 w-10 rounded-full p-2 bg-[#FEF0C7] text-orange-500" />
+                </div>
+                <div className="sm:ml-4 mt-2 sm:mt-0 flex-1">
+                  <AlertTitle className="text-lg font-semibold text-gray-900">تنبية</AlertTitle>
+                  <AlertDescription className="mt-2 text-sm text-gray-600">
+                    {checkNum}
+                  </AlertDescription>
+                  <div className="mt-4 flex justify-end">
+                    <Button
+                      variant="outline"
+                      className="text-sm w-full sm:w-32"
+                      onClick={handleClose}
+                    >
+                      Close
+                    </Button>
+                  </div>
+                </div>
+              </Alert>
+            </div>
+          )}
           {/* <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>{showAlert ? 'Error' : 'Notice'}</AlertTitle>
@@ -385,7 +461,7 @@ export default function FormDismissal() {
                         <div className="col-span-1 translate-y-6">
                           <Button
                             className="w-[104px] h-[42px] bg-[#196CB0] hover:bg-[#2b4d68]"
-                            onClick={generateRfid}
+                            onClick={handleCheck}
                             type="button"
                           >
                             مسح البطاقة
