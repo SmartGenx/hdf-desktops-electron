@@ -106,7 +106,7 @@ class DismissalService {
         where: { globalId: data.accreditedGlobalId, state: 'موقف' }
       })
       if (accreditedExists) {
-        return { message: 'لايمكن صرف عليك مراجعة الادارة'}
+        return { message: 'لايمكن صرف عليك مراجعة الادارة' }
       }
 
       const accredited = await this.prisma.dismissal.findFirst({
@@ -234,7 +234,7 @@ class DismissalService {
   }
   async checkDismissal(DismissalData) {
     // const pharmacyGlobalId = DismissalData.pharmacyGlobalId;
-    const {  ...data } = DismissalData
+    const { ...data } = DismissalData
     const timestamp = Date.now()
     const uniqueId = uuidv4() // Ensure uuidv4 is imported
     const globalId = `${process.env.LOCAL_DB_ID}-${uniqueId}-${timestamp}`
@@ -255,13 +255,17 @@ class DismissalService {
         where: { numberOfRfid: data.numberOfRfid, state: 'موقف' }
       })
       if (accreditedExists) {
-        return { message: 'لايمكن صرف عليك مراجعة الادارة'}
+        return { message: 'لايمكن صرف عليك مراجعة الادارة' }
       }
       const accredited = await this.prisma.accredited.findFirst({
         where: { numberOfRfid: data.numberOfRfid }
       })
-
-
+      const accrediteds = await this.prisma.dismissal.findFirst({
+        where: { accreditedGlobalId: accredited.globalId }
+      })
+      if (!accrediteds) {
+        return null
+      }
 
       const checkdismissals = await this.prisma.dismissal.findFirst({
         where: { accreditedGlobalId: accredited.globalId, month: currentMonthStr }
