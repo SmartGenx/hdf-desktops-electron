@@ -71,7 +71,7 @@ const options = {
 
 const StatistChartCard = () => {
   const authToken = useAuthHeader()
-  const { data: staticsPer } = useQuery({
+  const { data: staticsPer, isPending } = useQuery({
     queryKey: ['staticsPer'],
     queryFn: () =>
       getApi<StaticsPer>('/applicant/ApplicantMonthlyGenderCount', {
@@ -166,7 +166,9 @@ const StatistChartCard = () => {
       ]
     })
   }, [])
-
+  if (isPending) {
+    return 'Loading...'
+  }
   return (
     <div className="h-[350px] w-[836px]">
       <Card className="shadow-lg border rounded-lg w-full h-full">

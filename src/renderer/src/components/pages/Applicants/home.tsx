@@ -33,7 +33,17 @@ const Home = () => {
     error,
     data: applicants
   } = useQuery({
-    queryKey: ['applicant', page, query, directorateGlobalId,fromDate,toDate, categoryGlobalId, state, gender],
+    queryKey: [
+      'applicant',
+      page,
+      query,
+      directorateGlobalId,
+      fromDate,
+      toDate,
+      categoryGlobalId,
+      state,
+      gender
+    ],
     queryFn: () =>
       getApi<Applicants>('/applicant', {
         params: {
@@ -41,14 +51,14 @@ const Home = () => {
           'include[category]': true,
           'include[diseasesApplicants]': true,
           'name[contains]': query,
-          "craeteAt[gte]":fromDate,
-          "craeteAt[lte]":toDate,
+          'craeteAt[gte]': fromDate,
+          'craeteAt[lte]': toDate,
           directorateGlobalId: directorateGlobalId,
           categoryGlobalId: categoryGlobalId,
           state: state,
           gender: gender,
-          page: page || 1,
-          pageSize: 5
+          "page": page || 1,
+          "pageSize": 5
         },
         headers: {
           Authorization: authToken()

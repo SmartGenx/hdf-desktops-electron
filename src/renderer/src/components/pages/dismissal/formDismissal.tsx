@@ -50,10 +50,7 @@ export default function FormDismissal() {
   const form = useForm<AccreditedFormValue>({
     resolver: zodResolver(formSchema)
   })
-  const [states, _setStates] = useState([
-    { value: 'active', label: 'نشط' },
-    { value: 'not active', label: 'غير نشط' }
-  ])
+  const [states, _setStates] = useState([{ value: 'active', label: 'نشط' }])
   const [numberOfRfid, setNumberOfRfid] = useState('')
   const [number, setNumber] = useState<AccreditedRes>()
 
@@ -361,6 +358,7 @@ export default function FormDismissal() {
   }
   const handleClose = () => {
     setCheckNum('')
+    setNumberOfRfid('')
   }
   const onSubmit = async (data: AccreditedFormValue) => {
     mutate(data)
@@ -416,7 +414,7 @@ export default function FormDismissal() {
                       className="text-sm w-full sm:w-32"
                       onClick={handleClose}
                     >
-                      Close
+                      إغلاق
                     </Button>
                   </div>
                 </div>
@@ -454,7 +452,7 @@ export default function FormDismissal() {
                             type="text"
                             value={numberOfRfid}
                             onChange={(e) => setNumberOfRfid(e.target.value)}
-                            placeholder="Enter RFID number"
+                            placeholder="ادخل رقم البطاقة"
                             className="w-full p-2 border rounded"
                           />
                         </div>
@@ -756,7 +754,7 @@ export default function FormDismissal() {
 
                 <div className="flex justify-end gap-4 ">
                   <Button type="submit" className="w-[120px] bg-[#196CB0] hover:bg-[#2b4d68]">
-                    حفظ
+                    صرف
                   </Button>
                   <Button
                     variant="outline"
