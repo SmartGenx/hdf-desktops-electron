@@ -19,22 +19,13 @@ import * as z from 'zod'
 import { cn } from '../../../lib/utils'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { axiosInstance, getApi, postApi } from '../../../lib/http'
+import { axiosInstance, postApi } from '../../../lib/http'
 import { useAuthHeader } from 'react-auth-kit'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { AccreditedRes, Pharmacy } from '@renderer/types'
 import Pdf from '@renderer/components/icons/pdf'
 import { AlertCircle } from 'lucide-react'
 import { FormInput } from '@renderer/components/ui/forms-input'
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-  DialogTrigger
-} from '@renderer/components/ui/dialog'
-import { AlertDialogHeader } from '@renderer/components/ui/alert-dialog'
 
 const formSchema = z.object({
   totalAmount: z.string(),
@@ -358,7 +349,7 @@ export default function FormDismissal() {
   const isPDF = attachedUrlPrec?.toLowerCase().endsWith('.pdf')
   //
   const attachedUrlAttachment = number?.info?.[0]?.attachment?.[0]?.attachmentFile ?? 'لايوجد'
-  const isPDFAtta = attachedUrlPrec?.toLowerCase().endsWith('.pdf')
+  // const isPDFAtta = attachedUrlPrec?.toLowerCase().endsWith('.pdf')
   const openPtModal = () => {
     if (number?.info?.[0]?.attachment[0]?.attachmentFile) {
       setModalPtOpen(true)
@@ -377,7 +368,6 @@ export default function FormDismissal() {
 
   return (
     <>
-      {checkNum}
       <div className="flex flex-col gap-6 ">
         <div className="">
           <h1 className="text-2xl font-bold"> بيانات الصرف</h1>
