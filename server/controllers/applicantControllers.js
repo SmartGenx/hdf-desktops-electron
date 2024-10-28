@@ -331,14 +331,15 @@ class ApplicantController {
 
   //--
   async getAllAccreditedAfterDismissal(req, res,next) {
-    try {
+    // try {
       const ApplicantService = databaseService.getApplicantService()
       const filterParams = req.query
+
       const applicants = await ApplicantService.getAllAccreditedAfterDismissal(filterParams)
       res.status(200).json(applicants)
-    } catch (error) {
-      next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
-    }
+    // } catch (error) {
+    //   next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
+    // }
   }
   async exportAllAccreditedAfterDismissal(req, res,next) {
     try {

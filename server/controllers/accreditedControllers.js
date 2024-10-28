@@ -365,16 +365,16 @@ class AccreditedController {
   }
 
   async AccreditedByPrescriptionServers(req, res, next) {
-    try {
+    // try {
       const AccreditedService = databaseService.getAccreditedService()
       const dataFilter = req.query
 
       const accrediteds = await AccreditedService.AccreditedByPrescriptionServer(dataFilter)
       res.status(200).json(accrediteds)
-    } catch (error) {
-      console.error('Failed ', error)
-      next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
-    }
+    // } catch (error) {
+    //   console.error('Failed ', error)
+    //   next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
+    // }
   }
 
   async exportAllAccreditedsToPDF(req, res, next) {
