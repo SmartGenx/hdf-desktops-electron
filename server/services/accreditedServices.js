@@ -553,7 +553,7 @@ class AccreditedService {
   }
 
   async AccreditedByPrescriptionServer(dataFilter) {
-    try {
+    // try {
       const page = dataFilter?.page
       const pageSize = dataFilter?.pageSize
       delete dataFilter?.page
@@ -563,36 +563,32 @@ class AccreditedService {
         const take = pageSize
 
         const Accredited = await this.prisma.accredited.findMany({
-          where: {
-            applicant: {
-              name: {
-                contains: dataFilter?.name
-              },
-              directorate: {
-                name: {
-                  contains: dataFilter?.directorate
-                }
-              },
-              diseasesApplicants: {
-                some: {
-                  Disease: {
-                    name: {
-                      contains: dataFilter?.disease
-                    }
-                  }
-                }
-              }
-            },
+          where:
+          // {
+          //   applicant: {
 
-            prescription: {
-              some: {
-                renewalDate: {
-                  gt: dataFilter?.start && new Date(dataFilter?.start),
-                  lt: dataFilter?.end && new Date(dataFilter?.end)
-                }
-              }
-            }
-          },
+          //     diseasesApplicants: {
+          //       some: {
+          //         Disease: {
+          //           name: {
+          //             contains:'ششششششششش'
+          //           }
+          //         }
+          //       }
+          //     }
+          //   }
+          // },
+
+          //   prescription: {
+          //     some: {
+          //       renewalDate: {
+          //         gt: dataFilter?.start && new Date(dataFilter?.start),
+          //         lt: dataFilter?.end && new Date(dataFilter?.end)
+          //       }
+          //     }
+          //   }
+          // },
+          dataFilter,
 
           include: {
             prescription: true,
@@ -665,36 +661,38 @@ class AccreditedService {
         return { info: reports, total: total, page: page, pageSize: pageSize }
       } else {
         const Accredited = await this.prisma.accredited.findMany({
-          where: {
-            applicant: {
-              name: {
-                contains: dataFilter?.name
-              },
-              directorate: {
-                name: {
-                  contains: dataFilter?.directorate
-                }
-              },
-              diseasesApplicants: {
-                some: {
-                  Disease: {
-                    name: {
-                      contains: dataFilter?.disease
-                    }
-                  }
-                }
-              }
-            },
+          where:
+          // {
+          //   applicant: {
+          //     name: {
+          //       contains: dataFilter?.name
+          //     },
+          //     directorate: {
+          //       name: {
+          //         contains: dataFilter?.directorate
+          //       }
+          //     },
+          //     diseasesApplicants: {
+          //       some: {
+          //         Disease: {
+          //           name: {
+          //             contains: dataFilter?.disease
+          //           }
+          //         }
+          //       }
+          //     }
+          //   },
 
-            prescription: {
-              some: {
-                renewalDate: {
-                  gt: dataFilter?.start && new Date(dataFilter?.start),
-                  lt: dataFilter?.end && new Date(dataFilter?.end)
-                }
-              }
-            }
-          },
+          //   prescription: {
+          //     some: {
+          //       renewalDate: {
+          //         gt: dataFilter?.start && new Date(dataFilter?.start),
+          //         lt: dataFilter?.end && new Date(dataFilter?.end)
+          //       }
+          //     }
+          //   }
+          // },
+          dataFilter,
 
           include: {
             prescription: true,
@@ -708,7 +706,7 @@ class AccreditedService {
                 }
               }
             }
-          }
+          },
         })
         const reports = Accredited.map((accredited) => {
           const applicant = {
@@ -780,9 +778,9 @@ class AccreditedService {
         const monthsDifference = endDate.getMonth() - startDate.getMonth()
         return yearsDifference * 12 + monthsDifference
       }
-    } catch (error) {
-      throw new DatabaseError('Error fetching accreditation data.', error)
-    }
+    // } catch (error) {
+    //   throw new DatabaseError('Error fetching accreditation data.', error)
+    // }
   }
 }
 

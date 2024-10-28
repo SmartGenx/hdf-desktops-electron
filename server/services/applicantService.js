@@ -46,7 +46,7 @@ class ApplicantService {
         const applicant = await this.prisma.applicant.findMany({
           where: {
             ...dataFillter,
-           
+
             deleted: false,
             accredited: false
           },
@@ -422,112 +422,30 @@ class ApplicantService {
     if (page && pageSize) {
       const skip = (+page - 1) * +pageSize
       const take = +pageSize
-      try {
-        const dismissal = await this.prisma.dismissal.findMany({
-          where: {
-            Accredited: {
-              applicant: {
-                gender: {
-                  contains: filterParams?.gender
-                },
-                directorate: {
-                  name: {
-                    contains: filterParams?.directorate
-                  }
-                },
-                diseasesApplicants: {
-                  some: {
-                    Disease: {
-                      name: {
-                        contains: filterParams?.disease
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          include: {
-            Accredited: {
-              include: {
-                applicant: {
-                  include: {
-                    directorate: true,
-                    category: true,
-                    diseasesApplicants: {
-                      include: {
-                        Disease: true
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          skip: +skip,
-          take: +take
-
-          // Make sure this relationship is correctly defined in your Prisma schema
-        })
-        const total = await this.prisma.dismissal.count({
-          where: filterParams
-        })
-        const reports = dismissal?.map((dismissal) => {
-          const applicant = {
-            name: dismissal.Accredited.applicant.name,
-            gender: dismissal.Accredited.applicant.gender,
-            phoneNumber: dismissal.Accredited.applicant.phoneNumber,
-            numberOfRfid: dismissal.Accredited.applicant.phoneNumber
-          }
-          const state = dismissal.Accredited.state
-          const Namedirectorate = dismissal.Accredited.applicant.directorate.name
-          const Namecategory = dismissal.Accredited.applicant.category.SupportRatio + '%'
-          const diseaseNames = dismissal.Accredited.applicant.diseasesApplicants
-            .map((da) => da.Disease.name)
-            .join(', ')
-
-          const dismissals = {
-            totalAmount: dismissal.totalAmount,
-
-            approvedAmount: dismissal.approvedAmount
-          }
-          return new ApplicantByDirectorateViewModel(
-            applicant,
-            diseaseNames,
-            Namedirectorate,
-            state,
-            dismissals,
-            Namecategory
-          )
-        })
-
-        return {
-          info: reports,
-          total: total,
-          page: page,
-          pageSize: pageSize
-        }
-      } catch (error) {
-        throw new DatabaseError('Error deleting accreditation.', error)
-      }
-    } else {
+      // try {
+      console.log(
+        '🚀 ~ ApplicantService ~ getAllAccreditedAfterDismissal ~ filterParams:',
+        filterParams
+      )
       const dismissal = await this.prisma.dismissal.findMany({
-        where: {
+        where:
+
+
+
+          filterParams,
+
+        include: {
           Accredited: {
-            applicant: {
-              gender: {
-                contains: filterParams?.gender
-              },
-              directorate: {
-                name: {
-                  contains: filterParams?.directorate
-                }
-              },
-              diseasesApplicants: {
-                some: {
-                  Disease: {
-                    name: {
-                      contains: filterParams?.disease
+
+            include: {
+              square: true,
+              applicant: {
+                include: {
+                  directorate: true,
+                  category: true,
+                  diseasesApplicants: {
+                    include: {
+                      Disease: true
                     }
                   }
                 }
@@ -535,9 +453,65 @@ class ApplicantService {
             }
           }
         },
+        skip: +skip,
+        take: +take
+
+        // Make sure this relationship is correctly defined in your Prisma schema
+      })
+      const total = await this.prisma.dismissal.count({
+        where: filterParams
+      })
+      const reports = dismissal?.map((dismissal) => {
+        const applicant = {
+          name: dismissal.Accredited.applicant.name,
+          gender: dismissal.Accredited.applicant.gender,
+          phoneNumber: dismissal.Accredited.applicant.phoneNumber,
+          numberOfRfid: dismissal.Accredited.applicant.phoneNumber
+        }
+        const state = dismissal.Accredited.state
+        const Namedirectorate = dismissal.Accredited.applicant.directorate.name
+        const Namecategory = dismissal.Accredited.applicant.category.SupportRatio + '%'
+        const diseaseNames = dismissal.Accredited.applicant.diseasesApplicants
+          .map((da) => da.Disease.name)
+          .join(', ')
+
+        const dismissals = {
+          totalAmount: dismissal.totalAmount,
+
+          approvedAmount: dismissal.approvedAmount
+        }
+        return new ApplicantByDirectorateViewModel(
+          applicant,
+          diseaseNames,
+          Namedirectorate,
+          state,
+          dismissals,
+          Namecategory
+        )
+      })
+
+      return {
+        info: reports,
+        total: total,
+        page: page,
+        pageSize: pageSize
+      }
+      // } catch (error) {
+      //   throw new DatabaseError('Error deleting accreditation.', error)
+      // }
+    } else {
+      const dismissal = await this.prisma.dismissal.findMany({
+        where:
+
+
+
+          filterParams,
+
         include: {
           Accredited: {
+
             include: {
+              square: true,
               applicant: {
                 include: {
                   directorate: true,
@@ -601,29 +575,30 @@ class ApplicantService {
         const take = pageSize
 
         const Applicant = await this.prisma.applicant.findMany({
-          where: {
-            deleted: false,
-            accredited: false,
-            category: {
-              name: {
-                contains: applicantfilter?.category
-              }
-            },
-            diseasesApplicants: {
-              some: {
-                Disease: {
-                  name: {
-                    contains: applicantfilter?.disease
-                  }
-                }
-              }
-            },
-            directorate: {
-              name: {
-                contains: applicantfilter?.directorate
-              }
-            }
-          },
+          // where: {
+          //   deleted: false,
+          //   accredited: false,
+          //   category: {
+          //     name: {
+          //       contains: applicantfilter?.category
+          //     }
+          //   },
+          //   diseasesApplicants: {
+          //     some: {
+          //       Disease: {
+          //         name: {
+          //           contains: applicantfilter?.disease
+          //         }
+          //       }
+          //     }
+          //   },
+          //   directorate: {
+          //     name: {
+          //       contains: applicantfilter?.directorate
+          //     }
+          //   }
+          // },
+          applicantfilter,
 
           include: {
             directorate: true,
@@ -668,29 +643,30 @@ class ApplicantService {
         }
       } else {
         const Applicant = await this.prisma.applicant.findMany({
-          where: {
-            deleted: false,
-            accredited: false,
-            category: {
-              name: {
-                contains: applicantfilter?.category
-              }
-            },
-            diseasesApplicants: {
-              some: {
-                Disease: {
-                  name: {
-                    contains: applicantfilter?.disease
-                  }
-                }
-              }
-            },
-            directorate: {
-              name: {
-                contains: applicantfilter?.directorate
-              }
-            }
-          },
+          // where: {
+          //   deleted: false,
+          //   accredited: false,
+          //   category: {
+          //     name: {
+          //       contains: applicantfilter?.category
+          //     }
+          //   },
+          //   diseasesApplicants: {
+          //     some: {
+          //       Disease: {
+          //         name: {
+          //           contains: applicantfilter?.disease
+          //         }
+          //       }
+          //     }
+          //   },
+          //   directorate: {
+          //     name: {
+          //       contains: applicantfilter?.directorate
+          //     }
+          //   }
+          // },
+          applicantfilter,
 
           include: {
             directorate: true,
