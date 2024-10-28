@@ -233,52 +233,56 @@ class DismissalService {
   //   }
   // }
   async createDismissal(DismissalData) {
-    const { pharmacyGlobalId, ...data } = DismissalData;
-    const timestamp = Date.now();
-    const uniqueId = uuidv4();
-    const globalId = `${process.env.LOCAL_DB_ID}-${uniqueId}-${timestamp}`;
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth() + 1;
-    const currentYear = currentDate.getFullYear();
+    const { pharmacyGlobalId, ...data } = DismissalData
+    const timestamp = Date.now()
+    const uniqueId = uuidv4()
+    const globalId = `${process.env.LOCAL_DB_ID}-${uniqueId}-${timestamp}`
+    const currentDate = new Date()
+    const currentMonth = currentDate.getMonth() + 1
+    const currentYear = currentDate.getFullYear()
 
-    const currentMonthStr = String(currentMonth);
-    const currentYearStr = currentYear.toString();
+    const currentMonthStr = String(currentMonth)
+    const currentYearStr = currentYear.toString()
 
     function isDateBetween(targetDate, startDate, endDate) {
-      const target = new Date(targetDate);
-      return target >= startDate && target <= endDate;
+      const target = new Date(targetDate)
+      return target >= startDate && target <= endDate
     }
 
     try {
       // Check if accredited is not stopped
       const accreditedExists = await this.prisma.accredited.findFirst({
-        where: { globalId: data.accreditedGlobalId, state: 'موقف' },
-      });
+        where: { globalId: data.accreditedGlobalId, state: 'موقف' }
+      })
       if (accreditedExists) {
-        return { message: 'هذا المريض موقف عليك مراجعة الادارة' };
+        return { message: 'هذا المريض موقف عليك مراجعة الادارة' }
       }
 
       // Check if dismissal already exists for this month
       const existingDismissal = await this.prisma.dismissal.findFirst({
-        where: { accreditedGlobalId: data.accreditedGlobalId, month: currentMonthStr, year: currentYearStr },
-      });
+        where: {
+          accreditedGlobalId: data.accreditedGlobalId,
+          month: currentMonthStr,
+          year: currentYearStr
+        }
+      })
       if (existingDismissal) {
-        return { message: 'تم الصرف مسبقا' };
+        return { message: 'تم الصرف مسبقا' }
       }
 
       // Check if dispensing is allowed for the current date in the pharmacy
       const pharmacy = await this.prisma.pharmacy.findUnique({
-        where: { globalId: pharmacyGlobalId },
-      });
+        where: { globalId: pharmacyGlobalId }
+      })
       if (!pharmacy) {
-        throw new NotFoundError(`Pharmacy with id ${pharmacyGlobalId} not found.`);
+        throw new NotFoundError(`Pharmacy with id ${pharmacyGlobalId} not found.`)
       }
 
-      const { startDispenseDate: start, endispenseDate: end } = pharmacy;
-      const today = new Date();
-      const result = isDateBetween(today, start, end);
+      const { startDispenseDate: start, endispenseDate: end } = pharmacy
+      const today = new Date()
+      const result = isDateBetween(today, start, end)
       if (!result) {
-        return { message: 'انتهاء وقت الصرف في هذه الصيدلية' };
+        return { message: 'انتهاء وقت الصرف في هذه الصيدلية' }
       }
 
       // Create new dismissal record
@@ -289,18 +293,17 @@ class DismissalService {
           year: currentYearStr,
           dateToDay: currentDate, // Corrected field name
           openDismissal: false,
-          globalId,
-        },
-      });
+          globalId
+        }
+      })
     } catch (error) {
       if (error instanceof NotFoundError) {
-        throw error;
+        throw error
       } else {
-        throw new DatabaseError('Error creating new dismissal.', error);
+        throw new DatabaseError('Error creating new dismissal.', error)
       }
     }
   }
-
 
   // async checkDismissal(DismissalData) {
   //   // const pharmacyGlobalId = DismissalData.pharmacyGlobalId;
@@ -490,73 +493,72 @@ class DismissalService {
   // }
 
   async checkDismissal(DismissalData) {
-    const { ...data } = DismissalData;
-    const timestamp = Date.now();
-    const uniqueId = uuidv4(); // Ensure uuidv4 is imported
-    const globalId = `${process.env.LOCAL_DB_ID}-${uniqueId}-${timestamp}`;
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth() + 1; // Normalize month
-    const currentYear = currentDate.getFullYear(); // Get full year
+    const { ...data } = DismissalData
+    const timestamp = Date.now()
+    const uniqueId = uuidv4() // Ensure uuidv4 is imported
+    const globalId = `${process.env.LOCAL_DB_ID}-${uniqueId}-${timestamp}`
+    const currentDate = new Date()
+    const currentMonth = currentDate.getMonth() + 1 // Normalize month
+    const currentYear = currentDate.getFullYear() // Get full year
 
-    const currentMonthStr = String(currentMonth);
-    const currentYearStr = currentYear.toString();
+    const currentMonthStr = String(currentMonth)
+    const currentYearStr = currentYear.toString()
 
     function isDateBetween(targetDate, startDate, endDate) {
-      const target = new Date(targetDate);
-      return target >= startDate && target <= endDate;
+      const target = new Date(targetDate)
+      return target >= startDate && target <= endDate
     }
 
     try {
       // Check if accredited is not stopped
       const accreditedExists = await this.prisma.accredited.findFirst({
-        where: { numberOfRfid: data.numberOfRfid, state: 'موقف' },
-      });
+        where: { numberOfRfid: data.numberOfRfid, state: 'موقف' }
+      })
       if (accreditedExists) {
-        return { message: 'هذا المريض موقف عليك مراجعة الادارة' };
+        return { message: 'هذا المريض موقف عليك مراجعة الادارة' }
       }
 
       // Check if dismissal already exists for this month
       const accredited = await this.prisma.accredited.findFirst({
-        where: { numberOfRfid: data.numberOfRfid },
-      });
+        where: { numberOfRfid: data.numberOfRfid }
+      })
       if (!accredited) {
-        throw new NotFoundError('Accredited does not exist.');
+        throw new NotFoundError('Accredited does not exist.')
       }
 
       const existingDismissal = await this.prisma.dismissal.findFirst({
-        where: { accreditedGlobalId: accredited.globalId, month: currentMonthStr, year: currentYearStr },
-      });
+        where: {
+          accreditedGlobalId: accredited.globalId,
+          month: currentMonthStr,
+          year: currentYearStr
+        }
+      })
       if (existingDismissal) {
-        return { message: 'تم الصرف مسبقا' };
+        return { message: 'تم الصرف مسبقا' }
       }
 
       // Check if dispensing is allowed for the current date in the pharmacy
       const pharmacy = await this.prisma.pharmacy.findFirst({
-        where: { globalId: accredited.pharmacyGlobalId },
-      });
+        where: { globalId: accredited.pharmacyGlobalId }
+      })
       if (!pharmacy) {
-        throw new NotFoundError(`Pharmacy with id ${accredited.pharmacyGlobalId} not found.`);
+        throw new NotFoundError(`Pharmacy with id ${accredited.pharmacyGlobalId} not found.`)
       }
 
-      const { startDispenseDate: start, endispenseDate: end } = pharmacy;
-      const today = new Date();
-      const result = isDateBetween(today, start, end);
+      const { startDispenseDate: start, endispenseDate: end } = pharmacy
+      const today = new Date()
+      const result = isDateBetween(today, start, end)
       if (!result) {
-        return { message: 'انتهاء وقت الصرف في هذه الصيدلية' };
+        return { message: 'انتهاء وقت الصرف في هذه الصيدلية' }
       }
-
-     
-
     } catch (error) {
       if (error instanceof NotFoundError) {
-        throw error;
+        throw error
       } else {
-        throw new DatabaseError('Error checking dismissal.', error);
+        throw new DatabaseError('Error checking dismissal.', error)
       }
     }
   }
-
-
 
   async updateDismissal(id, dismissalData) {
     try {
