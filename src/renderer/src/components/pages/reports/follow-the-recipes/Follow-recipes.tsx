@@ -13,6 +13,17 @@ export default function FollowReceiptTable({ info, page, total, pageSize }: Prop
   const columns = React.useMemo<ColumnDef<AllAccreditedsForPdfInfo>[]>(
     () => [
       {
+        accessorKey: 'id',
+        header: '#',
+        cell: ({ row }) => {
+          const currentPage = Number(page) || 1
+          const itemsPerPage = Number(pageSize) || 5
+          const globalRowNumber = (currentPage - 1) * itemsPerPage + row.index + 1
+          return <p>{globalRowNumber}</p>
+        },
+        enableSorting: false
+      },
+      {
         accessorKey: ' .',
         header: 'الأسم',
         cell: ({ row }) => row.original.name

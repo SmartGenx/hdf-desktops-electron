@@ -13,6 +13,17 @@ export default function WaitingTable({ info, page, total, pageSize }: Props) {
   const columns = React.useMemo<ColumnDef<applicantsReportCategory>[]>(
     () => [
       {
+        accessorKey: 'id',
+        header: '#',
+        cell: ({ row }) => {
+          const currentPage = Number(page) || 1
+          const itemsPerPage = Number(pageSize) || 5
+          const globalRowNumber = (currentPage - 1) * itemsPerPage + row.index + 1
+          return <p>{globalRowNumber}</p>
+        },
+        enableSorting: false
+      },
+      {
         accessorKey: ' .',
         header: 'الأسم',
         cell: ({ row }) => row.original.name

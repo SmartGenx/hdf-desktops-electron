@@ -571,6 +571,7 @@ class ApplicantService {
           deleted: false
         },
 
+
         include: {
           directorate: true,
           category: true,
@@ -615,28 +616,7 @@ class ApplicantService {
     } else {
       const Applicant = await this.prisma.applicant.findMany({
         where:
-          //   deleted: false,
-          //   accredited: false,
-          //   category: {
-          //     name: {
-          //       contains: applicantfilter?.category
-          //     }
-          //   },
-          //   diseasesApplicants: {
-          //     some: {
-          //       Disease: {
-          //         name: {
-          //           contains: applicantfilter?.disease
-          //         }
-          //       }
-          //     }
-          //   },
-          //   directorate: {
-          //     name: {
-          //       contains: applicantfilter?.directorate
-          //     }
-          //   }
-          // },
+
           applicantfilter,
 
         include: {

@@ -236,6 +236,15 @@ export interface DiseasesApplicantInfo {
   version: number
   lastModified: Date
 }
+export interface DiseasesResponses {
+  id: number
+  globalId: string
+  name: string
+  deleted: boolean
+  description: string
+  version: number
+  lastModified: Date
+}
 export type Category = {
   id: number
   globalId: string

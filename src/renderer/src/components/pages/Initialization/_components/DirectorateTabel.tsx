@@ -14,6 +14,14 @@ export default function DirectorateTabel({ info, page, total }: Props) {
   const columns = React.useMemo<ColumnDef<Directorate>[]>(
     () => [
       {
+        accessorKey: 'id',
+        header: '#',
+        cell: ({ row }) => {
+          return <p>{row.index + 1}</p>
+        },
+        enableSorting: false
+      },
+      {
         accessorKey: 'name',
         header: () => <div className="w-96">المديرية</div>
       },
