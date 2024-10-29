@@ -17,7 +17,6 @@ class ApplicantService {
   }
 
   async getAllApplicants(dataFillter) {
-    console.log('🚀 ~ ApplicantService ~ getAllApplicants ~ dataFillter:', dataFillter)
     try {
       const page = dataFillter?.page
       const pageSize = dataFillter?.pageSize
@@ -38,7 +37,6 @@ class ApplicantService {
       } else {
         dataFillter = {}
       }
-      console.log('🚀 ~ ApplicantService ~ getAllApplicants ~ dataFillter:', dataFillter)
 
       if (page && pageSize) {
         const skip = (+page - 1) * +pageSize
@@ -422,11 +420,8 @@ class ApplicantService {
     if (page && pageSize) {
       const skip = (+page - 1) * +pageSize
       const take = +pageSize
-      // try {
-      console.log(
-        '🚀 ~ ApplicantService ~ getAllAccreditedAfterDismissal ~ filterParams:',
-        filterParams
-      )
+      try {
+
       const dismissal = await this.prisma.dismissal.findMany({
         where: filterParams,
 
@@ -491,9 +486,9 @@ class ApplicantService {
         page: page,
         pageSize: pageSize
       }
-      // } catch (error) {
-      //   throw new DatabaseError('Error deleting accreditation.', error)
-      // }
+      } catch (error) {
+        throw new DatabaseError('Error deleting accreditation.', error)
+      }
     } else {
       const dismissal = await this.prisma.dismissal.findMany({
         where: filterParams,

@@ -50,7 +50,6 @@ class AuthService {
         where: { email },
         include: { role: true }
       })
-      console.log("🚀 ~ AuthService ~ login ~ existingUser:", existingUser)
       if (!existingUser) {
         throw new Error('Invalid email')
       }

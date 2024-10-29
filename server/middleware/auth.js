@@ -20,7 +20,6 @@ const isAuthenticated = async (req, res, next) => {
 
     // 3. Verify and decode the token
     const payload = jwt.verify(token, JWT_SECRET)
-    console.log("🚀 ~ isAuthenticated ~ payload:", payload)
 
     // Fetch user data from the database
     const user = await prisma.user.findFirst({ where: { id: payload.userId } })

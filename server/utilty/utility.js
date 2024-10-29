@@ -59,7 +59,6 @@ const backupDatabase = async (req, res) => {
         console.error(`Backup stderr: ${stderr}`);
         return res.status(500).json({ error: 'Error during the backup process.' });
       }
-      console.log(`Backup successful! Saved to ${outputPath}`)
 
 
       // Move the file to a specified download folder
@@ -75,7 +74,6 @@ const backupDatabase = async (req, res) => {
           return res.status(500).send('Could not move the file to the download folder')
         }
 
-        console.log(`File moved to: ${downloadOutputPath}`);
 
         try {
           const backupServices = databaseService.getbackupServices();
