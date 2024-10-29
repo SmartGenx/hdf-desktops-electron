@@ -24,6 +24,7 @@ export default function MedicalAllocationsIndex() {
   const page = searchParams.get('page')
   const query = searchParams.get('query')
   const directorate = searchParams.get('Accredited[applicant][directorate][name][contains]')
+  const state = searchParams.get('Accredited[state][contains]')
   const authToken = useAuthHeader()
 
   const {
@@ -32,13 +33,14 @@ export default function MedicalAllocationsIndex() {
     error: errorViewModel,
     data: ApplicantByDirectorateViewModelData
   } = useQuery({
-    queryKey: ['ApplicantByDirectorateViewModel', page, query, dieases,directorate],
+    queryKey: ['ApplicantByDirectorateViewModel', page, query, dieases, directorate, state],
     queryFn: () =>
       getApi<ApplicantByDirectorateViewModel>('/applicant/ApplicantByDirectorateViewModel', {
         params: {
           'Accredited[applicant][name][contains]': query,
           'Accredited[applicant][diseasesApplicants][some][Disease][name]': dieases,
-          "Accredited[applicant][directorate][name][contains]":directorate,
+          'Accredited[applicant][directorate][name][contains]': directorate,
+          'Accredited[state][contains]': state,
           page: page || 1,
           pageSize: 5
         },

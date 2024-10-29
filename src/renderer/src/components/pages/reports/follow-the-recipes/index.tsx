@@ -20,6 +20,7 @@ export default function FollowTheRecipes() {
   const query = searchParams.get('query')
   const directorate = searchParams.get('applicant[directorate][name][contains]')
   const dieases = searchParams.get('applicant[diseasesApplicants][some][Disease][name][contains]')
+  const state = searchParams.get('state[contains]')
   const authToken = useAuthHeader()
   const {
     isPending,
@@ -27,13 +28,14 @@ export default function FollowTheRecipes() {
     isError,
     data: AllAccreditedsForPdf
   } = useQuery({
-    queryKey: ['AllAccreditedsForPdf', page, query, dieases, directorate],
+    queryKey: ['AllAccreditedsForPdf', page, query, dieases, directorate,state],
     queryFn: () =>
       getApi<AllAccreditedsForPdf>('/accredited/AllAccreditedsForPdf', {
         params: {
           'applicant[name][contains]': query,
           'applicant[directorate][name][contains]': directorate,
           'applicant[diseasesApplicants][some][Disease][name][contains]': dieases,
+          'state[contains]': state,
           page: page || 1,
           pageSize: 5
         },

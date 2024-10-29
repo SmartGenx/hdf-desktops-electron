@@ -15,7 +15,16 @@ import { getApi } from '@renderer/lib/http'
 import { useAuthHeader } from 'react-auth-kit'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { DiseasesResponses,  Directorate } from '@renderer/types'
+import { DiseasesResponses, Directorate } from '@renderer/types'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue
+} from '@renderer/components/ui/select'
 
 // export interface Directorate {
 //   id: number
@@ -48,9 +57,14 @@ const FilterDrawer = () => {
   const [selectedState, setSelectedState] = useState<string>('')
   const [selectedGender, setSelectedGender] = useState<string>('')
   const [name, setName] = useState<string>('')
+
   const [selectedDisease, setSelectedDisease] = useState<string[]>([])
   const [selectedDirectorate, setSelectedDirectorate] = useState<string[]>([])
-
+  const [states] = useState([
+    { value: 'مستمر', label: 'مستمر' },
+    { value: 'موقف', label: 'موقف' },
+    { value: 'منتهي', label: 'منتهي' }
+  ])
   const {
     data: disease,
     isPending: isdiseasePending,
@@ -109,7 +123,9 @@ const FilterDrawer = () => {
       prev.includes(diseases) ? prev.filter((name) => name !== diseases) : [...prev, diseases]
     )
   }
-
+  const handleStateChange = (state: string) => {
+    setSelectedState(state)
+  }
   const handleClearFilters = () => {
     navigate('/Reports', { replace: true })
   }
@@ -120,7 +136,7 @@ const FilterDrawer = () => {
     selectedCategories.forEach((id) => params.append('categoryGlobalId', id))
 
     if (selectedState) {
-      params.set('state', selectedState)
+      params.set('Accredited[state][contains]', selectedState)
     }
 
     if (selectedGender) {
@@ -209,6 +225,26 @@ const FilterDrawer = () => {
                 </div>
               ))}
             </div>
+          </div>
+
+          <div className="w-[279.35px] border-b-[1px] border-[#F0F1F5] pb-5">
+            {/* State Filter */}
+            <label className="pr-4 font-bold text-[#414141]">اختار الحالة</label>
+            <Select value={selectedState} onValueChange={handleStateChange}>
+              <SelectTrigger>
+                <SelectValue placeholder="اختار الحالة" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>الحالة</SelectLabel>
+                  {states.map((state) => (
+                    <SelectItem key={state.value} value={state.value}>
+                      {state.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
