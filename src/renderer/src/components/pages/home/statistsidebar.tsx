@@ -13,7 +13,6 @@ import { useAuthHeader } from 'react-auth-kit'
 import { useQuery } from '@tanstack/react-query'
 import { getApi } from '@renderer/lib/http'
 import { ChartOptions } from 'chart.js'
-import { LoaderIcon } from 'lucide-react'
 export interface StaticsPer {
   applicantMonthlyGenderCountsWithSquareCount: ApplicantMonthlyGenderCountsWithSquareCount
 }
@@ -153,7 +152,7 @@ const Statistsidebar: React.FC<StatistSidebarProps> = ({ isExpended }) => {
   if (isPending) {
     return (
       <div className="flex justify-center items-center w-full ">
-        <LoaderIcon className="mt-12 flex animate-spin items-center justify-end duration-1000" />
+        {/* <LoaderIcon className="mt-12 flex animate-spin items-center justify-end duration-1000" /> */}
       </div>
     )
   }

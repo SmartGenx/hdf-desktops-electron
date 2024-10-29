@@ -36,6 +36,11 @@ export default function AccreditedTable({ info, page, total, pageSize }: Props) 
         enableSorting: false
       },
       {
+        accessorKey: 'formNumber',
+        header: 'رقم الاستمارة',
+        cell: ({ row }) => row.original.formNumber
+      },
+      {
         accessorKey: 'applicant',
         header: 'الأسم',
         cell: ({ row }) => row.original.applicant?.name

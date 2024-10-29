@@ -27,6 +27,7 @@ const ComponentToPrint = React.forwardRef<HTMLDivElement, Props>(function Compon
       <table dir="rtl" className="w-full h-full rounded-t-lg">
         <thead>
           <tr className="h-10 text-black border-2 border-gray-300 py-5 bg-[#E5F0FF]">
+            <th>رقم</th>
             <th>الأسم</th>
             <th>الجنس</th>
             <th>تصنيف المرض</th>
@@ -39,8 +40,9 @@ const ComponentToPrint = React.forwardRef<HTMLDivElement, Props>(function Compon
           </tr>
         </thead>
         <tbody>
-          {data.map((item) => (
+          {data.map((item, index) => (
             <tr key={item.phoneNumber} className="h-10 text-black border-2 border-gray-300 py-5">
+              <td className="px-2">{index + 1}</td>
               <td className="px-2">{item.name}</td>
               <td className="px-2">{item.gender === 'M' ? 'ذكر' : 'انثى'}</td>
               <td className="px-2">{item.disease}</td>

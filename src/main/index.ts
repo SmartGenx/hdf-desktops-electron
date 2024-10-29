@@ -31,7 +31,7 @@ function createWindow(): void {
     return { action: 'deny' }
   })
 
-  mainWindow.webContents.on('context-menu', (event, params) => {
+  mainWindow.webContents.on('context-menu', (_event, _params) => {
     const contextMenu = Menu.buildFromTemplate([
       { role: 'cut', label: 'Cut' },
       { role: 'copy', label: 'Copy' },

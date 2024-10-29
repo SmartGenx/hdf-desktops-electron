@@ -90,8 +90,8 @@ class AccreditedService {
         } else if (renewalDate < currentDate) {
           newState = 'منتهي'
         } else if (renewalDate >= currentDate) {
-          newState = 'مستمر';
-      }
+          newState = 'مستمر'
+        }
 
         await this.prisma.accredited.update({
           where: { globalId: accredited.globalId },
@@ -712,6 +712,7 @@ class AccreditedService {
               .pop()
 
           }
+
 
         const days = calculateDaysBetweenDates(
           prescription.latestPrescriptionDate,

@@ -15,28 +15,18 @@ import { getApi } from '@renderer/lib/http'
 import { useAuthHeader } from 'react-auth-kit'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue
-} from '@renderer/components/ui/select'
-import { FormInput } from '@renderer/components/ui/forms-input'
-import { DiseasesResponses, Square } from '@renderer/types'
+import { DiseasesResponses,  Directorate } from '@renderer/types'
 
-export interface Directorate {
-  id: number
-  globalId: string
-  governorateGlobalId?: string
-  name: string
-  deleted: boolean
-  version: number
-  lastModified: Date
-  Governorate?: Directorate
-}
+// export interface Directorate {
+//   id: number
+//   globalId: string
+//   governorateGlobalId?: string
+//   name: string
+//   deleted: boolean
+//   version: number
+//   lastModified: Date
+//   Governorate?: Directorate
+// }
 export interface Category {
   id: number
   globalId: string
@@ -48,11 +38,6 @@ export interface Category {
   lastModified: Date
 }
 const FilterDrawer = () => {
-  const [gender] = useState([
-    { value: 'M', label: 'ذكر' },
-    { value: 'F', label: 'انثى' }
-  ])
-
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const authToken = useAuthHeader()
@@ -63,22 +48,9 @@ const FilterDrawer = () => {
   const [selectedState, setSelectedState] = useState<string>('')
   const [selectedGender, setSelectedGender] = useState<string>('')
   const [name, setName] = useState<string>('')
-  const [selectedSquares, setSelectedSquares] = useState<string[]>([])
   const [selectedDisease, setSelectedDisease] = useState<string[]>([])
+  const [selectedDirectorate, setSelectedDirectorate] = useState<string[]>([])
 
-  const {
-    data: squares,
-    isPending: issquaresPending,
-    error: squaresError
-  } = useQuery({
-    queryKey: ['square'],
-    queryFn: () =>
-      getApi<Square[]>('/square', {
-        headers: {
-          Authorization: authToken()
-        }
-      })
-  })
   const {
     data: disease,
     isPending: isdiseasePending,
@@ -92,53 +64,52 @@ const FilterDrawer = () => {
         }
       })
   })
-
-  const uniqueSquareNames = Array.from(new Set(squares?.data.map((square) => square.name)))
+  const {
+    data: directorates,
+    isPending: isDirectoratesPending,
+    error: directoratesError
+  } = useQuery({
+    queryKey: ['directorate'],
+    queryFn: () =>
+      getApi<Directorate[]>('/directorate', {
+        headers: {
+          Authorization: authToken()
+        }
+      })
+  })
   const uniqueDisaseNames = Array.from(new Set(disease?.data.map((disease) => disease.name)))
+  const uniqueDirectorates = Array.from(
+    new Set(directorates?.data.map((directorates) => directorates.name))
+  )
   useEffect(() => {
     const governorates = searchParams.getAll('directorateGlobalId')
     const categories = searchParams.getAll('categoryGlobalId')
     const state = searchParams.get('state') || ''
     const gender = searchParams.get('gender') || ''
     const name = searchParams.get('name') || ''
-    const squares = searchParams.getAll('squareGlobalId')
     const diseases = searchParams.getAll('diseaseId')
+    const directorate = searchParams.getAll('directorateGlobalId')
 
     setSelectedGovernorates(governorates)
     setSelectedCategories(categories)
     setSelectedState(state)
     setSelectedGender(gender)
     setName(name)
-    setSelectedSquares(squares)
     setSelectedDisease(diseases)
+    setSelectedDirectorate(directorate)
   }, [searchParams])
 
-  // const handleGovernorateChange = (globalId: string) => {
-  //   setSelectedGovernorates((prev) =>
-  //     prev.includes(globalId) ? prev.filter((id) => id !== globalId) : [...prev, globalId]
-  //   )
-  // }
-
-  // const handleCategoryChange = (globalId: string) => {
-  //   setSelectedCategories((prev) =>
-  //     prev.includes(globalId) ? prev.filter((id) => id !== globalId) : [...prev, globalId]
-  //   )
-  // }
-  const handleSquareCheckboxChange = (squareName: string) => {
-    setSelectedSquares((prev) =>
+  const handleDirectorateCheckboxChange = (squareName: string) => {
+    setSelectedDirectorate((prev) =>
       prev.includes(squareName) ? prev.filter((name) => name !== squareName) : [...prev, squareName]
     )
   }
-
   const handleDisasesCheckboxChange = (diseases: string) => {
     setSelectedDisease((prev) =>
       prev.includes(diseases) ? prev.filter((name) => name !== diseases) : [...prev, diseases]
     )
   }
 
-  const handleGenderChange = (gender: string) => {
-    setSelectedGender(gender)
-  }
   const handleClearFilters = () => {
     navigate('/Reports', { replace: true })
   }
@@ -158,16 +129,18 @@ const FilterDrawer = () => {
     if (name) {
       params.set('Accredited[applicant][name][contains]', name)
     }
-    selectedSquares.forEach((id) => params.append('Accredited[square][name]', id))
+    selectedDirectorate.forEach((id) =>
+      params.append('Accredited[applicant][directorate][name][contains]', id)
+    )
     selectedDisease.forEach((id) =>
       params.append('Accredited[applicant][diseasesApplicants][some][Disease][name]', id)
     )
 
     navigate(`/Reports?${params.toString()}`, { replace: true })
   }
-  if (issquaresPending || isdiseasePending) return 'Loading...'
-  if (diseaseeError || squaresError)
-    return 'An error has occurred: ' + (diseaseeError?.message || squaresError?.message)
+  if (isDirectoratesPending || isdiseasePending) return 'Loading...'
+  if (diseaseeError || directoratesError)
+    return 'An error has occurred: ' + (diseaseeError?.message || directoratesError?.message)
 
   return (
     <Drawer direction="left">
@@ -187,44 +160,6 @@ const FilterDrawer = () => {
         <Separator />
 
         <div className="p-6 overflow-y-auto">
-          {/* Governorates Filter */}
-          <div className="mb-6">
-            <h3 className="text-sm font-medium mb-2">اسم المتقدم</h3>
-            <div className="grid grid-cols-1 gap-4">
-              <FormInput
-                type="text"
-                placeholder="ادخل اسم المتقدم"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="mb-6">
-            <h3 className="text-sm font-medium mb-2">حسب المربعات</h3>
-            <div className="grid grid-cols-3 gap-4">
-              {uniqueSquareNames.map((name) => (
-                <div key={name} className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    value={name}
-                    checked={selectedSquares.includes(name)}
-                    onChange={() => handleSquareCheckboxChange(name)}
-                    className="ml-2"
-                  />
-                  <label
-                    className="text-sm truncate"
-                    dir="rtl"
-                    style={{ maxWidth: '120px' }}
-                    title={name}
-                  >
-                    {name}
-                  </label>
-                </div>
-              ))}
-            </div>
-          </div>
-
           <div className="w-full h-[1px] bg-[#F0F1F5]"></div>
           <div className="mb-6">
             <h3 className="text-sm font-medium mb-2">حسب المرض</h3>
@@ -251,25 +186,29 @@ const FilterDrawer = () => {
             </div>
           </div>
           <div className="w-full h-[1px] bg-[#F0F1F5]"></div>
-
-          <div className="w-[279.35px] border-b-[1px] border-[#F0F1F5] pb-5">
-            {/* Gender Filter */}
-            <label className="pr-4 font-bold text-[#414141]">اختار الجنس</label>
-            <Select value={selectedGender} onValueChange={handleGenderChange}>
-              <SelectTrigger>
-                <SelectValue placeholder="اختار الجنس" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>الجنس</SelectLabel>
-                  {gender.map((gender) => (
-                    <SelectItem key={gender.value} value={gender.value}>
-                      {gender.label}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+          <div className="mb-6">
+            <h3 className="text-sm font-medium mb-2">حسب المنطقة</h3>
+            <div className="grid grid-cols-3 gap-4">
+              {uniqueDirectorates.map((name) => (
+                <div key={name} className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    value={name}
+                    checked={selectedDirectorate.includes(name)}
+                    onChange={() => handleDirectorateCheckboxChange(name)}
+                    className="ml-2"
+                  />
+                  <label
+                    className="text-sm truncate"
+                    dir="rtl"
+                    style={{ maxWidth: '120px' }}
+                    title={name}
+                  >
+                    {name}
+                  </label>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 

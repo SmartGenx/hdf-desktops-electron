@@ -20,6 +20,7 @@ const ComponentToPrint = React.forwardRef<HTMLDivElement, Props>(function Compon
       </div>
       <table dir="rtl" className="w-full h-full rounded-t-lg">
         <tr className="  h-10 text-black border-2 border-gray-300 py-5 bg-[#E5F0FF]">
+          <th>رقم</th>
           <th>الأسم</th>
           <th>تصنيف المرض</th>
           <th>المنطقة</th>
@@ -30,15 +31,16 @@ const ComponentToPrint = React.forwardRef<HTMLDivElement, Props>(function Compon
           <th>الاشهر</th>
           <th>الحاله</th>
         </tr>
-        {data.map((item) => (
+        {data.map((item, index) => (
           // eslint-disable-next-line react/jsx-key
           <tr className=" -translate-x-3 h-10 text-black border-2 border-gray-300 py-5">
+            <td className="px-2">{index + 1}</td>
             <td>{item.name}</td>
             <td>{item.disease}</td>
             <td>{item.directorate}</td>
             <td>{item.phoneNumber}</td>
-            <td>{String(item.orescriptionDate)}</td>
-            <td>{String(item.renewalDate)}</td>
+            <td>{String(item.orescriptionDate).split('T')[0]}</td>
+            <td>{String(item.renewalDate).split('T')[0]}</td>
             <td>{item.days}</td>
             <td>{item.Months}</td>
             <td
