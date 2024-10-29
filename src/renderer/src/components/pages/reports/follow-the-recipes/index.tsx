@@ -9,7 +9,7 @@ import { AllAccreditedsForPdf, AllAccreditedsForPdfInfo, PrintFollowing } from '
 import FollowReceiptTable from './Follow-recipes'
 import ReactToPrint from 'react-to-print'
 import ComponentToPrint from './ComponentToPrint'
-import { Printer } from 'lucide-react'
+import { LoaderIcon, Printer } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import * as XLSX from 'xlsx'
 
@@ -53,14 +53,14 @@ export default function FollowTheRecipes() {
     if (AllAccreditedsForPdfPrint?.data) {
       const dataToExport = AllAccreditedsForPdfPrint?.data.map((item) => {
         return {
-          "الأسم": item.name,
+          الأسم: item.name,
           'تصنيف المرض': item.disease,
-          "المنطقة": item.directorate,
-          "الجوال": item.phoneNumber,
+          المنطقة: item.directorate,
+          الجوال: item.phoneNumber,
           'تاريخ التشخيص': item.orescriptionDate,
-          "الايام": item.days,
-          "الشهور": item.Months,
-          "الحاله": item.state
+          الايام: item.days,
+          الشهور: item.Months,
+          الحاله: item.state
         }
       })
 
@@ -78,7 +78,12 @@ export default function FollowTheRecipes() {
   }
 
   const componentRef = useRef<HTMLTableElement>(null)
-  if (isPending && isPeningCardCard) return 'Loading...'
+  if (isPending && isPeningCardCard)
+    return (
+      <div className="flex justify-center items-center w-full ">
+        <LoaderIcon className="mt-12 flex animate-spin items-center justify-end duration-1000" />
+      </div>
+    )
   if (isError && isErrorCard) return 'An error has occurred: ' + error.message
   return (
     <>
@@ -101,14 +106,13 @@ export default function FollowTheRecipes() {
           <div className="hidden">
             <ComponentToPrint ref={componentRef} data={AllAccreditedsForPdfPrint?.data || []} />
           </div>
-          
-            <Boutton
-              icon="addaccredited"
-              title={'تصدير'}
-              className="bg-[#92A709] hover:bg-[#5b6806] focus:ring-[#92A709]"
-              onClick={ExportCvs}
-            />
-          
+
+          <Boutton
+            icon="addaccredited"
+            title={'تصدير'}
+            className="bg-[#92A709] hover:bg-[#5b6806] focus:ring-[#92A709]"
+            onClick={ExportCvs}
+          />
         </div>
       </div>
       <FollowReceiptTable

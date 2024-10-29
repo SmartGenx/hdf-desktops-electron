@@ -12,7 +12,7 @@ import {
 } from '@renderer/types'
 import MedicalTable from './medicalTable'
 import ReactToPrint from 'react-to-print'
-import { Printer } from 'lucide-react'
+import { LoaderIcon, Printer } from 'lucide-react'
 import ComponentToPrint from './ComponentToPrint'
 import { useEffect, useRef, useState } from 'react'
 import * as XLSX from 'xlsx'
@@ -33,14 +33,14 @@ export default function MedicalAllocationsIndex() {
     error: errorViewModel,
     data: ApplicantByDirectorateViewModelData
   } = useQuery({
-    queryKey: ['ApplicantByDirectorateViewModel', page, gender, name, squar, dieases],
+    queryKey: ['ApplicantByDirectorateViewModel', page],
     queryFn: () =>
       getApi<ApplicantByDirectorateViewModel>('/applicant/ApplicantByDirectorateViewModel', {
         params: {
-          'Accredited[applicant][gender][contains]': gender,
-          'Accredited[applicant][name][contains]': name,
-          'Accredited[square][name]': squar,
-          'Accredited[applicant][diseasesApplicants][some][Disease][name]': dieases,
+          // 'Accredited[applicant][gender][contains]': gender,
+          // 'Accredited[applicant][name][contains]': name,
+          // 'Accredited[square][name]': squar,
+          // 'Accredited[applicant][diseasesApplicants][some][Disease][name]': dieases,
           page: page || 1,
           pageSize: 5
         },
@@ -104,7 +104,12 @@ export default function MedicalAllocationsIndex() {
   )
 
   const componentRef = useRef<HTMLTableElement>(null)
-  if (isPendingViewModel && isPeningCardCard) return 'Loading...'
+  if (isPendingViewModel && isPeningCardCard)
+    return (
+      <div className="flex justify-center items-center w-full ">
+        <LoaderIcon className="mt-12 flex animate-spin items-center justify-end duration-1000" />
+      </div>
+    )
   if (isErrorViewModel && isErrorCard) return 'An error has occurred: ' + errorViewModel.message
 
   return (

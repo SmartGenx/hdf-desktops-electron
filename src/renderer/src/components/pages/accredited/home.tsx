@@ -7,7 +7,7 @@ import { axiosInstance, getApi } from '@renderer/lib/http'
 import { Link, useSearchParams } from 'react-router-dom'
 import AccreditedTable from './accreditedTable'
 import { useEffect, useRef, useState } from 'react'
-import { Printer } from 'lucide-react'
+import { LoaderIcon, Printer } from 'lucide-react'
 import ReactToPrint from 'react-to-print'
 import A4Layout from './print-cards'
 import AccreditedSearch from './accredited-search'
@@ -68,18 +68,19 @@ const Home = () => {
   }, [])
 
   const componentRef = useRef<HTMLDivElement>(null)
-  if (isPending) return 'Loading...'
+  if (isPending) {
+    return (
+      <div className="flex justify-center items-center w-full ">
+        <LoaderIcon className="mt-12 flex animate-spin items-center justify-end duration-1000" />
+      </div>
+    )
+  }
   if (error) return 'An error has occurred: ' + error.message
   return (
     <div>
       <div className="grid grid-cols-4 gap-2">
         <div className=" col-span-1 ">
-          <StatistCardWithImage
-            title={'المعتمدين'}
-            value={statist?.count}
-       
-            image={LackOfAir}
-          />
+          <StatistCardWithImage title={'المعتمدين'} value={statist?.count} image={LackOfAir} />
         </div>
       </div>
       <div className="flex  gap-5 mt-[85px] items-center justify-between  ">

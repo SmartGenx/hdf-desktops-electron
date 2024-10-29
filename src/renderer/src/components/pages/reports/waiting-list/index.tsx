@@ -1,6 +1,6 @@
 import Boutton from '@renderer/components/Boutton'
 import SearchInput from '@renderer/components/searchInput'
-import {  useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import FilterDrawer from './filter'
 import { useAuthHeader } from 'react-auth-kit'
 import { useQuery } from '@tanstack/react-query'
@@ -9,7 +9,7 @@ import { getApi } from '@renderer/lib/http'
 import WaitingTable from './waitingTable'
 import ReactToPrint from 'react-to-print'
 import ComponentToPrint from './ComponentToPrint'
-import { Printer } from 'lucide-react'
+import { LoaderIcon, Printer } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import * as XLSX from 'xlsx'
 
@@ -61,19 +61,19 @@ export default function WaitingList() {
     if (applicantsReportCategoryPrint?.data) {
       const dataToExport = applicantsReportCategoryPrint?.data.map((item) => {
         return {
-          "الأسم": item.name,
+          الأسم: item.name,
           'تصنيف المرض': item.disease,
-          "المنطقة": item.directorate,
-          "الجوال": item.phoneNumber,
+          المنطقة: item.directorate,
+          الجوال: item.phoneNumber,
           'تاريخ التقديم': item.submissionDate,
-          "فئة": item.category
+          فئة: item.category
         }
       })
 
       setDataPrint(dataToExport)
     }
   }, [applicantsReportCategoryPrint])
-  // 
+  //
   const ExportCvs = () => {
     const workbook = XLSX.utils.book_new()
     const worksheet = XLSX.utils.json_to_sheet(dataPrint)
@@ -84,7 +84,12 @@ export default function WaitingList() {
   }
   const componentRef = useRef<HTMLTableElement>(null)
 
-  if (isPending && isPeningCardCard) return 'Loading...'
+  if (isPending && isPeningCardCard)
+    return (
+      <div className="flex justify-center items-center w-full ">
+        <LoaderIcon className="mt-12 flex animate-spin items-center justify-end duration-1000" />
+      </div>
+    )
   if (isError && isErrorCard) return 'An error has occurred: ' + error.message
   return (
     <>
