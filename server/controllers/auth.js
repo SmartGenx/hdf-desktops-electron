@@ -8,7 +8,6 @@ class AuthController {
       const { name, email, password, roleGlobalId, phone, address, synchronized } = req.body
       const authService = databaseService.getAuthService()
       const profileImage = req.file.local ? req.file.local : req.file.s3.Location
-      console.log("🚀 ~ AuthController ~ signup ~ profileImage:", profileImage)
 
       const newUser = await authService.signup(
         name,

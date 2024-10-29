@@ -40,7 +40,7 @@ class DatabaseService {
     // Initialize both Prisma clients for local and cloud databases
     this.localPrisma = new PrismaClient({
       datasources: {
-        db: { url: 'postgresql://postgres:123@localhost:5432/Hdf_electron?schema=public' }
+        db: { url: 'postgresql://postgres:sami2020@localhost:5432/Hdf_electron?schema=public' }
 
         // db: { url: 'postgresql://postgres:123456789@3.108.217.185:5432/hdf-web?schema=public' }
       }
@@ -473,9 +473,7 @@ class DatabaseService {
           } else {
             console.log(`File "${file}" not exists in the database. Skipping upload.`)
           }
-          // } else {
-          //   console.log(`File "${file}" already exists in S3. Skipping upload.`);
-          // }
+
         } catch (fileError) {
           console.error(`Failed to process file: ${file}`, fileError)
         }

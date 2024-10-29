@@ -47,7 +47,6 @@ class AccreditedController {
       // Respond with the filtered list of accredited records
       res.json(accreditedRecords)
     } catch (error) {
-      console.error('Error filtering accredited records:', error)
       next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
     }
   }
@@ -59,7 +58,6 @@ class AccreditedController {
       const Accredited = await AccreditedService.searchAccreditations(searchTerm)
       res.status(200).json(Accredited)
     } catch (error) {
-      console.error(error)
       next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
     }
   }
@@ -70,7 +68,6 @@ class AccreditedController {
       const Accredited = await AccreditedService.getAllAccreditations(searchTerm)
       res.status(200).json(Accredited)
     } catch (error) {
-      console.error(error)
       next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
     }
   }
@@ -87,7 +84,6 @@ class AccreditedController {
       }
       res.status(200).json(accreditation)
     } catch (error) {
-      console.error(error)
       next(error)
     }
   }
@@ -111,9 +107,7 @@ class AccreditedController {
         return next(new ValidationError('Validation Failed', errors.array()))
       }
       const fileAtch = req.atch
-      console.log("🚀 ~ AccreditedController ~ createAccreditation ~ fileAtch:", fileAtch)
       const filePt = req.pt
-      console.log("🚀 ~ AccreditedController ~ createAccreditation ~ filePt:", filePt)
       const AccreditedData = req.body
       const newAccreditation = await AccreditedService.createAccreditation(
         AccreditedData,
@@ -201,7 +195,6 @@ class AccreditedController {
       const Accredited = await AccreditedService.AccreditedByPrescriptionServer()
       res.status(200).json(Accredited)
     } catch (error) {
-      console.error(error)
       // Pass the error to the error handling middleware
       next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
     }
@@ -218,66 +211,7 @@ class AccreditedController {
       }
       res.status(200).send(dta)
 
-      // if (!accredited) {
-      //   return res.status(400).send({ error: 'No data provided for the barcodes' })
-      // }
-
-      // // Generate the barcode
-      // const pngBuffer = await bwipjs.toBuffer({
-      //   bcid: 'code128',
-      //   text: `${accredited.numberOfRfid}`,
-      //   scale: 3,
-      //   height: 10,
-      //   textxalign: 'center'
-      // })
-      // const barcodeData = pngBuffer.toString('base64')
-      // const barcodeImageSrc = `data:image/png;base64,${barcodeData}`
-
-      // const imagePath = path.join(__dirname, '..', '..', 'static', 'images', 'logo.png')
-      // const imageData = fs.readFileSync(imagePath)
-      // const base64Image = imageData.toString('base64')
-      // const logoImageSrc = `data:image/png;base64,${base64Image}`
-      // // Render the HTML content using EJS
-      // const templatePath = path.join(__dirname, '..', '..', 'views', 'accreditedsCardOne.ejs')
-      // const htmlContent = await ejs.renderFile(templatePath, {
-      //   accredited,
-      //   barcodeImageSrc,
-      //   logoImageSrc
-      // })
-      // const browser = await puppeteer.launch({
-      //   headless: true,
-      //   args: ['--no-sandbox', '--disable-setuid-sandbox']
-      // })
-      // const page = await browser.newPage()
-      // await page.setDefaultNavigationTimeout(60000) // Set default navigation timeout to 60 seconds
-
-      // try {
-      //   await page.setContent(htmlContent, { waitUntil: 'networkidle0' })
-      // } catch (error) {
-      //   console.error('Failed to set page content', error)
-      //   throw error
-      // }
-
-      // let pdfBuffer
-      // try {
-      //   pdfBuffer = await page.pdf({
-      //     format: 'A4',
-      //     printBackground: true,
-      //     margin: { top: '20mm', right: '20mm', bottom: '20mm', left: '20mm' }
-      //   })
-      // } catch (error) {
-      //   console.error('Failed to generate PDF', error)
-      //   throw error
-      // }
-
-      // await browser.close()
-
-      // // Send the PDF as response
-      // res.setHeader('Content-Type', 'application/pdf')
-      // res.setHeader('Content-Disposition', 'attachment; filename=accredited_barcode_card.pdf')
-      // res.send(pdfBuffer)
     } catch (error) {
-      console.error('Failed to generate the barcode card PDF', error)
       next(new ApiError(500, 'InternalServer', error))
     }
   }
@@ -293,73 +227,9 @@ class AccreditedController {
          })
       }
       res.status(200).json(card)
-      console.log('🚀 ~ AccreditedController ~ exportAllBarcodeCardToPDF ~ card:', card)
 
-      //   if (!accrediteds || accrediteds.length === 0) {
-      //     return res.status(400).send({ error: 'No data provided for the barcodes' })
-      //   }
-      //   let cardHtml = '<div style="display: flex; flex-wrap: wrap; gap: 1mm;">'
 
-      //   for (const data of accrediteds) {
-      //     // Generate the barcode
-      //     const pngBuffer = await bwipjs.toBuffer({
-      //       bcid: 'code128',
-      //       text: `${data.numberOfRfid}`,
-      //       scale: 3,
-      //       height: 7,
-      //       // includetext: true,
-      //       textxalign: 'center'
-      //     })
-      //     const barcodeData = pngBuffer.toString('base64')
-      //     const barcodeImageSrc = `data:image/png;base64,${barcodeData}`
-
-      //     const imagePath = path.join(__dirname, '..', '..', 'static', 'images', 'logo.png')
-      //     const imageData = fs.readFileSync(imagePath)
-      //     const base64Image = imageData.toString('base64')
-      //     const logoImageSrc = `data:image/png;base64,${base64Image}`
-      //     // Render the HTML content using EJS
-      //     const templatePath = path.join(__dirname, '..', '..', 'views', 'accreditedsCard.ejs')
-      //     const cardInstance = await ejs.renderFile(templatePath, {
-      //       data,
-      //       barcodeImageSrc,
-      //       logoImageSrc
-      //     })
-      //     // Card style adjusted for size
-      //     cardHtml += `<div style="width: 95mm; height: 100mm;">${cardInstance}</div>`
-      //   }
-      //   cardHtml += '</div>'
-      //   const browser = await puppeteer.launch({
-      //     headless: true,
-      //     args: ['--no-sandbox', '--disable-setuid-sandbox']
-      //   })
-      //   const page = await browser.newPage()
-      //   await page.setDefaultNavigationTimeout(60000) // Set default navigation timeout to 60 seconds
-      //   try {
-      //     await page.setContent(cardHtml, { waitUntil: 'networkidle0' })
-      //   } catch (error) {
-      //     console.error('Failed to set page content', error)
-      //     throw error
-      //   }
-
-      //   let pdfBuffer
-      //   try {
-      //     pdfBuffer = await page.pdf({
-      //       format: 'A4',
-      //       printBackground: true,
-      //       margin: { top: '5mm', right: '5mm', bottom: '5mm', left: '5mm' }
-      //     })
-      //   } catch (error) {
-      //     console.error('Failed to generate PDF', error)
-      //     throw error
-      //   }
-
-      //   await browser.close()
-
-      //   res.setHeader('Content-Type', 'application/pdf')
-      //   res.setHeader('Content-Disposition', 'attachment; filename=accrediteds_barcode_cards.pdf')
-      //   res.send(pdfBuffer)
     } catch (error) {
-      console.error('Failed to generate the barcode card PDF', error)
       next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
     }
   }
@@ -372,7 +242,6 @@ class AccreditedController {
       const accrediteds = await AccreditedService.AccreditedByPrescriptionServer(dataFilter)
       res.status(200).json(accrediteds)
     // } catch (error) {
-    //   console.error('Failed ', error)
     //   next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
     // }
   }
@@ -429,7 +298,6 @@ class AccreditedController {
       res.setHeader('Content-Disposition', 'attachment; filename="accrediteds.pdf"')
       res.send(pdfBuffer)
     } catch (error) {
-      console.error(error)
       next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
     }
   }
@@ -509,7 +377,6 @@ class AccreditedController {
       await workbook.xlsx.write(res)
       res.end()
     } catch (error) {
-      console.error(error)
       next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
     }
   }

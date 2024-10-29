@@ -22,7 +22,6 @@ const synchronizeAllTables = async () => {
 
   for (const table of tables) {
     await databaseService.synchronizeTable(table);
-    console.log("🚀 ~ synchronizeAllTables ~ table:", table)
 
     await databaseService.fetchUpdatesFromServer(table);
   }
