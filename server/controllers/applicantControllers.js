@@ -15,14 +15,14 @@ class ApplicantController {
   // Fetch all applicants
   //--
   async ApplicantReportCategory(req, res, next) {
-    try {
+    // try {
       const ApplicantService = databaseService.getApplicantService()
       const applicantfilter = req.query
       const applicantsData = await ApplicantService.ApplicantByCategory(applicantfilter)
       res.status(200).json(applicantsData)
-    } catch (error) {
-      next(new ApiError(error.message, error.status))
-    }
+    // } catch (error) {
+    //   next(new ApiError(error.message, error.status))
+    // }
   }
 
   async exportApplicantsReportCategoryToExcel(req, res,next) {
