@@ -1,5 +1,4 @@
 import Boutton from '@renderer/components/Boutton'
-import SearchInput from '@renderer/components/searchInput'
 import { useSearchParams } from 'react-router-dom'
 import FilterDrawer from './filter'
 import { useAuthHeader } from 'react-auth-kit'
@@ -16,15 +15,15 @@ import { LoaderIcon, Printer } from 'lucide-react'
 import ComponentToPrint from './ComponentToPrint'
 import { useEffect, useRef, useState } from 'react'
 import * as XLSX from 'xlsx'
+import MedicalSearch from './medical-search'
 
 export default function MedicalAllocationsIndex() {
   const [searchParams] = useSearchParams()
-  const gender = searchParams.get('Accredited[applicant][gender][contains]')
-  const name = searchParams.get('Accredited[applicant][name][contains]')
-  const squar = searchParams.get('Accredited[square][name]')
   const dieases = searchParams.get('Accredited[applicant][diseasesApplicants][some][Disease][name]')
   const [dataPrint, setDataPrint] = useState<PrintApplication[] | any[]>([])
   const page = searchParams.get('page')
+  const query = searchParams.get('query')
+  const directorate = searchParams.get('Accredited[applicant][directorate][name][contains]')
   const authToken = useAuthHeader()
 
   const {
@@ -33,14 +32,13 @@ export default function MedicalAllocationsIndex() {
     error: errorViewModel,
     data: ApplicantByDirectorateViewModelData
   } = useQuery({
-    queryKey: ['ApplicantByDirectorateViewModel', page],
+    queryKey: ['ApplicantByDirectorateViewModel', page, query, dieases,directorate],
     queryFn: () =>
       getApi<ApplicantByDirectorateViewModel>('/applicant/ApplicantByDirectorateViewModel', {
         params: {
-          // 'Accredited[applicant][gender][contains]': gender,
-          // 'Accredited[applicant][name][contains]': name,
-          // 'Accredited[square][name]': squar,
-          // 'Accredited[applicant][diseasesApplicants][some][Disease][name]': dieases,
+          'Accredited[applicant][name][contains]': query,
+          'Accredited[applicant][diseasesApplicants][some][Disease][name]': dieases,
+          "Accredited[applicant][directorate][name][contains]":directorate,
           page: page || 1,
           pageSize: 5
         },
@@ -119,7 +117,7 @@ export default function MedicalAllocationsIndex() {
           <h1 className="text-2xl font-medium">جدول المخصصات العلاجية</h1>
         </div>
         <div className="flex gap-2">
-          <SearchInput />
+          <MedicalSearch />
           <FilterDrawer />
           <ReactToPrint
             trigger={() => (

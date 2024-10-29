@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { Button } from '../../../ui/button' // Replace with your actual button component
-import { Calendar } from '../../../ui/calendar' // Replace with your actual calendar component
+import { useEffect, useState } from 'react'
+import { Button } from '../../../ui/button'
 import {
   Drawer,
   DrawerClose,
@@ -9,34 +8,25 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger
-} from '../../../ui/drawer' // Replace with your actual drawer component
-import CheckboxWithLabel from '@renderer/components/CheckboxWithLabel'
+} from '../../../ui/drawer'
 import { SlidersHorizontal, X } from 'lucide-react'
 import { Separator } from '@radix-ui/react-separator'
 import { getApi } from '@renderer/lib/http'
 import { useAuthHeader } from 'react-auth-kit'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue
-} from '@renderer/components/ui/select'
+import { DiseasesResponses,  Directorate } from '@renderer/types'
 
-export interface Directorate {
-  id: number
-  globalId: string
-  governorateGlobalId?: string
-  name: string
-  deleted: boolean
-  version: number
-  lastModified: Date
-  Governorate?: Directorate
-}
+// export interface Directorate {
+//   id: number
+//   globalId: string
+//   governorateGlobalId?: string
+//   name: string
+//   deleted: boolean
+//   version: number
+//   lastModified: Date
+//   Governorate?: Directorate
+// }
 export interface Category {
   id: number
   globalId: string
@@ -48,20 +38,7 @@ export interface Category {
   lastModified: Date
 }
 const FilterDrawer = () => {
-  const [states] = useState([
-    { value: 'active', label: 'نشط' },
-    { value: 'not active', label: 'غير نشط' }
-  ])
-  const [gender] = useState([
-    { value: 'M', label: 'ذكر' },
-    { value: 'F', label: 'انثى' }
-  ])
-  const [dateFrom, setDateFrom] = React.useState<Date | undefined>(new Date())
-  const [dateTo, setDateTo] = React.useState<Date | undefined>(new Date())
-  console.log('dateFrom', dateFrom?.toISOString())
-  console.log('dateTo', dateTo?.toISOString())
-  const [clanFrom, setClanFrom] = React.useState<boolean>(false)
-  const [clanTo, setClanTo] = React.useState<boolean>(false)
+
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const authToken = useAuthHeader()
@@ -71,10 +48,27 @@ const FilterDrawer = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [selectedState, setSelectedState] = useState<string>('')
   const [selectedGender, setSelectedGender] = useState<string>('')
+  const [name, setName] = useState<string>('')
+  const [selectedDisease, setSelectedDisease] = useState<string[]>([])
+  const [selectedDirectorate, setSelectedDirectorate] = useState<string[]>([])
+
   const {
-    isPending: isdirectoratePending,
-    error: directorateError,
-    data: governorateData
+    data: disease,
+    isPending: isdiseasePending,
+    error: diseaseeError
+  } = useQuery({
+    queryKey: ['disease'],
+    queryFn: () =>
+      getApi<DiseasesResponses[]>('/disease', {
+        headers: {
+          Authorization: authToken()
+        }
+      })
+  })
+  const {
+    data: directorates,
+    isPending: isDirectoratesPending,
+    error: directoratesError
   } = useQuery({
     queryKey: ['directorate'],
     queryFn: () =>
@@ -85,100 +79,41 @@ const FilterDrawer = () => {
       })
   })
 
-  const {
-    isPending: isCategoryPending,
-    error: categoryError,
-    data: categoryData
-  } = useQuery({
-    queryKey: ['category'],
-    queryFn: () =>
-      getApi<Category[]>('/category', {
-        headers: {
-          Authorization: authToken()
-        }
-      })
-  })
-
+  const uniqueDisaseNames = Array.from(new Set(disease?.data.map((disease) => disease.name)))
+  const uniqueDirectorates = Array.from(
+    new Set(directorates?.data.map((directorates) => directorates.name))
+  )
   useEffect(() => {
     const governorates = searchParams.getAll('directorateGlobalId')
     const categories = searchParams.getAll('categoryGlobalId')
     const state = searchParams.get('state') || ''
     const gender = searchParams.get('gender') || ''
+    const name = searchParams.get('name') || ''
+    const diseases = searchParams.getAll('diseaseId')
+    const directorate = searchParams.getAll('directorateGlobalId')
 
     setSelectedGovernorates(governorates)
     setSelectedCategories(categories)
     setSelectedState(state)
     setSelectedGender(gender)
+    setName(name)
+    setSelectedDisease(diseases)
+    setSelectedDirectorate(directorate)
   }, [searchParams])
 
-  // const handleGovernorateCheckboxChange = (globalId: string) => {
-  //   const params = new URLSearchParams(searchParams.toString())
-  //   const governorates = params.getAll('directorateGlobalId')
-
-  //   if (governorates.includes(globalId)) {
-  //     // If already selected, remove it
-  //     params.delete('directorateGlobalId')
-  //     governorates
-  //       .filter((id) => id !== globalId)
-  //       .forEach((id) => params.append('directorateGlobalId', id))
-  //   } else {
-  //     // Add new selection
-  //     params.append('directorateGlobalId', globalId)
-  //   }
-  //   navigate(`/applicants?${params.toString()}`, { replace: true })
-  // }
-
-  // const handleCategoryCheckboxChange = (globalId: string) => {
-  //   const params = new URLSearchParams(searchParams.toString())
-  //   const categories = params.getAll('categoryGlobalId')
-
-  //   if (categories.includes(globalId)) {
-  //     // If already selected, remove it
-  //     params.delete('categoryGlobalId')
-  //     categories
-  //       .filter((id) => id !== globalId)
-  //       .forEach((id) => params.append('categoryGlobalId', id))
-  //   } else {
-  //     // Add new selection
-  //     params.append('categoryGlobalId', globalId)
-  //   }
-  //   navigate(`/applicants?${params.toString()}`, { replace: true })
-  // }
-
-  // const handleStateChange = (state: string) => {
-  //   const params = new URLSearchParams(searchParams.toString())
-  //   params.set('state', state)
-
-  //   navigate(`/applicants?${params.toString()}`, { replace: true })
-  // }
-
-  // const handleGenderChange = (gender: string) => {
-  //   const params = new URLSearchParams(searchParams.toString())
-  //   params.set('gender', gender)
-
-  //   navigate(`/applicants?${params.toString()}`, { replace: true })
-  // }
-  const handleGovernorateChange = (globalId: string) => {
-    setSelectedGovernorates((prev) =>
-      prev.includes(globalId) ? prev.filter((id) => id !== globalId) : [...prev, globalId]
+  const handleDirectorateCheckboxChange = (squareName: string) => {
+    setSelectedDirectorate((prev) =>
+      prev.includes(squareName) ? prev.filter((name) => name !== squareName) : [...prev, squareName]
+    )
+  }
+  const handleDisasesCheckboxChange = (diseases: string) => {
+    setSelectedDisease((prev) =>
+      prev.includes(diseases) ? prev.filter((name) => name !== diseases) : [...prev, diseases]
     )
   }
 
-  const handleCategoryChange = (globalId: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(globalId) ? prev.filter((id) => id !== globalId) : [...prev, globalId]
-    )
-  }
-
-  const handleStateChange = (state: string) => {
-    setSelectedState(state)
-  }
-
-  const handleGenderChange = (gender: string) => {
-    setSelectedGender(gender)
-  }
   const handleClearFilters = () => {
-    navigate('/applicants', { replace: true })
+    navigate('/Reports', { replace: true })
   }
   const handleFilter = () => {
     const params = new URLSearchParams()
@@ -189,22 +124,21 @@ const FilterDrawer = () => {
     if (selectedState) {
       params.set('state', selectedState)
     }
-    if (dateFrom) {
-      params.set('craeteAt[gte]', dateFrom?.toISOString())
-    }
-    if (dateTo) {
-      params.set('craeteAt[lte]', dateTo?.toISOString())
-    }
 
     if (selectedGender) {
-      params.set('gender', selectedGender)
+      params.set('Accredited[applicant][gender][contains]', selectedGender)
     }
+    if (name) {
+      params.set('Accredited[applicant][name][contains]', name)
+    }
+    selectedDirectorate.forEach((id) => params.append('directorate[name][contains]', id))
+    selectedDisease.forEach((id) => params.append('diseasesApplicants[some][Disease][name]', id))
 
-    navigate(`/applicants?${params.toString()}`, { replace: true })
+    navigate(`/Reports?${params.toString()}`, { replace: true })
   }
-  if (isdirectoratePending || isCategoryPending) return 'Loading...'
-  if (directorateError || categoryError)
-    return 'An error has occurred: ' + (directorateError?.message || categoryError?.message)
+  if (isDirectoratesPending || isdiseasePending) return 'Loading...'
+  if (diseaseeError || directoratesError)
+    return 'An error has occurred: ' + (diseaseeError?.message || directoratesError?.message)
 
   return (
     <Drawer direction="left">
@@ -224,127 +158,55 @@ const FilterDrawer = () => {
         <Separator />
 
         <div className="p-6 overflow-y-auto">
-          {/* Governorates Filter */}
+          <div className="w-full h-[1px] bg-[#F0F1F5]"></div>
           <div className="mb-6">
-            <h3 className="text-sm font-medium mb-2">حسب المديريه</h3>
+            <h3 className="text-sm font-medium mb-2">حسب المرض</h3>
             <div className="grid grid-cols-3 gap-4">
-              {governorateData?.data.map((governorate) => (
-                <div key={governorate.globalId} className="flex items-center space-x-2">
+              {uniqueDisaseNames.map((name) => (
+                <div key={name} className="flex items-center space-x-2">
                   <input
                     type="checkbox"
-                    value={governorate.globalId}
-                    checked={selectedGovernorates.includes(governorate.globalId)}
-                    onChange={() => handleGovernorateChange(governorate.globalId)}
+                    value={name}
+                    checked={selectedDisease.includes(name)}
+                    onChange={() => handleDisasesCheckboxChange(name)}
                     className="ml-2"
                   />
                   <label
                     className="text-sm truncate"
                     dir="rtl"
                     style={{ maxWidth: '120px' }}
-                    title={governorate.name}
+                    title={name}
                   >
-                    {governorate.name}
+                    {name}
                   </label>
                 </div>
               ))}
             </div>
           </div>
-
           <div className="w-full h-[1px] bg-[#F0F1F5]"></div>
-          <div className="mb-6 mt-4">
-            <h3 className="text-sm font-medium mb-2">حسب فئة</h3>
+          <div className="mb-6">
+            <h3 className="text-sm font-medium mb-2">حسب المنطقة</h3>
             <div className="grid grid-cols-3 gap-4">
-              {categoryData?.data.map((category) => (
-                <div key={category.globalId} className="flex items-center space-x-2">
+              {uniqueDirectorates.map((name) => (
+                <div key={name} className="flex items-center space-x-2">
                   <input
                     type="checkbox"
-                    value={category.globalId}
-                    checked={selectedCategories.includes(category.globalId)}
-                    onChange={() => handleCategoryChange(category.globalId)}
+                    value={name}
+                    checked={selectedDirectorate.includes(name)}
+                    onChange={() => handleDirectorateCheckboxChange(name)}
                     className="ml-2"
                   />
                   <label
                     className="text-sm truncate"
                     dir="rtl"
                     style={{ maxWidth: '120px' }}
-                    title={category.name}
+                    title={name}
                   >
-                    {category.name}
+                    {name}
                   </label>
                 </div>
               ))}
             </div>
-          </div>
-
-          <div className="w-[279.35px] border-b-[1px] border-[#F0F1F5] pb-5">
-            {/* State Filter */}
-            <label className="pr-4 font-bold text-[#414141]">اختار الحالة</label>
-            <Select value={selectedState} onValueChange={handleStateChange}>
-              <SelectTrigger>
-                <SelectValue placeholder="اختار الحالة" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>الحالة</SelectLabel>
-                  {states.map((state) => (
-                    <SelectItem key={state.value} value={state.value}>
-                      {state.label}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="w-[279.35px] border-b-[1px] border-[#F0F1F5] pb-5">
-            {/* Gender Filter */}
-            <label className="pr-4 font-bold text-[#414141]">اختار الجنس</label>
-            <Select value={selectedGender} onValueChange={handleGenderChange}>
-              <SelectTrigger>
-                <SelectValue placeholder="اختار الجنس" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>الجنس</SelectLabel>
-                  {gender.map((gender) => (
-                    <SelectItem key={gender.value} value={gender.value}>
-                      {gender.label}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="w-full h-[1px] bg-[#F0F1F5]"></div>
-          <div className="mb-6 mt-3">
-            <div className="flex items-center mb-4">
-              <CheckboxWithLabel label="تحديد الفترة" />
-            </div>
-            <div className="grid grid-cols-2 gap-2 mb-4">
-              <Button className="bg-blue-600 text-white " onClick={() => setClanFrom(!clanFrom)}>
-                من
-              </Button>
-              <Button className="bg-blue-600 text-white" onClick={() => setClanTo(!clanTo)}>
-                إلى
-              </Button>
-            </div>
-            {clanFrom ? (
-              <Calendar
-                mode="single"
-                selected={dateFrom}
-                onSelect={setDateFrom}
-                className="rounded-md border "
-              />
-            ) : null}
-            {clanTo ? (
-              <Calendar
-                mode="single"
-                selected={dateTo}
-                onSelect={setDateTo}
-                className="rounded-md border "
-              />
-            ) : null}
           </div>
         </div>
 
