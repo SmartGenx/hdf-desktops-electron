@@ -458,6 +458,8 @@ class ApplicantService {
           phoneNumber: dismissal.Accredited.applicant.phoneNumber,
           numberOfRfid: dismissal.Accredited.applicant.phoneNumber
         }
+       const Month = dismissal.month
+       console.log("🚀 ~ ApplicantService ~ reports ~ Month:", Month)
         const state = dismissal.Accredited.state
         const Namedirectorate = dismissal.Accredited.applicant.directorate.name
         const Namecategory = dismissal.Accredited.applicant.category.SupportRatio + '%'
@@ -476,9 +478,11 @@ class ApplicantService {
           Namedirectorate,
           state,
           dismissals,
-          Namecategory
+          Namecategory,
+          Month,
         )
       })
+
 
       return {
         info: reports,
@@ -521,6 +525,7 @@ class ApplicantService {
           phoneNumber: dismissal.Accredited.applicant.phoneNumber,
           numberOfRfid: dismissal.Accredited.applicant.phoneNumber
         }
+        const Month = dismissal.month
         const state = dismissal.Accredited.state
         const Namedirectorate = dismissal.Accredited.applicant.directorate.name
         const Namecategory = dismissal.Accredited.applicant.category.SupportRatio + '%'
@@ -539,7 +544,8 @@ class ApplicantService {
           Namedirectorate,
           state,
           dismissals,
-          Namecategory
+          Namecategory,
+          Month,
         )
       })
       return reports

@@ -1,5 +1,5 @@
 class ApplicantByDirectorateViewModel {
-  constructor(Applicant,DiseaseName,Namedirectorate,state,dismissals,Namecategory) {
+  constructor(Applicant,DiseaseName,Namedirectorate,state,dismissals,Namecategory,Month) {
     this.name = Applicant.name;
     this.gender = Applicant.gender;
     this.disease = DiseaseName;
@@ -9,6 +9,8 @@ class ApplicantByDirectorateViewModel {
     this.totalAmount = dismissals.totalAmount ; // Provide a default value if Dismissal is null
     this.supportRatio = Namecategory ; // Assuming supportRatio is a property you need
     this.approvedAmount = dismissals.approvedAmount ;
+    this.Months = Month;
+
 
   }
 }
