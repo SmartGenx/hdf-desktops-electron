@@ -52,7 +52,7 @@ export default function BackupDialog() {
         '/backUp',
         {
           backupName: datas.backupName,
-          token:token
+          token: token
         },
         {
           headers: {
@@ -66,7 +66,10 @@ export default function BackupDialog() {
         variant: 'success',
         description: 'تمت الاضافة بنجاح'
       })
-      queryClient.invalidateQueries({ queryKey: ['ApplicantByDirectorateViewModel'] })
+      queryClient.invalidateQueries({ queryKey: ['backUp'] })
+      setTimeout(() => {
+        window.location.reload()
+      }, 1000)
       navigate('/backup')
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -81,7 +84,7 @@ export default function BackupDialog() {
   })
   useEffect(() => {
     form.setValue('token', token || '')
-  },[])
+  }, [])
   const onSubmit = (datas: BackUpFormValue) => {
     mutate(datas)
   }
@@ -126,7 +129,6 @@ export default function BackupDialog() {
                   )}
                 />
               </div>
-
             </div>
             <DialogFooter className="flex gap-2">
               <DialogClose asChild>

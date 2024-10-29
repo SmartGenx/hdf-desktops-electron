@@ -19,6 +19,7 @@ export interface BackUpInfos {
 export default function BackUpIndex() {
   const authToken = useAuthHeader()
   const {
+    refetch,
     isPending: isPendingViewModel,
     isError: _isErrorViewModel,
     error: errorViewModel,
@@ -33,13 +34,13 @@ export default function BackUpIndex() {
       })
   })
 
-  console.log('BackUps', BackUps?.data)
   if (isPendingViewModel)
     return (
       <div className="flex justify-center items-center w-full ">
         <LoaderIcon className="mt-12 flex animate-spin items-center justify-end duration-1000" />
       </div>
     )
+
   if (errorViewModel) return 'An error has occurred: ' + errorViewModel.message
   return (
     <>

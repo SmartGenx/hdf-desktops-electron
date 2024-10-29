@@ -1,35 +1,27 @@
-
-const { exec } = require('child_process');
-const path = require('path');
-const fs = require('fs');
+const { exec } = require('child_process')
+const path = require('path')
+const fs = require('fs')
 const jwt = require('jsonwebtoken')
 const { JWT_SECRET } = require('../secrets')
 
-const { databaseService } = require('../database'); // Adjust the import path as needed
+const { databaseService } = require('../database') // Adjust the import path as needed
 
 const backupDatabase = async (req, res) => {
   try {
-
-    const dbName = 'Hdf_electron';
-    const dbUser = 'postgres';
-    const dbPassword = 'sami2020';
-    const dbPort = 5432;
-    const token = req.body.token;
-    const backupPath = 'D:\\backup';
-    const backupName = req.body.backupName;
+    const dbName = 'Hdf_electron'
+    const dbUser = 'postgres'
+    const dbPassword = '123'
+    const dbPort = 5432
+    const token = req.body.token
+    const backupPath = 'D:\\backup'
+    const backupName = req.body.backupName
 
     const payload = jwt.verify(token, JWT_SECRET)
 
-
-
-
-
     if (!dbName || !dbUser || !dbPassword || !backupPath || !backupName) {
-      res
-        .status(400)
-        .json({
-          error: 'Database name, user, password, backup path, and backup name are required.'
-        })
+      res.status(400).json({
+        error: 'Database name, user, password, backup path, and backup name are required.'
+      })
       return
     }
 
@@ -51,19 +43,17 @@ const backupDatabase = async (req, res) => {
       delete process.env.PGPASSWORD
 
       if (error) {
-
-        console.error(`Backup error: ${error}`);
-        return res.status(500).json({ error: 'Backup process failed.' });
+        console.error(`Backup error: ${error}`)
+        return res.status(500).json({ error: 'Backup process failed.' })
       }
       if (stderr) {
-        console.error(`Backup stderr: ${stderr}`);
-        return res.status(500).json({ error: 'Error during the backup process.' });
+        console.error(`Backup stderr: ${stderr}`)
+        return res.status(500).json({ error: 'Error during the backup process.' })
       }
       console.log(`Backup successful! Saved to ${outputPath}`)
 
-
       // Move the file to a specified download folder
-      const downloadPath = backupPath;
+      const downloadPath = backupPath
       if (!fs.existsSync(downloadPath)) {
         fs.mkdirSync(downloadPath, { recursive: true })
       }
@@ -75,18 +65,22 @@ const backupDatabase = async (req, res) => {
           return res.status(500).send('Could not move the file to the download folder')
         }
 
-        console.log(`File moved to: ${downloadOutputPath}`);
+        console.log(`File moved to: ${downloadOutputPath}`)
 
         try {
-          const backupServices = databaseService.getbackupServices();
-          await backupServices.createbackup(downloadOutputPath, payload.name);
-          res.status(200).json({ message: `Backup successfully created and moved to ${downloadOutputPath}` });
+          const backupServices = databaseService.getbackupServices()
+          await backupServices.createbackup(downloadOutputPath, payload.name)
+          res
+            .status(200)
+            .json({ message: `Backup successfully created and moved to ${downloadOutputPath}` })
         } catch (dbError) {
-          console.error('Error saving backup info to the database:', dbError);
-          res.status(500).json({ error: 'Backup created but failed to save information to the database.' });
+          console.error('Error saving backup info to the database:', dbError)
+          res
+            .status(500)
+            .json({ error: 'Backup created but failed to save information to the database.' })
         }
-      });
-    });
+      })
+    })
   } catch (error) {
     console.error('Unexpected error:', error)
     res.status(500).json({ error: 'An unexpected error occurred.' })

@@ -8,7 +8,7 @@ export default function useNavItems() {
           href: '/',
           icon: 'dashboard',
           label: 'الصفحة الرئيسية',
-          roles: ['Admin', 'Coordinator',"Pharmacist"]
+          roles: ['Admin', 'Coordinator', 'Pharmacist']
         }
       ]
     },
@@ -71,7 +71,7 @@ export default function useNavItems() {
           icon: 'report',
           label: 'تهيئة النظام',
           disabled: false,
-          roles: ['Admin', 'Coordinator']
+          roles: ['Admin']
         },
         {
           href: '/backup',
