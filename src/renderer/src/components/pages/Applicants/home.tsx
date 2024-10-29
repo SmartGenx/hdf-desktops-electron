@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react'
 import ApplicantsSearch from './applicants-search'
 import LackOfAir from '../../../assets/images/lack-of-air.png'
 import StatistCardWithImage from '@renderer/components/statistCardWithImage'
+import { LoaderIcon } from 'lucide-react'
 
 export type statistCardInfo = {
   count: number
@@ -57,8 +58,8 @@ const Home = () => {
           categoryGlobalId: categoryGlobalId,
           state: state,
           gender: gender,
-          "page": page || 1,
-          "pageSize": 5
+          page: page || 1,
+          pageSize: 5
         },
         headers: {
           Authorization: authToken()
@@ -82,7 +83,13 @@ const Home = () => {
     fetchStatist()
   }, [])
 
-  if (isPending) return 'Loading...'
+  if (isPending) {
+    return (
+      <div className="flex justify-center items-center w-full ">
+        <LoaderIcon className="mt-12 flex animate-spin items-center justify-end duration-1000" />
+      </div>
+    )
+  }
   if (error) return 'An error has occurred: ' + error.message
   return (
     <div>

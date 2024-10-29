@@ -10,6 +10,7 @@ import LocationPin from '../../../assets/images/location-pin.png'
 import map from '../../../assets/images/map.png'
 import yemen from '../../../assets/images/yemen.png'
 import { useQuery } from '@tanstack/react-query'
+import { LoaderIcon } from 'lucide-react'
 export type statistCardInfo = {
   diseaseCount: number
   GovernorateCount: number
@@ -94,7 +95,11 @@ const Home = () => {
       })
   })
   if (isPending) {
-    return 'Loading...'
+    return (
+      <div className="flex justify-center items-center w-full ">
+        <LoaderIcon className="mt-12 flex animate-spin items-center justify-end duration-1000" />
+      </div>
+    )
   }
   return (
     <div ref={divRef}>

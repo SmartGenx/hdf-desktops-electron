@@ -548,6 +548,7 @@ class DismissalService {
       const { startDispenseDate: start, endispenseDate: end } = pharmacy
       const today = new Date()
       const result = isDateBetween(today, start, end)
+     
       if (!result) {
         return { message: 'انتهاء وقت الصرف في هذه الصيدلية' }
       }
