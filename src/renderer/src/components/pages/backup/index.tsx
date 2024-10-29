@@ -19,7 +19,6 @@ export interface BackUpInfos {
 export default function BackUpIndex() {
   const authToken = useAuthHeader()
   const {
-    refetch,
     isPending: isPendingViewModel,
     isError: _isErrorViewModel,
     error: errorViewModel,
