@@ -15,7 +15,7 @@ class AccreditedService {
     this.prisma = prisma
   }
 
- 
+
   async searchAccreditations(dataFilter) {
     function getDateMonthsFromNow(months) {
       let currentDate = new Date()
@@ -49,17 +49,9 @@ class AccreditedService {
       })
 
       for (const accredited of accreditations) {
-        const prescriptions = await this.prisma.prescription.findMany({
+        const prescriptions = await this.prisma.prescription.findFirst({
           where: { accreditedGlobalId: accredited.globalId },
-          orderBy: [
-            {
-              prescriptionDate: 'desc' // Primary sort by date in descending order
-            },
-            {
-              id: 'desc' // Secondary sort by id in descending order
-            }
-          ],
-          take: 1 // Take only the first record after ordering
+          // Take only the first record after ordering
         })
         const dismissal = await this.prisma.dismissal.findFirst({
           where: { accreditedGlobalId: accredited.globalId },
@@ -69,7 +61,7 @@ class AccreditedService {
         })
 
         const dismissalDate = dismissal?.dateToDay
-        const renewalDate = prescriptions[0]?.renewalDate
+        const renewalDate = prescriptions?.renewalDate
         const renewalDateObj = new Date(renewalDate)
         const dismissalDateObj = new Date(dismissalDate)
 
