@@ -68,7 +68,7 @@ export default function useNavItems() {
         // },
         {
           href: '/Initialization',
-          icon: 'report',
+          icon: 'settingsAdmin',
           label: 'تهيئة النظام',
           disabled: false,
           roles: ['Admin']
