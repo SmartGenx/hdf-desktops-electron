@@ -50,7 +50,6 @@ const Dismissal = () => {
       })
   })
 
-  console.log('dismissal', dismissal?.data)
 
   useEffect(() => {
     const fetchStatist = async () => {

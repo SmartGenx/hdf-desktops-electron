@@ -20,25 +20,11 @@ interface DashboardNavProps {
 }
 
 export default function DashboardNav({ items, expanded = true, itemSetting }: DashboardNavProps) {
-  // const [user, setUser] = useState<{ role: string } | null>(null)
+
   const authUser = useAuthUser()
   const user = authUser()
 
-  // console.log('user', user)
-  // console.log('authToken', authUser())
-  // useEffect(() => {
-  //   const authState = localStorage.getItem('_auth_state')
-  //   if (authState) {
-  //     try {
-  //       const authData = JSON.parse(authState)
-  //       if (authData && authData.user) {
-  //         setUser(authData.user)
-  //       }
-  //     } catch (error) {
-  //       console.error('Error parsing auth state:', error)
-  //     }
-  //   }
-  // }, [])
+
   const signOut = useSignOut()
   const location = useLocation()
   const path = location.pathname
@@ -50,7 +36,6 @@ export default function DashboardNav({ items, expanded = true, itemSetting }: Da
   if (!items?.length) {
     return null
   }
-  console.log('user', user?.role)
 
   const filterNavItemsByRole = (navItems: NavItem[]) => {
     return navItems

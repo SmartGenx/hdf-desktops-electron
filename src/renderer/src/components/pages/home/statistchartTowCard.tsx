@@ -74,10 +74,7 @@ const StatistchartTowCard = () => {
         }
       })
   })
-  console.log(
-    'staticsPer',
-    staticsPer?.data.applicantMonthlyGenderCountsWithSquareCount.monthlyCounts
-  )
+ 
   const [chartData, setChartData] = useState<{
     labels: string[]
     datasets: {
@@ -107,26 +104,7 @@ const StatistchartTowCard = () => {
     ]
   })
   useEffect(() => {
-    // Static data for demonstration
-    // const staticData = [
-    //   { month: 'January', male: 20, female: 15 },
-    //   { month: 'February', male: 10, female: 20 },
-    //   { month: 'March', male: 10, female: 10 },
-    //   { month: 'April', male: 30, female: 40 },
-    //   { month: 'April', male: 15, female: 30 },
-    //   { month: 'April', male: 30, female: 60 },
-    //   { month: 'April', male: 10, female: 30 },
-    //   { month: 'April', male: 30, female: 20 },
-    //   { month: 'April', male: 10, female: 30 },
-    //   { month: 'April', male: 50, female: 30 },
-    //   { month: 'April', male: 30, female: 15 }
-    // ]
-
-    // console.log(staticsPer?.data.applicantMonthlyGenderCountsWithSquareCount.monthlyCounts.map((X)=>X.females))
-    // const labels = staticData.map((item) => item.month)
-    // const maleData = staticData.map((item) => item.male)
-    // const femaleData = staticData.map((item) => item.female)
-
+    
     const monthNames = [
       'January',
       'February',

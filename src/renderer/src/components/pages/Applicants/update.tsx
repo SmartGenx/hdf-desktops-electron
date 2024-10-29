@@ -177,8 +177,7 @@ export default function UpdateApplicant() {
       })
   })
 
-  console.log('applicants', applicants?.data)
-  console.log('applicant name', applicants?.data[0].name)
+
   React.useEffect(() => {
     if (applicants?.data) {
       form.reset({

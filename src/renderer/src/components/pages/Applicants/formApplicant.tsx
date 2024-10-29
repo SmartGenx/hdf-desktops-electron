@@ -102,7 +102,6 @@ export default function FormApplicant() {
     { value: 'F', label: 'انثى' }
   ])
   const [delayedSubmitting, _setDelayedSubmitting] = useState(form.formState.isSubmitting)
-  console.log('selectedDirectorate?.globalId', selectedDirectorate?.globalId)
   React.useEffect(() => {
     const fetchData = async () => {
       try {
@@ -190,21 +189,18 @@ export default function FormApplicant() {
   })
   React.useEffect(() => {
     if (selectedDirectorate?.globalId) {
-      console.log('selectedDirectorate?.globalId', selectedDirectorate.globalId)
       form.setValue('directorateGlobalId', selectedDirectorate.globalId)
     } else {
       form.setValue('directorateGlobalId', '')
     }
 
     if (selectedCategory?.globalId) {
-      console.log('selectedCategory?.globalId', selectedCategory.globalId)
       form.setValue('categoryGlobalId', selectedCategory.globalId)
     } else {
       form.setValue('categoryGlobalId', '')
     }
 
     if (selectedDisease?.globalId) {
-      console.log('selectedDisease?.globalId', selectedDisease.globalId)
       form.setValue('diseaseGlobalId', selectedDisease.globalId)
     } else {
       form.setValue('diseaseGlobalId', '')

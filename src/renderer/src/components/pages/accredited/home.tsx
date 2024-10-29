@@ -24,7 +24,7 @@ const Home = () => {
   const state = searchParams.get('state')
   const query = searchParams.get('query')
   const page = searchParams.get('page')
-  console.log('query', query)
+
   const [statist, setStatist] = useState<statistCardInfo | undefined>()
   const authToken = useAuthHeader()
   const {
