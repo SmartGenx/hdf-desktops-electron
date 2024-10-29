@@ -4,37 +4,51 @@ const { databaseService } = require('./database');
 
 const synchronizeAllTables = async () => {
   const tables = [
-    'Role',
-    'User',
-    'Category',
-    'Governorate',
-    'Directorate',
-    'Square',
-    'Disease',
-    'Applicant',
-    'Pharmacy',
-    'Accredited',
-    'DiseasesApplicants',
-    'Prescription',
-    'Attachment',
-    'Dismissal',
+    'role',
+    'user',
+    'category',
+    'governorate',
+    'directorate',
+    'square',
+    'disease',
+    'applicant',
+    'pharmacy',
+    'accredited',
+    'diseasesApplicants',
+    'prescription',
+    'attachment',
+    'dismissal',
   ];
 
   for (const table of tables) {
     await databaseService.synchronizeTable(table);
+    console.log("🚀 ~ synchronizeAllTables ~ table:", table)
+
     await databaseService.fetchUpdatesFromServer(table);
-    await databaseService.synchronizeS3ToLocal();
-    await databaseService.synchronizeLocalToS3();
+  }
+};
 
+const synchronizeBuckets = async () => {
+  await databaseService.synchronizeS3ToLocal();
+  await databaseService.synchronizeLocalToS3();
+};
 
+const synchronizeAll = async () => {
+  try {
+    // مزامنة جميع الجداول
+    await synchronizeAllTables();
 
+    // مزامنة البوكيت
+    await synchronizeBuckets();
+  } catch (error) {
+    console.error('Error during synchronization:', error);
   }
 };
 
 // تشغيل المزامنة عند بدء العملية
-synchronizeAllTables().catch(console.error);
+synchronizeAll().catch(console.error);
 
 // جدولة المزامنة لتعمل كل ساعة
 setInterval(() => {
-  synchronizeAllTables().catch(console.error);
+  synchronizeAll().catch(console.error);
 }, 3600000); // كل ساعة
