@@ -1,5 +1,4 @@
 import Boutton from '@renderer/components/Boutton'
-import SearchInput from '@renderer/components/searchInput'
 import { useSearchParams } from 'react-router-dom'
 import FilterDrawer from './filter'
 import { useAuthHeader } from 'react-auth-kit'
@@ -12,11 +11,15 @@ import ComponentToPrint from './ComponentToPrint'
 import { LoaderIcon, Printer } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import * as XLSX from 'xlsx'
+import FollowSearch from './follow-search'
 
 export default function FollowTheRecipes() {
   const [dataPrint, setDataPrint] = useState<PrintFollowing[] | any[]>([])
   const [searchParams] = useSearchParams()
   const page = searchParams.get('page')
+  const query = searchParams.get('query')
+  const directorate = searchParams.get('applicant[directorate][name][contains]')
+  const dieases = searchParams.get('applicant[diseasesApplicants][some][Disease][name][contains]')
   const authToken = useAuthHeader()
   const {
     isPending,
@@ -24,10 +27,16 @@ export default function FollowTheRecipes() {
     isError,
     data: AllAccreditedsForPdf
   } = useQuery({
-    queryKey: ['AllAccreditedsForPdf', page],
+    queryKey: ['AllAccreditedsForPdf', page, query, dieases, directorate],
     queryFn: () =>
       getApi<AllAccreditedsForPdf>('/accredited/AllAccreditedsForPdf', {
-        params: { page: page || 1, pageSize: 5 },
+        params: {
+          'applicant[name][contains]': query,
+          'applicant[directorate][name][contains]': directorate,
+          'applicant[diseasesApplicants][some][Disease][name][contains]': dieases,
+          page: page || 1,
+          pageSize: 5
+        },
         headers: {
           Authorization: authToken()
         }
@@ -92,7 +101,7 @@ export default function FollowTheRecipes() {
           <h1 className="text-2xl font-medium">جدول متابعة الوصفات</h1>
         </div>
         <div className="flex gap-2">
-          <SearchInput />
+          <FollowSearch />
           <FilterDrawer />
           <ReactToPrint
             trigger={() => (

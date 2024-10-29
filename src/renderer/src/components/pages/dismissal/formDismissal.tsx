@@ -50,7 +50,8 @@ export default function FormDismissal() {
   const form = useForm<AccreditedFormValue>({
     resolver: zodResolver(formSchema)
   })
-  const [states, _setStates] = useState([{ value: 'active', label: 'نشط' }])
+  const [states, _setStates] = useState('نشط')
+
   const [numberOfRfid, setNumberOfRfid] = useState('')
   const [number, setNumber] = useState<AccreditedRes>()
 
@@ -281,7 +282,7 @@ export default function FormDismissal() {
           amountPaid: +datas.amountPaid,
           accreditedGlobalId: datas.accreditedGlobalId,
           pharmacyGlobalId: datas.pharmacyGlobalId,
-          state: datas.state
+          state: states
         },
         {
           headers: {
@@ -320,6 +321,7 @@ export default function FormDismissal() {
       }
       queryClient.invalidateQueries({ queryKey: ['dismissal'] })
       queryClient.invalidateQueries({ queryKey: ['accredited'] })
+      queryClient.invalidateQueries({ queryKey: ['ApplicantByDirectorateViewModel'] })
       navigate('/dismissal')
     },
     onError: (error: any) => {
@@ -375,7 +377,7 @@ export default function FormDismissal() {
             <Button
               variant={'outline'}
               className="w-[120px]"
-              onClick={() => navigate('/accredited')}
+              onClick={() => navigate('/dismissal')}
             >
               رجوع
             </Button>
@@ -610,44 +612,14 @@ export default function FormDismissal() {
                   <div className="grid grid-cols-3 gap-2">
                     <div className="col-span-1">
                       <label htmlFor="" className="text-[#A2A1A8]">
-                        رقم المعتمد
+                        رقم هاتف المعتمد
                       </label>
                       <FormInput
-                        label="ادخل رقم المعتمد"
+                        label="ادخل رقم هاتف المعتمد"
                         className="h-10 p-0 rounded-xl text-sm"
                         placeholder="المعنمد"
                         value={number?.info[0].applicant?.phoneNumber || ''}
                         disabled
-                      />
-                    </div>
-                    <div className="col-span-1">
-                      <label htmlFor="" className="text-[#A2A1A8]">
-                        الحاله
-                      </label>
-                      <FormField
-                        control={form.control}
-                        name="state"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <SelectTrigger className="">
-                                  <SelectValue placeholder="اختر الحالة" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectGroup>
-                                    <SelectLabel>الحالات</SelectLabel>
-                                    {states.map((state) => (
-                                      <SelectItem key={state.value} value={state.label}>
-                                        {state.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectGroup>
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                          </FormItem>
-                        )}
                       />
                     </div>
                   </div>

@@ -1,5 +1,4 @@
 import Boutton from '@renderer/components/Boutton'
-import SearchInput from '@renderer/components/searchInput'
 import { useSearchParams } from 'react-router-dom'
 import FilterDrawer from './filter'
 import { useAuthHeader } from 'react-auth-kit'
@@ -12,11 +11,15 @@ import ComponentToPrint from './ComponentToPrint'
 import { LoaderIcon, Printer } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import * as XLSX from 'xlsx'
+import WaitingSearch from './waiting-search'
 
 export default function WaitingList() {
   const [searchParams] = useSearchParams()
   const [dataPrint, setDataPrint] = useState<Print[] | any[]>([])
   const page = searchParams.get('page')
+  const query = searchParams.get('query')
+  const directorate = searchParams.get('directorate[name][contains]')
+  const dieases = searchParams.get('diseasesApplicants[some][Disease][name]')
   const authToken = useAuthHeader()
   const {
     isPending,
@@ -24,10 +27,16 @@ export default function WaitingList() {
     isError,
     data: applicantsReportCategory
   } = useQuery({
-    queryKey: ['applicantsReportCategory', page],
+    queryKey: ['applicantsReportCategory', page, directorate, dieases],
     queryFn: () =>
       getApi<applicantsReportCategoryInfo>('/applicant/applicantsReportCategory', {
-        params: { page: page || 1, pageSize: 5 },
+        params: {
+          'name[contains]': query,
+          'directorate[name][contains]': directorate,
+          'diseasesApplicants[some][Disease][name]': dieases,
+          page: page || 1,
+          pageSize: 5
+        },
         headers: {
           Authorization: authToken()
         }
@@ -98,7 +107,7 @@ export default function WaitingList() {
           <h1 className="text-2xl font-medium">جدول قائمة الأنتظار</h1>
         </div>
         <div className="flex gap-2">
-          <SearchInput />
+          <WaitingSearch />
           <FilterDrawer />
 
           <ReactToPrint
