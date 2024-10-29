@@ -55,22 +55,7 @@ export default function FormDismissal() {
   const [numberOfRfid, setNumberOfRfid] = useState('')
   const [number, setNumber] = useState<AccreditedRes>()
 
-  // const checkNumOf = () => {
-  //   const { data: checkNoo, isSuccess } = useQuery({
-  //     queryKey: ['checkNoo'],
-  //     queryFn: () =>
-  //       getApi('/dismissal/check', {
-  //         params: { numberOfRfid },
-  //         headers: {
-  //           Authorization: authToken()
-  //         }
-  //       })
-  //   })
 
-  //   if (isSuccess) {
-  //     console.log('isSuccess')
-  //   }
-  // }
   const [checkNum, setCheckNum] = useState('')
   const { mutate: checkMutation } = useMutation({
     // mutationKey: ['AccreditedInfo'],
@@ -150,7 +135,7 @@ export default function FormDismissal() {
   const [totalAmounts, setTotalAmounts] = useState<number>(0)
   const [totalPrice, setTotalPrice] = useState<number>(0)
 
-  console.log('totalPrice', totalPrice)
+  
   React.useEffect(() => {
     form.setValue("state",states)
     if (number && number.info.length > 0) {
@@ -178,12 +163,11 @@ export default function FormDismissal() {
       const approvedPercentage = (50000 * approvedAmounts) / 100
       const reducedAmount = 50000 - approvedPercentage
       computedPrice = reducedAmount + excessAmount
-      console.log('totalAmounts', totalAmounts)
-      console.log('approvedAmounts', approvedAmounts)
+     
     } else {
       computedPrice = totalAmounts - (totalAmounts * approvedAmounts) / 100
     }
-    console.log('computedPrice', computedPrice)
+   
     setTotalPrice(computedPrice)
   }, [totalAmounts, approvedAmounts, number])
 
@@ -230,10 +214,6 @@ export default function FormDismissal() {
 
   const [delayedSubmitting, _setDelayedSubmitting] = useState(form.formState.isSubmitting)
 
-  console.log('numbernumbernumber', number?.info[0].applicant?.category.SupportRatio)
-  // const name =
-  //   applicant?.data?.find((applicant) => applicant?.globalId === number?.info[0]?.applicantGlobalId)
-  //     ?.name || null
 
   React.useEffect(() => {
     if (number && number.info.length > 0) {

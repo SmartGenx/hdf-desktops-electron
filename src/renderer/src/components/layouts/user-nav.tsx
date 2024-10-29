@@ -26,7 +26,6 @@ export default function UserNav() {
   const authUser = useAuthUser()
   const user = authUser()
 
-  console.log('user', user)
   if (issAuthenticated()) {
     return (
       <DropdownMenu>

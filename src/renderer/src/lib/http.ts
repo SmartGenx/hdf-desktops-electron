@@ -8,17 +8,10 @@ export const axiosInstance = axios.create({
 
 type Config = AxiosRequestConfig<unknown> | undefined
 
-// function isAuth() {
-//   const isAuthenticated = useIsAuthenticated()
-//   console.log(isAuthenticated)
-//   if (isAuthenticated) return true
 
-//   redirect('login')
-//   return false
-// }
 
 export function getApi<T>(url: string, config?: Config) {
-  // if (isAuth()) return
+
   return axiosInstance.get<T>(url, config)
 }
 
@@ -27,8 +20,7 @@ export function putApi<T>(url: string, data: unknown, config?: Config) {
 }
 
 export function postApi<T>(url: string, data: unknown, config?: Config) {
-  // if (isAuth()) return
-  // console.log(url)
+  
   return axiosInstance.post<T>(url, data, config)
 }
 

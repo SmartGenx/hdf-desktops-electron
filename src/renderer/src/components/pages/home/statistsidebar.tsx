@@ -95,10 +95,7 @@ const Statistsidebar: React.FC<StatistSidebarProps> = ({ isExpended }) => {
         }
       })
   })
-  console.log(
-    'staticsPer',
-    staticsPer?.data.applicantMonthlyGenderCountsWithSquareCount.monthlyCounts
-  )
+ 
 
   const labels = [
     'يناير',

@@ -43,7 +43,7 @@ export default function BackupDialog() {
   }
   // Example usage
   const token = getTokenFromLocalStorage()
-  console.log('token:', token)
+
 
   const { mutate } = useMutation({
     mutationKey: ['uploadBackUp'],

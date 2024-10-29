@@ -49,7 +49,7 @@ export default function UpdateAccredited() {
   const queryClient = useQueryClient()
   const [square, setSquare] = useState<Square[]>([])
   const [pharmacy, setPharmacy] = useState<Pharmacy[]>([])
-  const [applicantType, setApplicantType] = useState<applicantType[]>([])
+  const [_applicantType, setApplicantType] = useState<applicantType[]>([])
   const form = useForm<AccreditedFormValue>({
     resolver: zodResolver(formSchema)
   })
@@ -201,8 +201,7 @@ export default function UpdateAccredited() {
       })
     }
   })
-  console.log('accredited?.data[0].applicantGlobalId', accredited?.data[0].applicantGlobalId)
-  console.log('applicantType', applicantType)
+
   const onSubmit = async (data: AccreditedFormValue) => {
     // console.log(data)
     mutate(data)

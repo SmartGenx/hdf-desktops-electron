@@ -55,7 +55,7 @@ export default function FormAccredited() {
   const [selectedPharmacy, setSelectedPharmacy] = useState<Pharmacy | null>(null)
   const [applicantType, setApplicantType] = useState<applicantType[]>([])
   const [selectedApplicantType, setSelectedApplicantType] = useState<applicantType | null>(null)
-  console.log('asdas', selectedApplicantType)
+
   const form = useForm<AccreditedFormValue>({
     resolver: zodResolver(formSchema)
   })
@@ -172,21 +172,18 @@ export default function FormAccredited() {
 
   React.useEffect(() => {
     if (selectedPharmacy?.globalId) {
-      console.log('selectedPharmacy?.globalId', selectedPharmacy.globalId)
       form.setValue('pharmacyGlobalId', selectedPharmacy.globalId)
     } else {
       form.setValue('pharmacyGlobalId', '')
     }
     //
     if (selectedSquare?.globalId) {
-      console.log('selectedSquare?.globalId', selectedSquare.globalId)
       form.setValue('squareGlobalId', selectedSquare.globalId)
     } else {
       form.setValue('squareGlobalId', '')
     }
     //
     if (selectedApplicantType?.globalId) {
-      console.log('selectedApplicantType?.globalId', selectedApplicantType.globalId)
       form.setValue('applicantGlobalId', selectedApplicantType.globalId)
     } else {
       form.setValue('applicantGlobalId', '')

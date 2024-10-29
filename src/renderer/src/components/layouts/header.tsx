@@ -6,15 +6,13 @@ import UserNav from './user-nav'
 
 export default function Header() {
   const currentPath = useCurrentNav()
-  console.log(currentPath)
 
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen)
   }
-  console.log('vndvkjnvjnkjnlvnkjvndkjvdvnbkj' + currentPath?.label)
-
+ 
   return (
     <>
       <div className="top-6 z-20  shadow-lg  border bg-background">
