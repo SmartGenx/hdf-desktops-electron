@@ -8,7 +8,6 @@ const convertEqualsToInt = require('../utilty/convertToInt')
 const convertTopLevelStringBooleans = require('../utilty/convertTopLevelStringBooleans')
 const { info } = require('console')
 
-
 // Promisify fs methods to use async/await
 
 class AccreditedService {
@@ -18,156 +17,295 @@ class AccreditedService {
 
   // Ensure local directory exists for a user
 
-  async searchAccreditations(dataFillter) {
+  // async searchAccreditations(dataFillter) {
+  //   function getDateMonthsFromNow(months) {
+  //     let currentDate = new Date()
+  //     let currentMonth = currentDate.getMonth()
+  //     let currentYear = currentDate.getFullYear()
+
+  //     let newMonth = currentMonth + months
+  //     let newYear = currentYear
+
+  //     if (newMonth > 11) {
+  //       newYear += 1
+  //       newMonth -= 12
+  //     }
+
+  //     let newDate = new Date(currentDate)
+  //     newDate.setMonth(newMonth)
+  //     newDate.setFullYear(newYear)
+
+  //     return newDate
+  //   }
+  //   const threeMonthsFromNow = getDateMonthsFromNow(0)
+  //   console.log(
+  //     '🚀 ~ AccreditedService ~ searchAccreditations ~ threeMonthsFromNow:',
+  //     threeMonthsFromNow
+  //   )
+  //   const dataOfDay = getDateMonthsFromNow(0)
+
+  //   try {
+  //     const accreditations = await this.prisma.accredited.findMany({
+  //       include: {
+  //         applicant: {
+  //           include: {
+  //             diseasesApplicants: {
+  //               include: {
+  //                 Disease: true // Include Disease details for each DiseasesApplicants relation
+  //               }
+  //             }
+  //           }
+  //         },
+  //         square: true,
+  //         dismissal: {
+  //           orderBy: {
+  //             id: 'desc'
+  //           },
+  //           take: 1
+  //         }
+  //       }
+  //     })
+
+  //     accreditations.map(async (accredited) => {
+  //       const prescriptions = await this.prisma.prescription.findMany({
+  //         where: { accreditedGlobalId: accredited.globalId },
+  //         orderBy: [
+  //           {
+  //             prescriptionDate: 'desc' // Primary sort by date in descending order
+  //           },
+  //           {
+  //             id: 'desc' // Secondary sort by id in descending order
+  //           }
+  //         ],
+  //         take: 1 // Take only the first record after ordering
+  //       })
+  //       const dismissal = await this.prisma.dismissal.findFirst({
+  //         where: { accreditedGlobalId: accredited.globalId }
+  //       })
+
+  //       const datedismissal = dismissal?.dateToDay
+  //       const renewalDate = prescriptions[0]?.renewalDate
+  //       const originalRenewalDate = new Date(renewalDate)
+  //       const originalDatedismissal = new Date(datedismissal)
+
+  //       const threeMonthsFromRenewalDate = new Date(originalRenewalDate)
+
+  //       threeMonthsFromRenewalDate.setMonth(threeMonthsFromRenewalDate.getMonth() + 3)
+  //       const threeMonthsFromDatedismissal = new Date(originalDatedismissal)
+
+  //       threeMonthsFromDatedismissal.setMonth(threeMonthsFromDatedismissal.getMonth() + 3)
+  //       console.log("🚀 ~ AccreditedService ~ accreditations.map ~ threeMonthsFromRenewalDate:", threeMonthsFromRenewalDate)
+
+  //       let newState
+  //       console.log("🚀 ~ AccreditedService ~ accreditations.map ~ renewalDate:", renewalDate)
+
+  //       if (threeMonthsFromRenewalDate < dataOfDay || threeMonthsFromDatedismissal < dataOfDay) {
+  //         newState = 'موقف'
+  //       } else if (renewalDate < dataOfDay) {
+  //         newState = 'منتهي'
+  //       } else {
+  //         newState = 'مستمر'
+  //       }
+
+  //       await this.prisma.accredited.update({
+  //         where: { globalId: accredited.globalId },
+  //         data: {
+  //           state: newState,
+  //           version: { increment: 1 } // Increment version for conflict resolution
+  //         }
+  //       })
+  //     })
+
+  //     const page = dataFillter?.page
+  //     const pageSize = dataFillter?.pageSize
+  //     delete dataFillter?.page
+  //     delete dataFillter?.pageSize
+  //     let include = dataFillter?.include
+  //     let orderBy = dataFillter?.orderBy
+  //     delete dataFillter?.include
+  //     delete dataFillter?.orderBy
+  //     if (include) {
+  //       const convertTopLevel = convertTopLevelStringBooleans(include)
+  //       include = convertTopLevel
+  //     } else {
+  //       include = {}
+  //     }
+  //     if (dataFillter) {
+  //       dataFillter = convertEqualsToInt(dataFillter)
+  //     } else {
+  //       dataFillter = {}
+  //     }
+
+  //     if (page && pageSize) {
+  //       const skip = (+page - 1) * +pageSize
+  //       const take = +pageSize
+  //       const accredited = await this.prisma.accredited.findMany({
+  //         where: { ...dataFillter, deleted: false },
+  //         include,
+  //         skip: +skip,
+  //         take: +take,
+  //         orderBy
+  //       })
+  //       const total = await this.prisma.accredited.count({
+  //         where: { ...dataFillter, deleted: false }
+  //       })
+  //       return {
+  //         info: accredited,
+  //         total,
+  //         page,
+  //         pageSize
+  //       }
+  //     }
+  //     return await this.prisma.accredited.findMany({
+  //       where: { ...dataFillter, deleted: false },
+  //       include,
+  //       orderBy
+  //     })
+  //   } catch (error) {
+  //     throw new DatabaseError('Error retrieving accreditations.', error)
+  //   }
+  // }
+
+  async searchAccreditations(dataFilter) {
     function getDateMonthsFromNow(months) {
-      let currentDate = new Date()
-      let currentMonth = currentDate.getMonth()
-      let currentYear = currentDate.getFullYear()
-
-      let newMonth = currentMonth + months
-      let newYear = currentYear
-
-      if (newMonth > 11) {
-        newYear += 1
-        newMonth -= 12
-      }
-
-      let newDate = new Date(currentDate)
-      newDate.setMonth(newMonth)
-      newDate.setFullYear(newYear)
-
-      return newDate
+        let currentDate = new Date();
+        let newDate = new Date(currentDate);
+        newDate.setMonth(currentDate.getMonth() + months);
+        return newDate;
     }
-    const threeMonthsFromNow = getDateMonthsFromNow(0)
+
+    const currentDate = getDateMonthsFromNow(0);
     console.log(
-      '🚀 ~ AccreditedService ~ searchAccreditations ~ threeMonthsFromNow:',
-      threeMonthsFromNow
-    )
-    const dataOfDay = getDateMonthsFromNow(0)
+        '🚀 ~ AccreditedService ~ searchAccreditations ~ currentDate:',
+        currentDate
+    );
 
     try {
-      const accreditations = await this.prisma.accredited.findMany({
-        include: {
-          applicant: {
+        const accreditations = await this.prisma.accredited.findMany({
             include: {
-              diseasesApplicants: {
-                include: {
-                  Disease: true // Include Disease details for each DiseasesApplicants relation
+                applicant: {
+                    include: {
+                        diseasesApplicants: {
+                            include: {
+                                Disease: true // Include Disease details for each DiseasesApplicants relation
+                            }
+                        }
+                    }
+                },
+                square: true,
+                dismissal: {
+                    orderBy: {
+                        id: 'desc'
+                    },
+                    take: 1
                 }
-              }
             }
-          },
-          square: true,
-          dismissal: {
-            orderBy: {
-              id: 'desc'
-            },
-            take: 1
-          }
+        });
+
+        for (const accredited of accreditations) {
+            const prescriptions = await this.prisma.prescription.findMany({
+                where: { accreditedGlobalId: accredited.globalId },
+                orderBy: [
+                    {
+                        prescriptionDate: 'desc' // Primary sort by date in descending order
+                    },
+                    {
+                        id: 'desc' // Secondary sort by id in descending order
+                    }
+                ],
+                take: 1 // Take only the first record after ordering
+            });
+            const dismissal = await this.prisma.dismissal.findFirst({
+                where: { accreditedGlobalId: accredited.globalId },
+                orderBy: {
+                    id: 'desc'
+                }
+            });
+
+            const dismissalDate = dismissal?.dateToDay;
+            const renewalDate = prescriptions[0]?.renewalDate;
+            const renewalDateObj = new Date(renewalDate);
+            const dismissalDateObj = new Date(dismissalDate);
+
+            const threeMonthsFromRenewalDate = new Date(renewalDateObj);
+            threeMonthsFromRenewalDate.setMonth(threeMonthsFromRenewalDate.getMonth() + 3);
+
+            const threeMonthsFromDismissalDate = new Date(dismissalDateObj);
+            threeMonthsFromDismissalDate.setMonth(threeMonthsFromDismissalDate.getMonth() + 3);
+
+            console.log("🚀 ~ AccreditedService ~ accreditations.map ~ threeMonthsFromRenewalDate:", threeMonthsFromRenewalDate);
+
+            let newState;
+            console.log("🚀 ~ AccreditedService ~ accreditations.map ~ renewalDate:", renewalDate);
+
+            if (renewalDate < currentDate && threeMonthsFromRenewalDate < currentDate) {
+                newState = 'موقف';
+            } else if (threeMonthsFromDismissalDate < currentDate) {
+                newState = 'موقف';
+            } else if (renewalDate < currentDate) {
+                newState = 'منتهي';
+            } else {
+                newState = 'مستمر';
+            }
+
+            await this.prisma.accredited.update({
+                where: { globalId: accredited.globalId },
+                data: {
+                    state: newState,
+                    version: { increment: 1 } // Increment version for conflict resolution
+                }
+            });
         }
-      })
 
-      accreditations.map(async (accredited) => {
-        const prescriptions = await this.prisma.prescription.findMany({
-          where: { accreditedGlobalId: accredited.globalId },
-          orderBy: [
-            {
-              prescriptionDate: 'desc' // Primary sort by date in descending order
-            },
-            {
-              id: 'desc' // Secondary sort by id in descending order
-            }
-          ],
-          take: 1 // Take only the first record after ordering
-        })
-        const dismissal = await this.prisma.dismissal.findFirst({
-          where: { accreditedGlobalId: accredited.globalId }
-        })
-
-        const datedismissal = dismissal?.dateToDay
-        const renewalDate = prescriptions[0]?.renewalDate
-        const originalRenewalDate = new Date(renewalDate)
-        const originalDatedismissal = new Date(datedismissal)
-
-        const threeMonthsFromRenewalDate = new Date(originalRenewalDate)
-
-        threeMonthsFromRenewalDate.setMonth(threeMonthsFromRenewalDate.getMonth() + 3)
-        const threeMonthsFromDatedismissal = new Date(originalDatedismissal)
-
-        threeMonthsFromDatedismissal.setMonth(threeMonthsFromDatedismissal.getMonth() + 3)
-        console.log("🚀 ~ AccreditedService ~ accreditations.map ~ threeMonthsFromRenewalDate:", threeMonthsFromRenewalDate)
-
-        let newState
-        console.log("🚀 ~ AccreditedService ~ accreditations.map ~ renewalDate:", renewalDate)
-
-        if (threeMonthsFromRenewalDate < dataOfDay || threeMonthsFromDatedismissal < dataOfDay) {
-          newState = 'موقف'
-        } else if (renewalDate < dataOfDay) {
-          newState = 'منتهي'
+        const page = dataFilter?.page;
+        const pageSize = dataFilter?.pageSize;
+        delete dataFilter?.page;
+        delete dataFilter?.pageSize;
+        let include = dataFilter?.include;
+        let orderBy = dataFilter?.orderBy;
+        delete dataFilter?.include;
+        delete dataFilter?.orderBy;
+        if (include) {
+            const convertTopLevel = convertTopLevelStringBooleans(include);
+            include = convertTopLevel;
         } else {
-          newState = 'مستمر'
+            include = {};
+        }
+        if (dataFilter) {
+            dataFilter = convertEqualsToInt(dataFilter);
+        } else {
+            dataFilter = {};
         }
 
-        await this.prisma.accredited.update({
-          where: { globalId: accredited.globalId },
-          data: {
-            state: newState,
-            version: { increment: 1 } // Increment version for conflict resolution
-          }
-        })
-      })
-
-
-
-      const page = dataFillter?.page
-      const pageSize = dataFillter?.pageSize
-      delete dataFillter?.page
-      delete dataFillter?.pageSize
-      let include = dataFillter?.include
-      let orderBy = dataFillter?.orderBy
-      delete dataFillter?.include
-      delete dataFillter?.orderBy
-      if (include) {
-        const convertTopLevel = convertTopLevelStringBooleans(include)
-        include = convertTopLevel
-      } else {
-        include = {}
-      }
-      if (dataFillter) {
-        dataFillter = convertEqualsToInt(dataFillter)
-      } else {
-        dataFillter = {}
-      }
-
-      if (page && pageSize) {
-        const skip = (+page - 1) * +pageSize
-        const take = +pageSize
-        const accredited = await this.prisma.accredited.findMany({
-          where: { ...dataFillter, deleted: false },
-          include,
-          skip: +skip,
-          take: +take,
-          orderBy
-        })
-        const total = await this.prisma.accredited.count({
-          where: { ...dataFillter, deleted: false }
-        })
-        return {
-          info: accredited,
-          total,
-          page,
-          pageSize
+        if (page && pageSize) {
+            const skip = (+page - 1) * +pageSize;
+            const take = +pageSize;
+            const accredited = await this.prisma.accredited.findMany({
+                where: { ...dataFilter, deleted: false },
+                include,
+                skip: +skip,
+                take: +take,
+                orderBy
+            });
+            const total = await this.prisma.accredited.count({
+                where: { ...dataFilter, deleted: false }
+            });
+            return {
+                info: accredited,
+                total,
+                page,
+                pageSize
+            };
         }
-      }
-      return await this.prisma.accredited.findMany({
-        where: { ...dataFillter, deleted: false },
-        include,
-        orderBy
-      })
+        return await this.prisma.accredited.findMany({
+            where: { ...dataFilter, deleted: false },
+            include,
+            orderBy
+        });
     } catch (error) {
-      throw new DatabaseError('Error retrieving accreditations.', error)
+        throw new DatabaseError('Error retrieving accreditations.', error);
     }
-  }
+}
 
   async filterAccreditedByDateAndLocation(squareId, location, docter, state) {
     try {
@@ -397,19 +535,16 @@ class AccreditedService {
             globalId: `${process.env.LOCAL_DB_ID}-${uuidv4()}-${new Date()}` // Assign the generated global ID
           }
         })
-
       }
     }
 
     const renewalDate = new Date(prescriptionDate)
     renewalDate.setMonth(renewalDate.getMonth() + 6)
     if (filePt) {
-
       const prescription = await this.prisma.prescription.findFirst({
         where: { accreditedGlobalId: accreited.globalId }
       })
       if (prescription) {
-
         const pt = await this.prisma.prescription.update({
           where: { globalId: prescription.globalId },
           data: {
@@ -420,15 +555,14 @@ class AccreditedService {
             globalId: `${process.env.LOCAL_DB_ID}-${uuidv4()}-${new Date()}` // Assign the generated global ID
           }
         })
-
       }
     }
-    const app = await this.prisma.applicant.update({
-      where: { globalId: AccreditedData.applicantGlobalId },
-      data: {
-        accredited: true
-      }
-    })
+    // const app = await this.prisma.applicant.update({
+    //   where: { globalId: AccreditedData.applicantGlobalId },
+    //   data: {
+    //     accredited: true
+    //   }
+    // })
 
     return accreited
     // } catch (error) {
@@ -554,16 +688,16 @@ class AccreditedService {
 
   async AccreditedByPrescriptionServer(dataFilter) {
     // try {
-      const page = dataFilter?.page
-      const pageSize = dataFilter?.pageSize
-      delete dataFilter?.page
-      delete dataFilter?.pageSize
-      if (page && pageSize) {
-        const skip = (page - 1) * pageSize
-        const take = pageSize
+    const page = dataFilter?.page
+    const pageSize = dataFilter?.pageSize
+    delete dataFilter?.page
+    delete dataFilter?.pageSize
+    if (page && pageSize) {
+      const skip = (page - 1) * pageSize
+      const take = pageSize
 
-        const Accredited = await this.prisma.accredited.findMany({
-          where:
+      const Accredited = await this.prisma.accredited.findMany({
+        where:
           // {
           //   applicant: {
 
@@ -590,78 +724,78 @@ class AccreditedService {
           // },
           dataFilter,
 
-          include: {
-            prescription: true,
-            applicant: {
-              include: {
-                directorate: true,
-                diseasesApplicants: {
-                  include: {
-                    Disease: true
-                  }
+        include: {
+          prescription: true,
+          applicant: {
+            include: {
+              directorate: true,
+              diseasesApplicants: {
+                include: {
+                  Disease: true
                 }
               }
             }
-          },
-          skip: +skip,
-          take: +take
-        })
-        const total = await this.prisma.accredited.count({
-          where: dataFilter
-        })
-
-        const reports = Accredited.map((accredited) => {
-          const applicant = {
-            name: accredited.applicant.name,
-            phoneNumber: accredited.applicant.phoneNumber,
-            state: accredited.state
           }
+        },
+        skip: +skip,
+        take: +take
+      })
+      const total = await this.prisma.accredited.count({
+        where: dataFilter
+      })
 
-          const Namedirectorate = accredited.applicant.directorate.name
+      const reports = Accredited.map((accredited) => {
+        const applicant = {
+          name: accredited.applicant.name,
+          phoneNumber: accredited.applicant.phoneNumber,
+          state: accredited.state
+        }
 
-          const diseaseNames = accredited.applicant.diseasesApplicants
-            .map((da) => da.Disease.name)
-            .join(', ')
+        const Namedirectorate = accredited.applicant.directorate.name
 
-          const prescription = {
-            latestPrescriptionDate: accredited.prescription
-              .map((da) => new Date(da.prescriptionDate))
-              .sort((a, b) => a - b)
-              .pop()
-              .toISOString()
-              .split('T')[0],
+        const diseaseNames = accredited.applicant.diseasesApplicants
+          .map((da) => da.Disease.name)
+          .join(', ')
 
-            renewalDate: accredited.prescription
-              .map((da) => new Date(da.renewalDate))
-              .sort((a, b) => a - b)
-              .pop()
-              .toISOString()
-              .split('T')[0]
-          }
+        const prescription = {
+          latestPrescriptionDate: accredited.prescription
+            .map((da) => new Date(da.prescriptionDate))
+            .sort((a, b) => a - b)
+            .pop()
+            .toISOString()
+            .split('T')[0],
 
-          const days = calculateDaysBetweenDates(
-            prescription.latestPrescriptionDate,
-            prescription.renewalDate
-          )
-          const months = calculateMonthsBetweenDates(
-            prescription.latestPrescriptionDate,
-            prescription.renewalDate
-          )
+          renewalDate: accredited.prescription
+            .map((da) => new Date(da.renewalDate))
+            .sort((a, b) => a - b)
+            .pop()
+            .toISOString()
+            .split('T')[0]
+        }
 
-          return new AccreditedByPrescription(
-            applicant,
-            diseaseNames,
-            Namedirectorate,
-            prescription,
-            days,
-            months
-          )
-        })
+        const days = calculateDaysBetweenDates(
+          prescription.latestPrescriptionDate,
+          prescription.renewalDate
+        )
+        const months = calculateMonthsBetweenDates(
+          prescription.latestPrescriptionDate,
+          prescription.renewalDate
+        )
 
-        return { info: reports, total: total, page: page, pageSize: pageSize }
-      } else {
-        const Accredited = await this.prisma.accredited.findMany({
-          where:
+        return new AccreditedByPrescription(
+          applicant,
+          diseaseNames,
+          Namedirectorate,
+          prescription,
+          days,
+          months
+        )
+      })
+
+      return { info: reports, total: total, page: page, pageSize: pageSize }
+    } else {
+      const Accredited = await this.prisma.accredited.findMany({
+        where:
           // {
           //   applicant: {
           //     name: {
@@ -694,90 +828,90 @@ class AccreditedService {
           // },
           dataFilter,
 
-          include: {
-            prescription: true,
-            applicant: {
-              include: {
-                directorate: true,
-                diseasesApplicants: {
-                  include: {
-                    Disease: true
-                  }
+        include: {
+          prescription: true,
+          applicant: {
+            include: {
+              directorate: true,
+              diseasesApplicants: {
+                include: {
+                  Disease: true
                 }
               }
             }
-          },
-        })
-        const reports = Accredited.map((accredited) => {
-          const applicant = {
-            name: accredited.applicant.name,
-            phoneNumber: accredited.applicant.phoneNumber,
-            state: accredited.state
           }
-
-          const Namedirectorate = accredited.applicant.directorate.name
-
-          const diseaseNames = accredited.applicant.diseasesApplicants
-            .map((da) => da.Disease.name)
-            .join(', ')
-
-          const prescription = {
-            latestPrescriptionDate: accredited.prescription
-              .map((da) => new Date(da.prescriptionDate))
-              .sort((a, b) => a - b)
-              .pop()
-              .toISOString()
-              .split('T')[0],
-
-            renewalDate: accredited.prescription
-              .map((da) => new Date(da.renewalDate))
-              .sort((a, b) => a - b)
-              .pop()
-              .toISOString()
-              .split('T')[0]
-          }
-
-          const days = calculateDaysBetweenDates(
-            prescription.latestPrescriptionDate,
-            prescription.renewalDate
-          )
-          const months = calculateMonthsBetweenDates(
-            prescription.latestPrescriptionDate,
-            prescription.renewalDate
-          )
-
-          return new AccreditedByPrescription(
-            applicant,
-            diseaseNames,
-            Namedirectorate,
-            prescription,
-            days,
-            months
-          )
-        })
-        return reports
-      }
-
-      // Helper function to calculate days between two dates
-      function calculateDaysBetweenDates(date1, date2) {
-        const startDate = new Date(date1)
-        const endDate = new Date(date2)
-        const differenceInMilliseconds = endDate - startDate
-        const differenceInDays = differenceInMilliseconds / (1000 * 60 * 60 * 24)
-        return Math.round(differenceInDays)
-      }
-
-      // Helper function to calculate months between two dates
-      function calculateMonthsBetweenDates(date1, date2) {
-        const startDate = new Date(date1)
-        const endDate = new Date(date2)
-        if (startDate > endDate) {
-          return 0
         }
-        const yearsDifference = endDate.getFullYear() - startDate.getFullYear()
-        const monthsDifference = endDate.getMonth() - startDate.getMonth()
-        return yearsDifference * 12 + monthsDifference
+      })
+      const reports = Accredited.map((accredited) => {
+        const applicant = {
+          name: accredited.applicant.name,
+          phoneNumber: accredited.applicant.phoneNumber,
+          state: accredited.state
+        }
+
+        const Namedirectorate = accredited.applicant.directorate.name
+
+        const diseaseNames = accredited.applicant.diseasesApplicants
+          .map((da) => da.Disease.name)
+          .join(', ')
+
+        const prescription = {
+          latestPrescriptionDate: accredited.prescription
+            .map((da) => new Date(da.prescriptionDate))
+            .sort((a, b) => a - b)
+            .pop()
+            .toISOString()
+            .split('T')[0],
+
+          renewalDate: accredited.prescription
+            .map((da) => new Date(da.renewalDate))
+            .sort((a, b) => a - b)
+            .pop()
+            .toISOString()
+            .split('T')[0]
+        }
+
+        const days = calculateDaysBetweenDates(
+          prescription.latestPrescriptionDate,
+          prescription.renewalDate
+        )
+        const months = calculateMonthsBetweenDates(
+          prescription.latestPrescriptionDate,
+          prescription.renewalDate
+        )
+
+        return new AccreditedByPrescription(
+          applicant,
+          diseaseNames,
+          Namedirectorate,
+          prescription,
+          days,
+          months
+        )
+      })
+      return reports
+    }
+
+    // Helper function to calculate days between two dates
+    function calculateDaysBetweenDates(date1, date2) {
+      const startDate = new Date(date1)
+      const endDate = new Date(date2)
+      const differenceInMilliseconds = endDate - startDate
+      const differenceInDays = differenceInMilliseconds / (1000 * 60 * 60 * 24)
+      return Math.round(differenceInDays)
+    }
+
+    // Helper function to calculate months between two dates
+    function calculateMonthsBetweenDates(date1, date2) {
+      const startDate = new Date(date1)
+      const endDate = new Date(date2)
+      if (startDate > endDate) {
+        return 0
       }
+      const yearsDifference = endDate.getFullYear() - startDate.getFullYear()
+      const monthsDifference = endDate.getMonth() - startDate.getMonth()
+      return yearsDifference * 12 + monthsDifference
+    }
     // } catch (error) {
     //   throw new DatabaseError('Error fetching accreditation data.', error)
     // }
