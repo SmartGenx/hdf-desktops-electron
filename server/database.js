@@ -232,9 +232,9 @@ class DatabaseService {
       // Define role names and user details
       const roles = ['Admin', 'Coordinator', 'Pharmacist']
       const users = [
-        { email: 'admin@hdfye.org', role: 'Admin', name: 'Admin User' },
-        { email: 'coordinator@hdfye.org', role: 'Coordinator', name: 'Coordinator User' },
-        { email: 'pharmacist@hdfye.org', role: 'Pharmacist', name: 'Pharmacist User' }
+        { email: 'admin@hdfye.org', role: 'Admin', name: 'المدير' },
+        { email: 'coordinator@hdfye.org', role: 'Coordinator', name: 'المنسق' },
+        { email: 'pharmacist@hdfye.org', role: 'Pharmacist', name: ' الصيدلاني' }
       ]
 
       // Create roles if they do not exist

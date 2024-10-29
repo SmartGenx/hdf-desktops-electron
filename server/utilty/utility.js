@@ -10,7 +10,7 @@ const backupDatabase = async (req, res) => {
   try {
     const dbName = 'Hdf_electron'
     const dbUser = 'postgres'
-    const dbPassword = '123'
+    const dbPassword = 'sami2020'
     const dbPort = 5432
     const token = req.body.token
     const backupPath = 'D:\\backup'
@@ -68,6 +68,7 @@ const backupDatabase = async (req, res) => {
 
         try {
           const backupServices = databaseService.getbackupServices()
+          console.log(payload.name)
           await backupServices.createbackup(downloadOutputPath, payload.name)
           res
             .status(200)

@@ -152,6 +152,7 @@ export default function FormDismissal() {
 
   console.log('totalPrice', totalPrice)
   React.useEffect(() => {
+    form.setValue("state",states)
     if (number && number.info.length > 0) {
       const applicant = number.info[0].applicant
       if (applicant && applicant.category && applicant.category.SupportRatio !== undefined) {
