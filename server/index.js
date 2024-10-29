@@ -28,43 +28,13 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization']
 }
 
-// Define the synchronizeAllTables function
-// const synchronizeAllTables = async () => {
-//   const tables = [
-//     'Role',
-//     'User',
-//     'Category',
-//     'Governorate',
-//     'Directorate',
-//     'Square',
-//     'Disease',
-//     'Applicant',
-//     'Pharmacy',
-//     'Accredited',
-//     'DiseasesApplicants',
-//     'Prescription',
-//     'Attachment',
-//     'Dismissal',
-//   ];
-//   for (const table of tables) {
-//     await databaseService.synchronizeTable(table);
-//     await databaseService.fetchUpdatesFromServer(table);
-//     // Uncomment the following lines if needed
-//     // await databaseService.synchronizeLocalToS3();
-//     // await databaseService.synchronizeS3ToLocal();
-//   }
-// };
+
 
 async function ExpressApp() {
   try {
     await databaseService.switchDatabaseBasedOnConnectivity()
     await databaseService.user()
 
-    // Run synchronizeAllTables once at startup
-
-    // Then schedule it to run every hour
-    // await synchronizeAllTables();
-    // setInterval(synchronizeAllTables, 3600000); // 3600000 milliseconds = 1 hour
     const syncProcess = fork(path.join(__dirname, 'syncProcess.js'));
 
 
@@ -75,13 +45,11 @@ async function ExpressApp() {
 
     expressApp.use('/api', rootRouter)
 
-    const profileDir = path.join('C:', 'Profiles')
+    const profileDir = path.join('D:', 'Profiles')
 
     const PORT = process.env.PORT || 5050
     expressApp.listen(PORT, async () => {
-      // It's generally a good practice to ensure prerequisites before starting the server
       await ensureProfileDirExists(profileDir)
-      // Initialize role - user
     })
   } catch (error) {
     console.error('Failed to initialize the database service or server:', error)
