@@ -15,6 +15,14 @@ export default function DiseaseTabel({ info, page, total }: Props) {
   const columns = React.useMemo<ColumnDef<DiseasesApplicant>[]>(
     () => [
       {
+        accessorKey: 'id',
+        header: '#',
+        cell: ({ row }) => {
+          return <p>{row.index + 1}</p>
+        },
+        enableSorting: false
+      },
+      {
         accessorKey: 'name',
         header: () => <div className="w-96">المرض</div>
       },

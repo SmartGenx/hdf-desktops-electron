@@ -575,7 +575,7 @@ class ApplicantService {
         const take = pageSize
 
         const Applicant = await this.prisma.applicant.findMany({
-          // where: {
+          where: 
           //   deleted: false,
           //   accredited: false,
           //   category: {
@@ -643,7 +643,7 @@ class ApplicantService {
         }
       } else {
         const Applicant = await this.prisma.applicant.findMany({
-          // where: {
+          where: 
           //   deleted: false,
           //   accredited: false,
           //   category: {

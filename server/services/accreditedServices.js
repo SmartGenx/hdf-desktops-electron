@@ -849,27 +849,26 @@ class AccreditedService {
           state: accredited.state
         }
 
-        const Namedirectorate = accredited.applicant.directorate.name
+          const Namedirectorate = accredited.applicant.directorate.name
 
-        const diseaseNames = accredited.applicant.diseasesApplicants
-          .map((da) => da.Disease.name)
-          .join(', ')
+          const diseaseNames = accredited.applicant.diseasesApplicants
+            .map((da) => da.Disease.name)
+            .join(', ')
 
-        const prescription = {
-          latestPrescriptionDate: accredited.prescription
-            .map((da) => new Date(da.prescriptionDate))
-            .sort((a, b) => a - b)
-            .pop()
-            .toISOString()
-            .split('T')[0],
+          const prescription = {
+            latestPrescriptionDate: accredited.prescription
+              .map((da) => new Date(da.prescriptionDate))
+              .sort((a, b) => a - b)
+              .pop()
+              .toISOString()
+              .split('T')[0],
 
-          renewalDate: accredited.prescription
-            .map((da) => new Date(da.renewalDate))
-            .sort((a, b) => a - b)
-            .pop()
-            .toISOString()
-            .split('T')[0]
-        }
+            renewalDate: accredited.prescription
+              .map((da) => new Date(da.renewalDate))
+              .sort((a, b) => a - b)
+              .pop()
+              .split('T')[0]
+          }
 
         const days = calculateDaysBetweenDates(
           prescription.latestPrescriptionDate,
