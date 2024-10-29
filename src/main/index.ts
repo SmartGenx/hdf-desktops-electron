@@ -6,10 +6,11 @@ import { spawn } from 'child_process'
 function createWindow(): void {
   const iconPath = join(__dirname, '../../../resources/logo.ico')
   const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+    width: 1700,
+    height: 1000,
     show: false,
     autoHideMenuBar: true,
+    // fullscreen: true, // Set full-screen mode
 
     ...(process.platform === 'linux' ? { iconPath } : {}),
     title: 'مؤسسة التنمية الصحية',

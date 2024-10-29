@@ -9,6 +9,12 @@ type Props = {
   pageSize: string
   total: number
 }
+
+const monthNames = [
+  'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+  'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+]
+
 export default function MedicalTable({ info, page, total, pageSize }: Props) {
   const columns = React.useMemo<ColumnDef<ApplicantByDirectorateViewModelInfo>[]>(
     () => [
@@ -24,34 +30,34 @@ export default function MedicalTable({ info, page, total, pageSize }: Props) {
         enableSorting: false
       },
       {
-        accessorKey: ' .',
+        accessorKey: 'name',
         header: 'الأسم',
         cell: ({ row }) => row.original.name
       },
       {
-        accessorKey: '',
+        accessorKey: 'gender',
         header: 'الجنس',
         cell: ({ row }) => {
           return row.original.gender === 'M' ? 'ذكر' : 'انثى'
         }
       },
       {
-        accessorKey: '',
+        accessorKey: 'disease',
         header: 'تصنيف المرض',
         cell: ({ row }) => row.original.disease
       },
       {
-        accessorKey: '',
+        accessorKey: 'directorate',
         header: 'المنطقة',
         cell: ({ row }) => row.original.directorate
       },
       {
-        accessorKey: '',
+        accessorKey: 'phoneNumber',
         header: 'الجوال',
         cell: ({ row }) => row.original.phoneNumber
       },
       {
-        accessorKey: '',
+        accessorKey: 'state',
         header: 'الحاله',
         cell: ({ row }) => {
           return (
@@ -72,24 +78,37 @@ export default function MedicalTable({ info, page, total, pageSize }: Props) {
         }
       },
       {
-        accessorKey: 'totalAmount',
-        header: 'تكلفة العلاج',
-        cell: ({ row }) => row.original.totalAmount + 'ريال'
+        accessorKey: 'Months',
+        header: 'الشهر',
+        cell: ({ row }) => {
+          const monthIndex = row.original.Months ;
+
+
+          return  monthNames[parseInt(monthIndex) - 1];
+        }
       },
       {
-        accessorKey: '',
+        accessorKey: 'year',
+        header: 'السنة',
+        cell: ({ row }) => row.original.year
+      },
+      {
+        accessorKey: 'totalAmount',
+        header: 'تكلفة العلاج',
+        cell: ({ row }) => row.original.totalAmount + ' ريال'
+      },
+      {
+        accessorKey: 'supportRatio',
         header: 'نسبة الخصم',
-        cell: ({ row }) => {
-          return row.original.supportRatio
-        }
+        cell: ({ row }) => row.original.supportRatio
       },
       {
         accessorKey: 'approvedAmount',
         header: 'مساهمة المريض',
-        cell: ({ row }) => row.original.approvedAmount + 'ريال'
+        cell: ({ row }) => row.original.approvedAmount + ' ريال'
       }
     ],
-    [5]
+    [page, pageSize]
   )
 
   return (

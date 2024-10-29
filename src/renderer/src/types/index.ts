@@ -30,6 +30,8 @@ export type ApplicantByDirectorateViewModelInfo = {
   totalAmount: number
   supportRatio: string
   approvedAmount: number
+  Months :string
+  year :string
 }
 export type PrintApplication = {
   name: string
