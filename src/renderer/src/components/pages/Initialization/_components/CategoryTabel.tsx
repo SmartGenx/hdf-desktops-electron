@@ -14,6 +14,14 @@ export default function CategoryTabel({ info, page, total }: Props) {
   const columns = React.useMemo<ColumnDef<Category>[]>(
     () => [
       {
+        accessorKey: 'id',
+        header: '#',
+        cell: ({ row }) => {
+          return <p>{row.index + 1}</p>
+        },
+        enableSorting: false
+      },
+      {
         accessorKey: 'name',
         header: 'اسم الفئة'
       },

@@ -733,7 +733,6 @@ class AccreditedService {
               .map((da) => new Date(da.renewalDate))
               .sort((a, b) => a - b)
               .pop()
-              .toISOString()
               .split('T')[0]
           }
 

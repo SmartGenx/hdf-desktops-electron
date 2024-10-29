@@ -22,6 +22,17 @@ export default function StateTable({ info, page, total, pageSize }: Props) {
   const columns = React.useMemo<ColumnDef<ApplicantsInfo>[]>(
     () => [
       {
+        accessorKey: 'id',
+        header: '#',
+        cell: ({ row }) => {
+          const currentPage = Number(page) || 1
+          const itemsPerPage = Number(pageSize) || 5
+          const globalRowNumber = (currentPage - 1) * itemsPerPage + row.index + 1
+          return <p>{globalRowNumber}</p>
+        },
+        enableSorting: false
+      },
+      {
         accessorKey: 'name',
         header: 'الأسم'
       },
@@ -49,7 +60,6 @@ export default function StateTable({ info, page, total, pageSize }: Props) {
       },
       {
         id: 'actions',
-
 
         cell: ({ row }) => (
           <DropdownMenu>

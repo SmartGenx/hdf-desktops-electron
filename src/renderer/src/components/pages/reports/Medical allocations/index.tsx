@@ -18,20 +18,32 @@ import { useEffect, useRef, useState } from 'react'
 import * as XLSX from 'xlsx'
 
 export default function MedicalAllocationsIndex() {
-  const [dataPrint, setDataPrint] = useState<PrintApplication[] | any[]>([])
   const [searchParams] = useSearchParams()
+  const gender = searchParams.get('Accredited[applicant][gender][contains]')
+  const name = searchParams.get('Accredited[applicant][name][contains]')
+  const squar = searchParams.get('Accredited[square][name]')
+  const dieases = searchParams.get('Accredited[applicant][diseasesApplicants][some][Disease][name]')
+  const [dataPrint, setDataPrint] = useState<PrintApplication[] | any[]>([])
   const page = searchParams.get('page')
   const authToken = useAuthHeader()
+
   const {
     isPending: isPendingViewModel,
     isError: isErrorViewModel,
     error: errorViewModel,
     data: ApplicantByDirectorateViewModelData
   } = useQuery({
-    queryKey: ['ApplicantByDirectorateViewModel', page],
+    queryKey: ['ApplicantByDirectorateViewModel', page, gender, name, squar, dieases],
     queryFn: () =>
       getApi<ApplicantByDirectorateViewModel>('/applicant/ApplicantByDirectorateViewModel', {
-        params: { page: page || 1, pageSize: 5 },
+        params: {
+          'Accredited[applicant][gender][contains]': gender,
+          'Accredited[applicant][name][contains]': name,
+          'Accredited[square][name]': squar,
+          'Accredited[applicant][diseasesApplicants][some][Disease][name]': dieases,
+          page: page || 1,
+          pageSize: 5
+        },
         headers: {
           Authorization: authToken()
         }

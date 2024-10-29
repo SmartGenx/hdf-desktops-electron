@@ -15,6 +15,14 @@ export default function GovernorateTabel({ info, page, total }: Props) {
   const columns = React.useMemo<ColumnDef<Governorate>[]>(
     () => [
       {
+        accessorKey: 'id',
+        header: '#',
+        cell: ({ row }) => {
+          return <p>{row.index + 1}</p>
+        },
+        enableSorting: false
+      },
+      {
         accessorKey: 'name',
         header: () => <div className="w-96">المحافظة</div>,
         cell: ({ row }) => <div className="w-full">{row.original.name}</div>
