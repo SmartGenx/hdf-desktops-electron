@@ -202,15 +202,7 @@ export default function FormDismissal() {
   //
   const authToken = useAuthHeader()
 
-  // const { data: applicant } = useQuery({
-  //   queryKey: ['applicant'],
-  //   queryFn: () =>
-  //     getApi<ApplicantsInfo[]>('/applicant', {
-  //       headers: {
-  //         Authorization: authToken()
-  //       }
-  //     })
-  // })
+
 
   const [delayedSubmitting, _setDelayedSubmitting] = useState(form.formState.isSubmitting)
 
@@ -247,10 +239,6 @@ export default function FormDismissal() {
 
     fetchPharmacyDirectorate()
   }, [number, totalPrice, form])
-
-  // const imagePath = `${number?.info?.[0]?.prescription[0].attachedUrl}`
-  // const encodedPath = encodeURI(imagePath)
-  // const src = `file:///${encodedPath}`
 
   const { mutate } = useMutation({
     // mutationKey: ['AccreditedInfo'],
@@ -329,7 +317,7 @@ export default function FormDismissal() {
   const isPDF = attachedUrlPrec?.toLowerCase().endsWith('.pdf')
   //
   const attachedUrlAttachment = number?.info?.[0]?.attachment?.[0]?.attachmentFile ?? 'لايوجد'
-  // const isPDFAtta = attachedUrlPrec?.toLowerCase().endsWith('.pdf')
+ 
   const openPtModal = () => {
     if (number?.info?.[0]?.attachment[0]?.attachmentFile) {
       setModalPtOpen(true)
@@ -404,15 +392,7 @@ export default function FormDismissal() {
               </Alert>
             </div>
           )}
-          {/* <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>{showAlert ? 'Error' : 'Notice'}</AlertTitle>
-            <AlertDescription>
-              {showAlert
-                ? 'The pharmacy is not currently dispensing. Please select a different pharmacy.'
-                : 'The pharmacy is currently dispensing. You can proceed.'}
-            </AlertDescription>
-          </Alert> */}
+      
           <div>
             <Form {...form}>
               <form

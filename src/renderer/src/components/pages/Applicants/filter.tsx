@@ -48,25 +48,21 @@ export interface Category {
   lastModified: Date
 }
 const FilterDrawer = () => {
-  const [states] = useState([
-    { value: 'active', label: 'نشط' },
-    { value: 'not active', label: 'غير نشط' }
-  ])
   const [gender] = useState([
     { value: 'M', label: 'ذكر' },
     { value: 'F', label: 'انثى' }
   ])
-  const [dateFrom, setDateFrom] = React.useState<Date | undefined>(new Date())
-  const [dateTo, setDateTo] = React.useState<Date | undefined>(new Date())
+  const [dateFrom, setDateFrom] = React.useState<Date | undefined>()
+  const [dateTo, setDateTo] = React.useState<Date | undefined>()
 
   const [clanFrom, setClanFrom] = React.useState<boolean>(false)
   const [clanTo, setClanTo] = React.useState<boolean>(false)
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const authToken = useAuthHeader()
+  const [isOpen, setIsOpen] = useState(false)
   const [selectedGovernorates, setSelectedGovernorates] = useState<string[]>([])
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
-  const [selectedState, setSelectedState] = useState<string>('')
   const [selectedGender, setSelectedGender] = useState<string>('')
   const {
     isPending: isdirectoratePending,
@@ -99,62 +95,14 @@ const FilterDrawer = () => {
   useEffect(() => {
     const governorates = searchParams.getAll('directorateGlobalId')
     const categories = searchParams.getAll('categoryGlobalId')
-    const state = searchParams.get('state') || ''
     const gender = searchParams.get('gender') || ''
 
     setSelectedGovernorates(governorates)
     setSelectedCategories(categories)
-    setSelectedState(state)
+
     setSelectedGender(gender)
   }, [searchParams])
 
-  // const handleGovernorateCheckboxChange = (globalId: string) => {
-  //   const params = new URLSearchParams(searchParams.toString())
-  //   const governorates = params.getAll('directorateGlobalId')
-
-  //   if (governorates.includes(globalId)) {
-  //     // If already selected, remove it
-  //     params.delete('directorateGlobalId')
-  //     governorates
-  //       .filter((id) => id !== globalId)
-  //       .forEach((id) => params.append('directorateGlobalId', id))
-  //   } else {
-  //     // Add new selection
-  //     params.append('directorateGlobalId', globalId)
-  //   }
-  //   navigate(`/applicants?${params.toString()}`, { replace: true })
-  // }
-
-  // const handleCategoryCheckboxChange = (globalId: string) => {
-  //   const params = new URLSearchParams(searchParams.toString())
-  //   const categories = params.getAll('categoryGlobalId')
-
-  //   if (categories.includes(globalId)) {
-  //     // If already selected, remove it
-  //     params.delete('categoryGlobalId')
-  //     categories
-  //       .filter((id) => id !== globalId)
-  //       .forEach((id) => params.append('categoryGlobalId', id))
-  //   } else {
-  //     // Add new selection
-  //     params.append('categoryGlobalId', globalId)
-  //   }
-  //   navigate(`/applicants?${params.toString()}`, { replace: true })
-  // }
-
-  // const handleStateChange = (state: string) => {
-  //   const params = new URLSearchParams(searchParams.toString())
-  //   params.set('state', state)
-
-  //   navigate(`/applicants?${params.toString()}`, { replace: true })
-  // }
-
-  // const handleGenderChange = (gender: string) => {
-  //   const params = new URLSearchParams(searchParams.toString())
-  //   params.set('gender', gender)
-
-  //   navigate(`/applicants?${params.toString()}`, { replace: true })
-  // }
   const handleGovernorateChange = (globalId: string) => {
     setSelectedGovernorates((prev) =>
       prev.includes(globalId) ? prev.filter((id) => id !== globalId) : [...prev, globalId]
@@ -165,10 +113,6 @@ const FilterDrawer = () => {
     setSelectedCategories((prev) =>
       prev.includes(globalId) ? prev.filter((id) => id !== globalId) : [...prev, globalId]
     )
-  }
-
-  const handleStateChange = (state: string) => {
-    setSelectedState(state)
   }
 
   const handleGenderChange = (gender: string) => {
@@ -183,20 +127,17 @@ const FilterDrawer = () => {
     selectedGovernorates.forEach((id) => params.append('directorateGlobalId', id))
     selectedCategories.forEach((id) => params.append('categoryGlobalId', id))
 
-    if (selectedState) {
-      params.set('state', selectedState)
-    }
     if (dateFrom) {
-      params.set('craeteAt[gte]', dateFrom?.toISOString())
+      params.set('submissionDate[gte]', dateFrom?.toISOString())
     }
     if (dateTo) {
-      params.set('craeteAt[lte]', dateTo?.toISOString())
+      params.set('submissionDate[lte]', dateTo?.toISOString())
     }
 
     if (selectedGender) {
       params.set('gender', selectedGender)
     }
-
+    setIsOpen(false)
     navigate(`/applicants?${params.toString()}`, { replace: true })
   }
   if (isdirectoratePending || isCategoryPending) return 'Loading...'
@@ -204,7 +145,7 @@ const FilterDrawer = () => {
     return 'An error has occurred: ' + (directorateError?.message || categoryError?.message)
 
   return (
-    <Drawer direction="left">
+    <Drawer open={isOpen} onOpenChange={setIsOpen} direction="left">
       <DrawerTrigger asChild>
         <Button variant="outline" className="border-[#434749]">
           <SlidersHorizontal fill="#434749" stroke="#434749" />
@@ -271,26 +212,6 @@ const FilterDrawer = () => {
                 </div>
               ))}
             </div>
-          </div>
-
-          <div className="w-[279.35px] border-b-[1px] border-[#F0F1F5] pb-5">
-            {/* State Filter */}
-            <label className="pr-4 font-bold text-[#414141]">اختار الحالة</label>
-            <Select value={selectedState} onValueChange={handleStateChange}>
-              <SelectTrigger>
-                <SelectValue placeholder="اختار الحالة" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>الحالة</SelectLabel>
-                  {states.map((state) => (
-                    <SelectItem key={state.value} value={state.value}>
-                      {state.label}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
           </div>
 
           <div className="w-[279.35px] border-b-[1px] border-[#F0F1F5] pb-5">

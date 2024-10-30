@@ -90,7 +90,7 @@ const Home = () => {
         <div className="flex gap-7">
           <AccreditedSearch />
           <FilterDrawer />
-          {/* <Boutton icon="filter" title={'طباعة'} /> */}
+       
           <ReactToPrint
             trigger={() => (
               <button className="bg-[#196CB0] flex items-center text-white rounded-lg hover:bg-[#2d5372] px-3 focus:ring-[#2d5372]">

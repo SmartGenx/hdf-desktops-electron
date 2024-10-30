@@ -45,11 +45,12 @@ const FilterDrawer = () => {
     { value: 'active', label: 'نشط' },
     { value: 'not active', label: 'غير نشط' }
   ])
-
+  const [isOpen, setIsOpen] = useState(false)
   const [searchParams] = useSearchParams()
   const [selectedMonth, setSelectedMonth] = useState<string>('')
   const [selectedYear, setSelectedYear] = useState<string>('')
   const [selectedState, setSelectedState] = useState<string>('')
+
   const navigate = useNavigate()
   const authToken = useAuthHeader()
   const { data: dismissal } = useQuery({
@@ -71,24 +72,6 @@ const FilterDrawer = () => {
     setSelectedYear(year)
     setSelectedState(state)
   }, [searchParams])
-  // const handleMonthChange = (month: string) => {
-  //   const params = new URLSearchParams(searchParams.toString())
-  //   params.set('month', month)
-
-  //   navigate(`/dismissal?${params.toString()}`, { replace: true })
-  // }
-  // const handleYearChange = (year: string) => {
-  //   const params = new URLSearchParams(searchParams.toString())
-  //   params.set('year', year)
-
-  //   navigate(`/dismissal?${params.toString()}`, { replace: true })
-  // }
-  // const handleStateChange = (state: string) => {
-  //   const params = new URLSearchParams(searchParams.toString())
-  //   params.set('state', state)
-
-  //   navigate(`/dismissal?${params.toString()}`, { replace: true })
-  // }
 
   const handleMonthChange = (month: string) => {
     setSelectedMonth(month)
@@ -116,7 +99,7 @@ const FilterDrawer = () => {
     if (selectedState) {
       params.set('state', selectedState)
     }
-
+    setIsOpen(false)
     navigate(`/dismissal?${params.toString()}`, { replace: true })
   }
   const handleClearFilters = () => {
@@ -124,7 +107,7 @@ const FilterDrawer = () => {
   }
 
   return (
-    <Drawer direction="left">
+    <Drawer open={isOpen} onOpenChange={setIsOpen} direction="left">
       <DrawerTrigger asChild>
         <Button variant="outline" className="border-[#434749]">
           <SlidersHorizontal fill="#434749" stroke="#434749" />
@@ -136,10 +119,6 @@ const FilterDrawer = () => {
           <div className=" font-bold text-xl border-b-2 border-[#DEDEDE] w-full flex justify-center pb-2">
             <DrawerTitle> فلترة</DrawerTitle>
           </div>
-
-          {/* <DrawerClose>
-            <X className="w-5 h-5 text-gray-600" />
-          </DrawerClose> */}
         </DrawerHeader>
 
         <form id="formId">

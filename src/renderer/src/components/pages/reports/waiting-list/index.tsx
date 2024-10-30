@@ -58,14 +58,7 @@ export default function WaitingList() {
       })
   })
 
-  // const dataToExport = applicantsReportCategoryPrint?.data.map((item) => ({
-  //   "الأسم": item.name,
-  //   'تصنيف المرض': item.disease,
-  //   "المنطقة": item.directorate,
-  //   "الجوال": item.phoneNumber,
-  //   'تاريخ التقديم': item.submissionDate,
-  //   "فئة": item.category
-  // }))
+ 
   useEffect(() => {
     if (applicantsReportCategoryPrint?.data) {
       const dataToExport = applicantsReportCategoryPrint?.data.map((item) => {
@@ -120,11 +113,11 @@ export default function WaitingList() {
             content={() => componentRef.current}
           />
           <div className="hidden">
-            <ComponentToPrint ref={componentRef} data={applicantsReportCategoryPrint?.data || []} />
+            <ComponentToPrint ref={componentRef} data={applicantsReportCategory?.data.info || []} />
           </div>
 
           <Boutton
-            icon="addaccredited"
+            icon="exportscvs"
             title={'تصدير'}
             className="bg-[#92A709] hover:bg-[#5b6806] focus:ring-[#92A709]"
             onClick={ExportCvs}

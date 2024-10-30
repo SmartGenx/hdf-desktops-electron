@@ -20,12 +20,9 @@ export type statistCardInfo = {
 
 const Home = () => {
   const authToken = useAuthHeader()
-  // const [statist, setStatist] = useState<statistCardInfo | undefined>()
+
   const divRef = useRef<HTMLDivElement>(null)
 
-  // Custom hook to get screen size
-  // const screenSize = useScreenSize()
-  // const screenWidth = screenSize.width
 
   // State to track if div width is greater than 1218px
   const [expanded, setExpanded] = useState<boolean>(true)
@@ -70,21 +67,6 @@ const Home = () => {
     }
   }, [divWidth]) // Depend only on divWidth
 
-  // useEffect(() => {
-  //   const fetchStatist = async () => {
-  //     try {
-  //       const response = await axiosInstance.get('/statistics/Initialization', {
-  //         headers: {
-  //           Authorization: `${authToken()}`
-  //         }
-  //       })
-  //       setStatist(response.data)
-  //     } catch (error) {
-  //       console.error('Error fetching data:', error)
-  //     }
-  //   }
-  //   fetchStatist()
-  // }, [])
   const { data: statist, isPending } = useQuery({
     queryKey: ['Initialization'],
     queryFn: () =>

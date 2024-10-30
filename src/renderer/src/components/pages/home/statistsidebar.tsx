@@ -37,48 +37,6 @@ export interface Result {
 // Registering the required components from chart.js
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
-// const barData = {
-//   labels: [
-//     'يناير',
-//     'فبراير',
-//     'مارس',
-//     'أبريل',
-//     'مايو',
-//     'يونيو',
-//     'يوليو',
-//     'أغسطس',
-//     'سبتمبر',
-//     'أكتوبر',
-//     'نوفمبر',
-//     'ديسمبر'
-//   ],
-//   datasets: [
-//     {
-//       data: [50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160],
-//       backgroundColor: '#ffffff',
-//       borderRadius: 10,
-//       barPercentage: 0.5
-//     }
-//   ]
-// }
-
-// const options = {
-//   responsive: true,
-//   plugins: {
-//     legend: {
-//       position: 'right' as const, // Positioning the legend to the right
-//       display: false
-//     }
-//   },
-//   scales: {
-//     x: {
-//       display: false
-//     },
-//     y: {
-//       display: false
-//     }
-//   }
-// }
 
 interface StatistSidebarProps {
   isExpended?: boolean
@@ -149,7 +107,7 @@ const Statistsidebar: React.FC<StatistSidebarProps> = ({ isExpended }) => {
   if (isPending) {
     return (
       <div className="flex justify-center items-center w-full ">
-        {/* <LoaderIcon className="mt-12 flex animate-spin items-center justify-end duration-1000" /> */}
+ 
       </div>
     )
   }

@@ -115,11 +115,11 @@ export default function FollowTheRecipes() {
             content={() => componentRef.current}
           />
           <div className="hidden">
-            <ComponentToPrint ref={componentRef} data={AllAccreditedsForPdfPrint?.data || []} />
+            <ComponentToPrint ref={componentRef} data={AllAccreditedsForPdf?.data.info || []} />
           </div>
 
           <Boutton
-            icon="addaccredited"
+            icon="exportscvs"
             title={'تصدير'}
             className="bg-[#92A709] hover:bg-[#5b6806] focus:ring-[#92A709]"
             onClick={ExportCvs}

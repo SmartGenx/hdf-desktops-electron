@@ -59,6 +59,13 @@ export default function StateTable({ info, page, total, pageSize }: Props) {
         header: 'رقم الجوال'
       },
       {
+        accessorKey: 'submissionDate',
+        header: 'تاريخ التقديم',
+        cell: ({ row }) => {
+          return <p>{String(row.original.submissionDate).split('T')[0]}</p>
+        }
+      },
+      {
         id: 'actions',
 
         cell: ({ row }) => (
@@ -93,9 +100,6 @@ export default function StateTable({ info, page, total, pageSize }: Props) {
       page={page.toString()}
       total={Number(total)}
       pageSize={Number(pageSize)}
-      // onRowClick={(_, { original }) => {
-      //   navigate(`/state-affairs/info/${}`)
-      // }}
     />
   )
 }

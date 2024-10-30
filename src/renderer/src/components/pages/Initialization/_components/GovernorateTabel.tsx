@@ -51,9 +51,7 @@ export default function GovernorateTabel({ info, page, total }: Props) {
       data={info}
       page={page.toString()}
       total={Number(total)}
-      // onRowClick={(_, { original }) => {
-      //   navigate(`/state-affairs/info/${}`)
-      // }}
+     
     />
   )
 }

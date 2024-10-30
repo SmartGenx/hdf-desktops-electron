@@ -25,6 +25,8 @@ export default function MedicalAllocationsIndex() {
   const query = searchParams.get('query')
   const directorate = searchParams.get('Accredited[applicant][directorate][name][contains]')
   const state = searchParams.get('Accredited[state][contains]')
+  const month = searchParams.get('month')
+  const year = searchParams.get('year')
   const authToken = useAuthHeader()
 
   const {
@@ -33,7 +35,7 @@ export default function MedicalAllocationsIndex() {
     error: errorViewModel,
     data: ApplicantByDirectorateViewModelData
   } = useQuery({
-    queryKey: ['ApplicantByDirectorateViewModel', page, query, dieases, directorate, state],
+    queryKey: ['ApplicantByDirectorateViewModel', page, query, dieases, directorate, state,month,year],
     queryFn: () =>
       getApi<ApplicantByDirectorateViewModel>('/applicant/ApplicantByDirectorateViewModel', {
         params: {
@@ -41,6 +43,8 @@ export default function MedicalAllocationsIndex() {
           'Accredited[applicant][diseasesApplicants][some][Disease][name]': dieases,
           'Accredited[applicant][directorate][name][contains]': directorate,
           'Accredited[state][contains]': state,
+          "month": month,
+          "year": year,
           page: page || 1,
           pageSize: 5
         },
@@ -133,12 +137,12 @@ export default function MedicalAllocationsIndex() {
           <div className="hidden">
             <ComponentToPrint
               ref={componentRef}
-              data={ApplicantByDirectorateViewModelDataCard?.data || []}
+              data={ApplicantByDirectorateViewModelData?.data.info || []}
             />
           </div>
 
           <Boutton
-            icon="addaccredited"
+            icon="exportscvs"
             title={'تصدير'}
             className="bg-[#92A709] hover:bg-[#5b6806] focus:ring-[#92A709]"
             onClick={ExportCvs}

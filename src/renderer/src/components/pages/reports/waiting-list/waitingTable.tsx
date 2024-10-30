@@ -57,7 +57,7 @@ export default function WaitingTable({ info, page, total, pageSize }: Props) {
         header: 'فئة'
       }
     ],
-    [5]
+    [page, pageSize]
   )
   return (
     <ReportsTable
@@ -66,9 +66,7 @@ export default function WaitingTable({ info, page, total, pageSize }: Props) {
       page={page.toString()}
       total={Number(total)}
       pageSize={Number(pageSize)}
-      // onRowClick={(_, { original }) => {
-      //   navigate(`/state-affairs/info/${}`)
-      // }}
+     
     />
   )
 }
