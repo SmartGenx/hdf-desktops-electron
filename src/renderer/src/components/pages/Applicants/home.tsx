@@ -105,6 +105,7 @@ const Home = () => {
 
           <Link to={'/FormApplicant'}>
             <Boutton
+              icon="exportscvs"
               title={'اضافة متقدم '}
               className="bg-[#92A709] hover:bg-[#5b6806] focus:ring-[#92A709]"
             />

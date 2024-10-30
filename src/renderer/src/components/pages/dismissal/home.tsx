@@ -99,7 +99,7 @@ const Dismissal = () => {
 
           <Link to={'/formDismissal'}>
             <Boutton
-              icon="addaccredited"
+              icon="exportscvs"
               title={'صرف دواء'}
               className="bg-[#92A709] hover:bg-[#5b6806] focus:ring-[#92A709]"
             />
