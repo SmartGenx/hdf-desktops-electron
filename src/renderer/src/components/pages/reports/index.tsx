@@ -46,7 +46,7 @@ export default function ReportIndex() {
             className=" dark:bg-[#09090b]"
           >
             <TabsList className="p-0 flex justify-start">
-              {subTabs.map((tab,index) => (
+              {subTabs.map((tab, index) => (
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
