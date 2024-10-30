@@ -68,7 +68,7 @@ const A4Layout = forwardRef<HTMLDivElement>((_props, ref) => {
             pageBreakAfter: pageIndex !== pages.length - 1 ? 'always' : 'auto',
           }}
         >
-          <div className="grid grid-cols-3 grid-rows-4 gap-4">
+          <div className="grid grid-cols-2 grid-rows-4 gap-4">
             {pageData.map((data, index) => (
               <Card key={index} value={data.number} formNumber={data.formNumber} />
             ))}
