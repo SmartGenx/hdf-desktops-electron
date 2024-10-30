@@ -15,7 +15,6 @@ class AccreditedService {
     this.prisma = prisma
   }
 
-
   async searchAccreditations(dataFilter) {
     function getDateMonthsFromNow(months) {
       let currentDate = new Date()
@@ -50,7 +49,7 @@ class AccreditedService {
 
       for (const accredited of accreditations) {
         const prescriptions = await this.prisma.prescription.findFirst({
-          where: { accreditedGlobalId: accredited.globalId },
+          where: { accreditedGlobalId: accredited.globalId }
           // Take only the first record after ordering
         })
         const dismissal = await this.prisma.dismissal.findFirst({
@@ -70,8 +69,6 @@ class AccreditedService {
 
         const threeMonthsFromDismissalDate = new Date(dismissalDateObj)
         threeMonthsFromDismissalDate.setMonth(threeMonthsFromDismissalDate.getMonth() + 3)
-
-
 
         let newState
 
@@ -684,27 +681,25 @@ class AccreditedService {
           state: accredited.state
         }
 
-          const Namedirectorate = accredited.applicant.directorate.name
+        const Namedirectorate = accredited.applicant.directorate.name
 
-          const diseaseNames = accredited.applicant.diseasesApplicants
-            .map((da) => da.Disease.name)
-            .join(', ')
+        const diseaseNames = accredited.applicant.diseasesApplicants
+          .map((da) => da.Disease.name)
+          .join(', ')
 
-          const prescription = {
-            latestPrescriptionDate: accredited.prescription
-              .map((da) => new Date(da.prescriptionDate))
-              .sort((a, b) => a - b)
-              .pop()
-              .toISOString()
-              .split('T')[0],
+        const prescription = {
+          latestPrescriptionDate: accredited.prescription
+            .map((da) => new Date(da.prescriptionDate))
+            .sort((a, b) => a - b)
+            .pop()
+            .toISOString()
+            .split('T')[0],
 
-            renewalDate: accredited.prescription
-              .map((da) => new Date(da.renewalDate))
-              .sort((a, b) => a - b)
-              .pop()
-
-          }
-
+          renewalDate: accredited.prescription
+            .map((da) => new Date(da.renewalDate))
+            .sort((a, b) => a - b)
+            .pop()
+        }
 
         const days = calculateDaysBetweenDates(
           prescription.latestPrescriptionDate,

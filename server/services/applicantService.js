@@ -421,75 +421,75 @@ class ApplicantService {
       const skip = (+page - 1) * +pageSize
       const take = +pageSize
       try {
+        const dismissal = await this.prisma.dismissal.findMany({
+          where: filterParams,
 
-      const dismissal = await this.prisma.dismissal.findMany({
-        where: filterParams,
-
-        include: {
-          Accredited: {
-            include: {
-              square: true,
-              applicant: {
-                include: {
-                  directorate: true,
-                  category: true,
-                  diseasesApplicants: {
-                    include: {
-                      Disease: true
+          include: {
+            Accredited: {
+              include: {
+                square: true,
+                applicant: {
+                  include: {
+                    directorate: true,
+                    category: true,
+                    diseasesApplicants: {
+                      include: {
+                        Disease: true
+                      }
                     }
                   }
                 }
               }
             }
+          },
+          skip: +skip,
+          take: +take
+
+          // Make sure this relationship is correctly defined in your Prisma schema
+        })
+        const total = await this.prisma.dismissal.count({
+          where: filterParams
+        })
+        const reports = dismissal?.map((dismissal) => {
+          const applicant = {
+            name: dismissal.Accredited.applicant.name,
+            gender: dismissal.Accredited.applicant.gender,
+            phoneNumber: dismissal.Accredited.applicant.phoneNumber,
+            numberOfRfid: dismissal.Accredited.applicant.phoneNumber
           }
-        },
-        skip: +skip,
-        take: +take
+          const Month = dismissal.month
+          const year=dismissal.year
+          console.log('🚀 ~ ApplicantService ~ reports ~ Month:', Month)
+          const state = dismissal.Accredited.state
+          const Namedirectorate = dismissal.Accredited.applicant.directorate.name
+          const Namecategory = dismissal.Accredited.applicant.category.SupportRatio + '%'
+          const diseaseNames = dismissal.Accredited.applicant.diseasesApplicants
+            .map((da) => da.Disease.name)
+            .join(', ')
 
-        // Make sure this relationship is correctly defined in your Prisma schema
-      })
-      const total = await this.prisma.dismissal.count({
-        where: filterParams
-      })
-      const reports = dismissal?.map((dismissal) => {
-        const applicant = {
-          name: dismissal.Accredited.applicant.name,
-          gender: dismissal.Accredited.applicant.gender,
-          phoneNumber: dismissal.Accredited.applicant.phoneNumber,
-          numberOfRfid: dismissal.Accredited.applicant.phoneNumber
+          const dismissals = {
+            totalAmount: dismissal.totalAmount,
+
+            approvedAmount: dismissal.approvedAmount
+          }
+          return new ApplicantByDirectorateViewModel(
+            applicant,
+            diseaseNames,
+            Namedirectorate,
+            state,
+            dismissals,
+            Namecategory,
+            Month,
+            year
+          )
+        })
+
+        return {
+          info: reports,
+          total: total,
+          page: page,
+          pageSize: pageSize
         }
-       const Month = dismissal.month
-       console.log("🚀 ~ ApplicantService ~ reports ~ Month:", Month)
-        const state = dismissal.Accredited.state
-        const Namedirectorate = dismissal.Accredited.applicant.directorate.name
-        const Namecategory = dismissal.Accredited.applicant.category.SupportRatio + '%'
-        const diseaseNames = dismissal.Accredited.applicant.diseasesApplicants
-          .map((da) => da.Disease.name)
-          .join(', ')
-
-        const dismissals = {
-          totalAmount: dismissal.totalAmount,
-
-          approvedAmount: dismissal.approvedAmount
-        }
-        return new ApplicantByDirectorateViewModel(
-          applicant,
-          diseaseNames,
-          Namedirectorate,
-          state,
-          dismissals,
-          Namecategory,
-          Month,
-        )
-      })
-
-
-      return {
-        info: reports,
-        total: total,
-        page: page,
-        pageSize: pageSize
-      }
       } catch (error) {
         throw new DatabaseError('Error deleting accreditation.', error)
       }
@@ -526,6 +526,7 @@ class ApplicantService {
           numberOfRfid: dismissal.Accredited.applicant.phoneNumber
         }
         const Month = dismissal.month
+        const year=dismissal.year
         const state = dismissal.Accredited.state
         const Namedirectorate = dismissal.Accredited.applicant.directorate.name
         const Namecategory = dismissal.Accredited.applicant.category.SupportRatio + '%'
@@ -546,6 +547,7 @@ class ApplicantService {
           dismissals,
           Namecategory,
           Month,
+          year
         )
       })
       return reports
@@ -571,7 +573,6 @@ class ApplicantService {
           accredited: false,
           deleted: false
         },
-
 
         include: {
           directorate: true,
@@ -616,9 +617,7 @@ class ApplicantService {
       }
     } else {
       const Applicant = await this.prisma.applicant.findMany({
-        where:
-
-          applicantfilter,
+        where: applicantfilter,
 
         include: {
           directorate: true,
