@@ -1,31 +1,34 @@
-import React from 'react'
-import logo from '../../../../assets/images/newlogo.svg'
-import { ApplicantByDirectorateViewModelInfo } from '@renderer/types'
-import { cn } from '@renderer/lib'
+import React from 'react';
+import logo from '../../../../assets/images/newlogo.svg';
+import { ApplicantByDirectorateViewModelInfo } from '@renderer/types';
+import { cn } from '@renderer/lib';
 
 type Props = {
-  data: ApplicantByDirectorateViewModelInfo[]
-}
+  data: ApplicantByDirectorateViewModelInfo[];
+};
 
 const ComponentToPrint = React.forwardRef<HTMLDivElement, Props>(function ComponentToPrint(
   { data },
   ref
 ) {
-  const totalAmountSum = data?.reduce((acc, current) => acc + (current.totalAmount || 0), 0)
-  const totalApprovedAmount = data?.reduce((acc, current) => acc + (current.approvedAmount || 0), 0)
-  const date = new Date().toISOString().split('T')[0]
+  const totalAmountSum = data?.reduce((acc, current) => acc + (current.totalAmount || 0), 0);
+  const totalApprovedAmount = data?.reduce(
+    (acc, current) => acc + (current.approvedAmount || 0),
+    0
+  );
+  const date = new Date().toISOString().split('T')[0];
 
   return (
     <div ref={ref} className="w-[95%] mx-auto h-full">
       <div className="w-full h-[150px] mb-7 flex items-end">
         <p className="basis-[40%] font-extrabold">{String(date)}</p>
         <div className="basis-[40%]">
-          <img src={logo} className="w-[40%] h-[40%] object-cover" />
+          <img src={logo} className="w-[40%] h-[40%] object-cover" alt="Logo" />
         </div>
         <p className="basis-[20%] font-extrabold">عنوان التقرير : تقرير المخصصات العلاجية</p>
       </div>
-      <table dir="rtl" className="w-full h-full rounded-t-lg">
-        <thead>
+      <table dir="rtl" className="w-full h-full rounded-t-lg" style={{ borderCollapse: 'collapse' }}>
+        <thead style={{ display: 'table-header-group' }}>
           <tr className="h-10 text-black border-2 border-gray-300 py-5 bg-[#E5F0FF]">
             <th>رقم</th>
             <th>الأسم</th>
@@ -34,14 +37,18 @@ const ComponentToPrint = React.forwardRef<HTMLDivElement, Props>(function Compon
             <th>المنطقة</th>
             <th>الجوال</th>
             <th>الحاله</th>
-            <th>تكليف العلاج</th>
+            <th>تكلفة العلاج</th>
             <th>نسبة الخصم</th>
             <th>مساهمة المريض</th>
           </tr>
         </thead>
         <tbody>
           {data.map((item, index) => (
-            <tr key={item.phoneNumber} className="h-10 text-black border-2 border-gray-300 py-5">
+            <tr
+              key={item.phoneNumber}
+              className="h-10 text-black border-2 border-gray-300 py-5"
+              style={{ pageBreakInside: 'avoid' }}
+            >
               <td className="px-2">{index + 1}</td>
               <td className="px-2">{item.name}</td>
               <td className="px-2">{item.gender === 'M' ? 'ذكر' : 'انثى'}</td>
@@ -53,10 +60,10 @@ const ComponentToPrint = React.forwardRef<HTMLDivElement, Props>(function Compon
                   item.state === 'موقف'
                     ? 'inline-block bg-[#FFDAA0]/[.35] rounded-3xl px-2 py-1 text-sm font-semibold text-[#CEA461] mt-2'
                     : item.state === 'مستمر'
-                      ? 'inline-block bg-[#C5FFBC]/[.35] rounded-3xl px-2 py-1 text-sm font-semibold text-[#69DB57] mt-2'
-                      : item.state === 'منتهي'
-                        ? 'inline-block bg-[#ffe0e0] rounded-3xl px-2 py-1 text-sm font-semibold text-[#ff0000] mt-2'
-                        : ''
+                    ? 'inline-block bg-[#C5FFBC]/[.35] rounded-3xl px-2 py-1 text-sm font-semibold text-[#69DB57] mt-2'
+                    : item.state === 'منتهي'
+                    ? 'inline-block bg-[#ffe0e0] rounded-3xl px-2 py-1 text-sm font-semibold text-[#ff0000] mt-2'
+                    : ''
                 )}
               >
                 {item.state}
@@ -66,14 +73,10 @@ const ComponentToPrint = React.forwardRef<HTMLDivElement, Props>(function Compon
               <td className="px-2">{item.approvedAmount}</td>
             </tr>
           ))}
-          {/* Spacer row to add visual separation */}
-          <tr>
-            <td colSpan={9} className="h-4"></td>
-          </tr>
         </tbody>
-        <tfoot>
+        <tfoot style={{ display: 'table-footer-group' }}>
           <tr className="bg-[#E5F0FF] text-gray-500 h-16">
-            <td colSpan={9} className="p-4 text-right">
+            <td colSpan={10} className="p-4 text-right">
               <div className="flex justify-between w-full">
                 <div>
                   <h1 className="text-xl font-medium">الاجمالي</h1>
@@ -94,7 +97,7 @@ const ComponentToPrint = React.forwardRef<HTMLDivElement, Props>(function Compon
         </tfoot>
       </table>
     </div>
-  )
-})
+  );
+});
 
-export default ComponentToPrint
+export default ComponentToPrint;

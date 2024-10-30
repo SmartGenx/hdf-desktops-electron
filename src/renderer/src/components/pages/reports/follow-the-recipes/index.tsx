@@ -28,7 +28,7 @@ export default function FollowTheRecipes() {
     isError,
     data: AllAccreditedsForPdf
   } = useQuery({
-    queryKey: ['AllAccreditedsForPdf', page, query, dieases, directorate,state],
+    queryKey: ['AllAccreditedsForPdf', page, query, dieases, directorate, state],
     queryFn: () =>
       getApi<AllAccreditedsForPdf>('/accredited/AllAccreditedsForPdf', {
         params: {
@@ -51,9 +51,15 @@ export default function FollowTheRecipes() {
     error: _errorCard,
     data: AllAccreditedsForPdfPrint
   } = useQuery({
-    queryKey: ['AllAccreditedsForPdfCard'],
+    queryKey: ['AllAccreditedsForPdfCard', dieases, directorate, state],
     queryFn: () =>
       getApi<AllAccreditedsForPdfInfo[]>('/accredited/AllAccreditedsForPdf', {
+        params: {
+          'applicant[name][contains]': query,
+          'applicant[directorate][name][contains]': directorate,
+          'applicant[diseasesApplicants][some][Disease][name][contains]': dieases,
+          'state[contains]': state
+        },
         headers: {
           Authorization: authToken()
         }
@@ -115,7 +121,7 @@ export default function FollowTheRecipes() {
             content={() => componentRef.current}
           />
           <div className="hidden">
-            <ComponentToPrint ref={componentRef} data={AllAccreditedsForPdf?.data.info || []} />
+            <ComponentToPrint ref={componentRef} data={AllAccreditedsForPdfPrint?.data || []} />
           </div>
 
           <Boutton
