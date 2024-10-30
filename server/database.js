@@ -396,7 +396,7 @@ class DatabaseService {
       const profileDir = 'D:\\Profiles' // Adjust the path to your directory
 
       // Fetch the list of files from S3
-      const s3Files = await listFilesInS3Bucket('hdf-app')
+      const s3Files = await listFilesInS3Bucket('hdf-production')
 
       const downloadPromises = s3Files.map(async (file) => {
         try {
@@ -421,7 +421,7 @@ class DatabaseService {
           // If the file does not exist in either table, download it from S3
           if (attachmentExists || prescriptionExists) {
             // If downloadFileFromS3 writes the file directly
-            await downloadFileFromS3('hdf-app', file.Key, localFilePath)
+            await downloadFileFromS3('hdf-production', file.Key, localFilePath)
             console.log(`File "${file.Key}" downloaded to local directory.`)
           } else {
             console.log(`File "${file.Key}" exists in the database. Skipping download.`)
@@ -449,7 +449,7 @@ class DatabaseService {
           const fileBuffer = await fs.readFile(filePath)
 
           // Check if the file name exists in S3
-          const isFileExistInS3 = await checkFileExistenceInS3('hdf-app', file)
+          const isFileExistInS3 = await checkFileExistenceInS3('hdf-production', file)
 
           // if (!isFileExistInS3) {
           // Check if the file name exists in the Attachment or Prescription tables
@@ -468,7 +468,7 @@ class DatabaseService {
           // If the file does not exist in either table, upload it to S3
           if (attachmentExists || prescriptionExists) {
             const mimeType = 'application/octet-stream' // Set to a default MIME type
-            await uploadFileToS3('hdf-app', file, fileBuffer, mimeType)
+            await uploadFileToS3('hdf-production', file, fileBuffer, mimeType)
             console.log(`File "${file}" uploaded to S3.`)
           } else {
             console.log(`File "${file}" not exists in the database. Skipping upload.`)
