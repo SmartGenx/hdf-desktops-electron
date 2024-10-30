@@ -157,9 +157,7 @@ class AccreditedService {
         whereClause.state = state
       }
 
-      // Add location filtering if provided
-      // You need to adjust this part based on how you want to filter by location.
-      // For example, if location refers to 'currentResidence' in Applicant:
+
       if (location) {
         whereClause.treatmentSite = location
       }
@@ -327,7 +325,7 @@ class AccreditedService {
     }
   }
   async updateAccreditation(id, AccreditedData, fileAtch, filePt) {
-    // try {
+    try {
     const timestamp = Date.now()
     const uniqueId = uuidv4()
     const globalId = `${process.env.LOCAL_DB_ID}-${uniqueId}-${timestamp}` //remove name artib
@@ -364,7 +362,8 @@ class AccreditedService {
             type: type, // Use shorthand property names
             accreditedGlobalId: accreited.globalId, // Use shorthand property names
             attachmentFile: fileAtch,
-            globalId: `${process.env.LOCAL_DB_ID}-${uuidv4()}-${new Date()}` // Assign the generated global ID
+            version: { increment: 1 }, // Correctly increment the version for conflict resolution
+
           }
         })
       }
@@ -384,90 +383,20 @@ class AccreditedService {
             renewalDate,
             attachedUrl: filePt,
             accreditedGlobalId: accreited.globalId,
-            globalId: `${process.env.LOCAL_DB_ID}-${uuidv4()}-${new Date()}` // Assign the generated global ID
+            version: { increment: 1 }, // Correctly increment the version for conflict resolution
           }
         })
       }
     }
-    // const app = await this.prisma.applicant.update({
-    //   where: { globalId: AccreditedData.applicantGlobalId },
-    //   data: {
-    //     accredited: true
-    //   }
-    // })
+
 
     return accreited
-    // } catch (error) {
-    //   throw new DatabaseError('Error updating accreditation.', error)
-    // }
+    } catch (error) {
+      throw new DatabaseError('Error updating accreditation.', error)
+    }
   }
 
-  // async updateAccreditation(id, accreditedData, fileAtch, filePt) {
-  //   try {
-  //     const { type, prescriptionDate, ...rest } = accreditedData
-  //     const existingAccreditation = await this.prisma.accredited.findUnique({
-  //       where: { globalId: id }
-  //     })
 
-  //     if (!existingAccreditation) {
-  //       throw new NotFoundError(`Accreditation with id ${id} not found.`)
-  //     }
-  //     const formNumber = accreditedData.formNumber
-  //       ? +accreditedData.formNumber
-  //       : existingAccreditation.formNumber
-  //     const numberOfRfid = accreditedData.numberOfRfid
-  //       ? +accreditedData.numberOfRfid
-  //       : existingAccreditation.numberOfRfid
-  //     const accreited = await this.prisma.accredited.update({
-  //       where: { globalId: id },
-  //       data: {
-  //         ...rest,
-  //         formNumber,
-  //         numberOfRfid,
-  //         version: { increment: 1 } // Increment version for conflict resolution
-  //       }
-  //     })
-
-  //     const attchment = await this.prisma.attachment.findFirst({
-  //       where: { accreditedGlobalId: id }
-  //     })
-  //     if (!attchment) {
-  //       throw new NotFoundError(`Attachment with id ${id} not found.`)
-  //     }
-
-  //     await this.prisma.attachment.update({
-  //       where: { globalId: attchment.globalId },
-  //       data: {
-  //         type: type > 0 ? type : attchment.type, // Use shorthand property names
-  //         accreditedGlobalId: accreited.globalId, // Use shorthand property names
-  //         attachmentFile: fileAtch > 0 ? fileAtch : attchment.attachmentFile,
-
-  //         version: { increment: 1 } // Increment version for conflict resolution
-  //       }
-  //     })
-
-  //     const pt = await this.prisma.prescription.findFirst({ where: { accreditedGlobalId: id } })
-  //     if (!pt) {
-  //       throw new NotFoundError(`Prescription with id ${id} not found.`)
-  //     }
-  //     const renewalDate = new Date()
-  //     renewalDate.setMonth(renewalDate.getMonth() + 6)
-
-  //     await this.prisma.prescription.update({
-  //       where: { globalId: pt.globalId },
-  //       data: {
-  //         prescriptionDate: prescriptionDate > 0 ? prescriptionDate : pt.prescriptionDate,
-  //         renewalDate: renewalDate,
-  //         attachedUrl: filePt > 0 ? filePt : pt.attachedUrl,
-  //         version: { increment: 1 } // Increment version for conflict resolution
-  //       }
-  //     })
-
-  //     return accreited
-  //   } catch (error) {
-  //     throw new DatabaseError('Error updating accreditation.', error)
-  //   }
-  // }
   async updateAccreditationState(id, state) {
     try {
       const existingAccreditation = await this.prisma.accredited.findUnique({
@@ -530,30 +459,7 @@ class AccreditedService {
 
       const Accredited = await this.prisma.accredited.findMany({
         where:
-          // {
-          //   applicant: {
 
-          //     diseasesApplicants: {
-          //       some: {
-          //         Disease: {
-          //           name: {
-          //             contains:'ششششششششش'
-          //           }
-          //         }
-          //       }
-          //     }
-          //   }
-          // },
-
-          //   prescription: {
-          //     some: {
-          //       renewalDate: {
-          //         gt: dataFilter?.start && new Date(dataFilter?.start),
-          //         lt: dataFilter?.end && new Date(dataFilter?.end)
-          //       }
-          //     }
-          //   }
-          // },
           dataFilter,
 
         include: {
@@ -628,36 +534,7 @@ class AccreditedService {
     } else {
       const Accredited = await this.prisma.accredited.findMany({
         where:
-          // {
-          //   applicant: {
-          //     name: {
-          //       contains: dataFilter?.name
-          //     },
-          //     directorate: {
-          //       name: {
-          //         contains: dataFilter?.directorate
-          //       }
-          //     },
-          //     diseasesApplicants: {
-          //       some: {
-          //         Disease: {
-          //           name: {
-          //             contains: dataFilter?.disease
-          //           }
-          //         }
-          //       }
-          //     }
-          //   },
-
-          //   prescription: {
-          //     some: {
-          //       renewalDate: {
-          //         gt: dataFilter?.start && new Date(dataFilter?.start),
-          //         lt: dataFilter?.end && new Date(dataFilter?.end)
-          //       }
-          //     }
-          //   }
-          // },
+         
           dataFilter,
 
         include: {
