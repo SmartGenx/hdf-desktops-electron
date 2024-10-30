@@ -557,7 +557,7 @@ class ApplicantService {
   //**********************************************  *********************************** */
   //no need
   async ApplicantByCategory(applicantfilter) {
-    // try {
+    try {
     const page = applicantfilter?.page
     const pageSize = applicantfilter?.pageSize
     delete applicantfilter?.page
@@ -650,10 +650,10 @@ class ApplicantService {
 
       return reports
     }
-    // } catch (error) {
-    //   console.error('Error fetching applicant report:', error)
-    //   throw new DatabaseError('Error deleting accreditation.', error)
-    // }
+    } catch (error) {
+      console.error('Error fetching applicant report:', error)
+      throw new DatabaseError('Error deleting accreditation.', error)
+    }
   }
 }
 

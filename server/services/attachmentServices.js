@@ -41,6 +41,7 @@ class AttachmentService {
 					take: +take,
 					orderBy
 				});
+        
 				const total = await this.prisma.attachment.count({
 					where: dataFillter,
 				});
