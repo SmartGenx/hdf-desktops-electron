@@ -107,3 +107,11 @@ details > summary::-webkit-details-marker /* Safari */ {
 ::-webkit-scrollbar-thumb:hover {
   opacity: 0;
 }
+@media print {
+  .page {
+    page-break-after: always;
+  }
+  .page:last-child {
+    page-break-after: auto;
+  }
+}

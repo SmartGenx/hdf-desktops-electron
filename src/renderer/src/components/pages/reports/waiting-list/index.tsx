@@ -49,16 +49,20 @@ export default function WaitingList() {
     error: _errorCard,
     data: applicantsReportCategoryPrint
   } = useQuery({
-    queryKey: ['applicantsReportCategoryCard'],
+    queryKey: ['applicantsReportCategoryCard', directorate, dieases],
     queryFn: () =>
       getApi<applicantsReportCategory[]>('/applicant/applicantsReportCategory', {
+        params: {
+          'name[contains]': query,
+          'directorate[name][contains]': directorate,
+          'diseasesApplicants[some][Disease][name]': dieases
+        },
         headers: {
           Authorization: authToken()
         }
       })
   })
 
- 
   useEffect(() => {
     if (applicantsReportCategoryPrint?.data) {
       const dataToExport = applicantsReportCategoryPrint?.data.map((item) => {
@@ -113,7 +117,7 @@ export default function WaitingList() {
             content={() => componentRef.current}
           />
           <div className="hidden">
-            <ComponentToPrint ref={componentRef} data={applicantsReportCategory?.data.info || []} />
+            <ComponentToPrint ref={componentRef} data={applicantsReportCategoryPrint?.data || []} />
           </div>
 
           <Boutton

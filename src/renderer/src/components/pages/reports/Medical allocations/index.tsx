@@ -35,7 +35,16 @@ export default function MedicalAllocationsIndex() {
     error: errorViewModel,
     data: ApplicantByDirectorateViewModelData
   } = useQuery({
-    queryKey: ['ApplicantByDirectorateViewModel', page, query, dieases, directorate, state,month,year],
+    queryKey: [
+      'ApplicantByDirectorateViewModel',
+      page,
+      query,
+      dieases,
+      directorate,
+      state,
+      month,
+      year
+    ],
     queryFn: () =>
       getApi<ApplicantByDirectorateViewModel>('/applicant/ApplicantByDirectorateViewModel', {
         params: {
@@ -43,8 +52,8 @@ export default function MedicalAllocationsIndex() {
           'Accredited[applicant][diseasesApplicants][some][Disease][name]': dieases,
           'Accredited[applicant][directorate][name][contains]': directorate,
           'Accredited[state][contains]': state,
-          "month": month,
-          "year": year,
+          month: month,
+          year: year,
           page: page || 1,
           pageSize: 5
         },
@@ -60,9 +69,17 @@ export default function MedicalAllocationsIndex() {
     error: _errorCard,
     data: ApplicantByDirectorateViewModelDataCard
   } = useQuery({
-    queryKey: ['ApplicantByDirectorateViewModelCard'],
+    queryKey: ['ApplicantByDirectorateViewModelCard', dieases, directorate, state, month, year],
     queryFn: () =>
       getApi<ApplicantByDirectorateViewModelInfo[]>('/applicant/ApplicantByDirectorateViewModel', {
+        params: {
+          'Accredited[applicant][name][contains]': query,
+          'Accredited[applicant][diseasesApplicants][some][Disease][name]': dieases,
+          'Accredited[applicant][directorate][name][contains]': directorate,
+          'Accredited[state][contains]': state,
+          month: month,
+          year: year
+        },
         headers: {
           Authorization: authToken()
         }
@@ -137,7 +154,7 @@ export default function MedicalAllocationsIndex() {
           <div className="hidden">
             <ComponentToPrint
               ref={componentRef}
-              data={ApplicantByDirectorateViewModelData?.data.info || []}
+              data={ApplicantByDirectorateViewModelDataCard?.data || []}
             />
           </div>
 
