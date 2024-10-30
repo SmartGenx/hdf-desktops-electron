@@ -219,15 +219,16 @@ const FilterDrawer = () => {
 
         <DrawerFooter className="flex justify-between p-4">
           <div className="flex justify-between">
-            <Button className="bg-[#196CB0]" onClick={handleFilter}>
-              فلتر
-            </Button>
-            <Button variant="outline" onClick={handleClearFilters}>
-              إعادة تعيين
-            </Button>
             <DrawerClose asChild>
               <Button variant="outline">إلغاء</Button>
             </DrawerClose>
+            <Button variant="outline" onClick={handleClearFilters}>
+              إعادة تعيين
+            </Button>
+
+            <Button className="bg-[#196CB0]" onClick={handleFilter}>
+              فلتر
+            </Button>
           </div>
         </DrawerFooter>
       </DrawerContent>
