@@ -37,7 +37,6 @@ export interface Result {
 // Registering the required components from chart.js
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
-
 interface StatistSidebarProps {
   isExpended?: boolean
 }
@@ -53,7 +52,6 @@ const Statistsidebar: React.FC<StatistSidebarProps> = ({ isExpended }) => {
         }
       })
   })
- 
 
   const labels = [
     'يناير',
@@ -105,11 +103,7 @@ const Statistsidebar: React.FC<StatistSidebarProps> = ({ isExpended }) => {
     }
   }
   if (isPending) {
-    return (
-      <div className="flex justify-center items-center w-full ">
- 
-      </div>
-    )
+    return <div className="flex justify-center items-center w-full "></div>
   }
   return (
     <>
@@ -134,12 +128,22 @@ const Statistsidebar: React.FC<StatistSidebarProps> = ({ isExpended }) => {
                   <span className="font-medium">المستفيدين</span>
                 </div>
 
-                {staticsPer?.data.applicantMonthlyGenderCountsWithSquareCount.result.map((item) => (
-                  <div key={item.name} className="flex justify-between mb-1">
-                    <span>{item.name}</span>
-                    <span className="font-semibold">{item.count.toLocaleString()}</span>
-                  </div>
-                ))}
+                <div className="max-h-[300px] px-3 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-rounded-lg scrollbar-thumb-gray-500">
+                  {staticsPer?.data.applicantMonthlyGenderCountsWithSquareCount.result.map(
+                    (item, index) => (
+                      <div
+                        key={index}
+                        className="flex justify-between items-center py-2 space-x-4 rtl:space-x-reverse"
+                      >
+                        <span className="flex-1 text-right pr-2">{item.name}</span>
+                        <span className="flex-none w-12 font-semibold text-left">
+                          {item.count.toLocaleString()}
+                        </span>
+                      </div>
+                    )
+                  )}
+                </div>
+
                 {/* Repeat similar blocks for more data */}
               </div>
             </CardContent>
@@ -163,12 +167,21 @@ const Statistsidebar: React.FC<StatistSidebarProps> = ({ isExpended }) => {
                   <span className="font-medium">أعلى المربعات</span>
                   <span className="font-medium">المستفيدين</span>
                 </div>
-                {staticsPer?.data.applicantMonthlyGenderCountsWithSquareCount.result.map((item) => (
-                  <div key={item.name} className="flex justify-between mb-1">
-                    <span>{item.name}</span>
-                    <span className="font-semibold">{item.count.toLocaleString()}</span>
-                  </div>
-                ))}
+                <div className="max-h-[400px] px-3 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-rounded-lg scrollbar-thumb-gray-500">
+                  {staticsPer?.data.applicantMonthlyGenderCountsWithSquareCount.result.map(
+                    (item, index) => (
+                      <div
+                        key={index}
+                        className="flex justify-between items-center py-2 space-x-4 rtl:space-x-reverse"
+                      >
+                        <span className="flex-1 text-right pr-2">{item.name}</span>
+                        <span className="flex-none w-12 font-semibold text-left">
+                          {item.count.toLocaleString()}
+                        </span>
+                      </div>
+                    )
+                  )}
+                </div>
                 {/* Repeat similar blocks for more data */}
               </div>
             </CardContent>
