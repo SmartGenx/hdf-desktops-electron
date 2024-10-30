@@ -8,7 +8,7 @@ const { databaseService } = require('../database') // Adjust the import path as 
 
 const backupDatabase = async (req, res) => {
   try {
-    const dbName = 'Hdf_electron'
+    const dbName = 'hdf-production'
     const dbUser = 'postgres'
     const dbPassword = '12345'
     const dbPort = 5432
