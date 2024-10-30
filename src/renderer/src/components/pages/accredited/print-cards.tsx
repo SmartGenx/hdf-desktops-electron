@@ -24,7 +24,7 @@ const A4Layout = forwardRef<HTMLDivElement>((_props, ref) => {
 
   return (
     <div ref={ref} className="w-[210mm] h-[297mm] p-5 mx-auto">
-      {/* Updated grid classes */}
+ 
       <div className="grid grid-cols-3 grid-rows-4 gap-4">
         {Cards?.data
           .slice(0, 12)

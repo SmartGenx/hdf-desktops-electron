@@ -20,10 +20,9 @@ const Home = () => {
   const [searchParams] = useSearchParams()
   const categoryGlobalId = searchParams.get('categoryGlobalId')
   const directorateGlobalId = searchParams.get('directorateGlobalId')
-  const state = searchParams.get('state')
   const gender = searchParams.get('gender')
-  const fromDate = searchParams.get('craeteAt[gte]')
-  const toDate = searchParams.get('craeteAt[lte]')
+  const fromDate = searchParams.get('submissionDate[gte]')
+  const toDate = searchParams.get('submissionDate[lte]')
 
   const query = searchParams.get('query')
   const page = searchParams.get('page')
@@ -42,7 +41,6 @@ const Home = () => {
       fromDate,
       toDate,
       categoryGlobalId,
-      state,
       gender
     ],
     queryFn: () =>
@@ -52,11 +50,10 @@ const Home = () => {
           'include[category]': true,
           'include[diseasesApplicants]': true,
           'name[contains]': query,
-          'craeteAt[gte]': fromDate,
-          'craeteAt[lte]': toDate,
+          'submissionDate[gte]': fromDate,
+          'submissionDate[lte]': toDate,
           directorateGlobalId: directorateGlobalId,
           categoryGlobalId: categoryGlobalId,
-          state: state,
           gender: gender,
           page: page || 1,
           pageSize: 5

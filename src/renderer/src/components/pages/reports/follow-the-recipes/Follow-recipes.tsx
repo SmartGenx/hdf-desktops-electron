@@ -91,7 +91,7 @@ export default function FollowReceiptTable({ info, page, total, pageSize }: Prop
         }
       }
     ],
-    [5]
+    [page, pageSize]
   )
   return (
     <ReportsTable
@@ -100,9 +100,7 @@ export default function FollowReceiptTable({ info, page, total, pageSize }: Prop
       page={page.toString()}
       total={Number(total)}
       pageSize={Number(pageSize)}
-      // onRowClick={(_, { original }) => {
-      //   navigate(`/state-affairs/info/${}`)
-      // }}
+     
     />
   )
 }

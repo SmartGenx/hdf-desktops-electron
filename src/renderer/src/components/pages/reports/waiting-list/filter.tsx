@@ -15,18 +15,9 @@ import { getApi } from '@renderer/lib/http'
 import { useAuthHeader } from 'react-auth-kit'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { DiseasesResponses,  Directorate } from '@renderer/types'
+import { DiseasesResponses, Directorate } from '@renderer/types'
 
-// export interface Directorate {
-//   id: number
-//   globalId: string
-//   governorateGlobalId?: string
-//   name: string
-//   deleted: boolean
-//   version: number
-//   lastModified: Date
-//   Governorate?: Directorate
-// }
+
 export interface Category {
   id: number
   globalId: string
@@ -38,12 +29,11 @@ export interface Category {
   lastModified: Date
 }
 const FilterDrawer = () => {
-
+  const [isOpen, setIsOpen] = useState(false)
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const authToken = useAuthHeader()
-  // const selectedGovernorates = searchParams.getAll('directorateGlobalId')
-  // const selectedCategories = searchParams.getAll('categoryGlobalId')
+  
   const [selectedGovernorates, setSelectedGovernorates] = useState<string[]>([])
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [selectedState, setSelectedState] = useState<string>('')
@@ -133,7 +123,7 @@ const FilterDrawer = () => {
     }
     selectedDirectorate.forEach((id) => params.append('directorate[name][contains]', id))
     selectedDisease.forEach((id) => params.append('diseasesApplicants[some][Disease][name]', id))
-
+    setIsOpen(false)
     navigate(`/Reports?${params.toString()}`, { replace: true })
   }
   if (isDirectoratesPending || isdiseasePending) return 'Loading...'
@@ -141,7 +131,7 @@ const FilterDrawer = () => {
     return 'An error has occurred: ' + (diseaseeError?.message || directoratesError?.message)
 
   return (
-    <Drawer direction="left">
+    <Drawer open={isOpen} onOpenChange={setIsOpen} direction="left">
       <DrawerTrigger asChild>
         <Button variant="outline" className="border-[#434749]">
           <SlidersHorizontal fill="#434749" stroke="#434749" />

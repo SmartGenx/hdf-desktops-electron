@@ -10,7 +10,6 @@ import {
   DropdownMenuTrigger
 } from '../ui/dropdown-menu'
 import { Avatar } from '../ui/avatar'
-// import { Avatar } from '../ui/avatar'
 
 export type userData = {
   user: {
@@ -32,12 +31,7 @@ export default function UserNav() {
         <DropdownMenuTrigger asChild className="justify-end w-44 border">
           <Button variant="ghost" className="relative flex gap-1">
             <Avatar className="" />
-            {/* <img
-              className="w-[35px] h-[35px]"
-              src={}
-              alt={auth?.name ?? 'Unknown User'}
-            /> */}
-
+          
             <div className="flex  space-y-1 ">
               <div>
                 <p className="text-base leading-none text-muted-foreground">

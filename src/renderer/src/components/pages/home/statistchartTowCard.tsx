@@ -157,7 +157,7 @@ const StatistchartTowCard = () => {
   if (isPending) {
     return (
       <div className="flex justify-center items-center w-full ">
-        {/* <LoaderIcon className="mt-12 flex animate-spin items-center justify-end duration-1000" /> */}
+
       </div>
     )
   }
