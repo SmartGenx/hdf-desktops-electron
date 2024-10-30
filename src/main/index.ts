@@ -34,11 +34,11 @@ function createWindow(): void {
 
   mainWindow.webContents.on('context-menu', (_event, _params) => {
     const contextMenu = Menu.buildFromTemplate([
-      { role: 'cut', label: 'Cut' },
-      { role: 'copy', label: 'Copy' },
-      { role: 'paste', label: 'Paste' },
+      { role: 'cut', label: 'قطع' },
+      { role: 'copy', label: 'نسخ' },
+      { role: 'paste', label: 'لصق' },
       { type: 'separator' },
-      { role: 'selectAll', label: 'Select All' }
+      { role: 'selectAll', label: 'تحديد الكل' }
     ])
     contextMenu.popup()
   })
