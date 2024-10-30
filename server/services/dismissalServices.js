@@ -192,8 +192,12 @@ class DismissalService {
           accreditedGlobalId: accredited.globalId,
           month: currentMonthStr,
           year: currentYearStr
+        },
+        orderBy: {
+          id: 'desc'
         }
       })
+      console.log("🚀 ~ DismissalService ~ checkDismissal ~ existingDismissal:", existingDismissal)
       if (existingDismissal) {
         return { message: 'تم الصرف مسبقا' }
       }
@@ -276,7 +280,7 @@ class DismissalService {
           version: { increment: 1 } // Increment version for conflict resolution
         }
       })
-  
+
     } catch (error) {
       throw new DatabaseError('Error deleting dismissal.', error)
     }

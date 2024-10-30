@@ -11,7 +11,7 @@ class PrescriptionService {
   }
 
   async getAllPrescriptions(dataFillter) {
-    // try {
+    try {
       const page = dataFillter?.page
       const pageSize = dataFillter?.pageSize
       delete dataFillter?.page
@@ -56,9 +56,9 @@ class PrescriptionService {
         include,
         orderBy
       })
-    // } catch (error) {
-    //   throw new DatabaseError('Error retrieving attachments.', error)
-    // }
+    } catch (error) {
+      throw new DatabaseError('Error retrieving attachments.', error)
+    }
   }
 
   async getPrescriptionById(id) {

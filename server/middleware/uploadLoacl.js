@@ -5,14 +5,26 @@ const profileDir = 'D:\\Profiles'
 require('dotenv').config()
 const { v4: uuidv4 } = require('uuid') // استيراد دالة uuid
 
-const MAX_SIZE = 2 * 1024 * 1024
-const ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp']
+const MAX_SIZE = 1 * 1024 * 1024 * 1024
 
+// تعديل أنواع الملفات المسموح بها لتشمل PDF، Word، وجميع أنواع الصور
 const fileFilter = (req, file, cb) => {
-  if (ALLOWED_TYPES.includes(file.mimetype)) {
+  const allowedTypes = [
+    'application/pdf',              // PDF
+    'application/msword',            // DOC
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // DOCX
+    'image/jpeg',                    // JPEG
+    'image/png',                     // PNG
+    'image/webp',                    // WEBP
+    'image/gif',                     // GIF
+    'image/bmp',                     // BMP
+    'image/tiff'                     // TIFF
+  ]
+
+  if (allowedTypes.includes(file.mimetype)) {
     cb(null, true)
   } else {
-    cb(new Error('Invalid file type. Only PDF, JPG, PNG, and WEBP files are allowed.'), false)
+    cb(new Error('Invalid file type. Only PDF, Word, and image files are allowed.'), false)
   }
 }
 
@@ -27,13 +39,11 @@ const copyFileToProfileDir = () => async (req, res, next) => {
     return next(new Error('No file uploaded'))
   }
 
-  // Generate a filename based on upload time and original name to avoid conflicts
-
   let fileName
   let destPath
   try {
-    // Ensure the directory exists
     await fs.mkdir(profileDir, { recursive: true })
+
     if (req.files) {
       if (req.files.atch) {
         const uniqueId = uuidv4()
@@ -53,24 +63,19 @@ const copyFileToProfileDir = () => async (req, res, next) => {
       }
     }
 
-    // Write the buffer to a new file in the profile directory
     if (req.file) {
-
       const ext = path.extname(req.file.originalname)
-      fileName = `${uuidv4()}-Approved attachments${ext}` // توليد اسم فريد جديد مع الامتداد الأصلي
-
+      fileName = `${uuidv4()}-Approved attachment${ext}`
       destPath = path.join(profileDir, fileName)
       req.file.local = destPath
       await fs.writeFile(destPath, req.file.buffer)
     }
 
-    // Proceed to next middleware or route handler
     next()
   } catch (error) {
     console.error('Failed to write file in profile directory', error)
     next(error)
   }
 }
-
 
 module.exports = { upload, copyFileToProfileDir }
