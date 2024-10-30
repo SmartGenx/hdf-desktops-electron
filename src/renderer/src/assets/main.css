@@ -117,15 +117,20 @@ details > summary::-webkit-details-marker /* Safari */ {
 }
 /* Tailwind CSS classes for custom scrollbar */
 .scrollbar-thin {
-  scrollbar-width: thin;
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgb(101, 129, 187) transparent; /* Color and track */
 }
 
-.scrollbar-thumb-rounded-lg {
-  scrollbar-color: var(--tw-scrollbar-thumb);
-  border-radius: 0.5rem;
+/* Scrollbar Styling for WebKit Browsers */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 8px; /* Scrollbar width */
 }
 
-.scrollbar-thumb-gray-500::-webkit-scrollbar-thumb {
-  background-color: rgba(107, 114, 128, 1); /* Replace with your desired color */
-  border-radius: 0.5rem;
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent; /* Track color */
+}
+
+.scrollbar-thumb-rounded-lg::-webkit-scrollbar-thumb {
+  background-color: rgb(101, 129, 187); /* Scrollbar thumb color */
+  border-radius: 8px; /* Rounded corners */
 }
