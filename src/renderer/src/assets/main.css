@@ -115,3 +115,17 @@ details > summary::-webkit-details-marker /* Safari */ {
     page-break-after: auto;
   }
 }
+/* Tailwind CSS classes for custom scrollbar */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thumb-rounded-lg {
+  scrollbar-color: var(--tw-scrollbar-thumb);
+  border-radius: 0.5rem;
+}
+
+.scrollbar-thumb-gray-500::-webkit-scrollbar-thumb {
+  background-color: rgba(107, 114, 128, 1); /* Replace with your desired color */
+  border-radius: 0.5rem;
+}
