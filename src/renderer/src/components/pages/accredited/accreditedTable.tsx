@@ -123,9 +123,6 @@ export default function AccreditedTable({ info, page, total, pageSize }: Props) 
       page={page.toString()}
       total={Number(total)}
       pageSize={Number(pageSize)}
-      // onRowClick={(_, { original }) => {
-      //   navigate(`/state-affairs/info/${}`)
-      // }}
     />
   )
 }

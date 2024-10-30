@@ -90,7 +90,7 @@ const Home = () => {
         <div className="flex gap-7">
           <AccreditedSearch />
           <FilterDrawer />
-          {/* <Boutton icon="filter" title={'طباعة'} /> */}
+       
           <ReactToPrint
             trigger={() => (
               <button className="bg-[#196CB0] flex items-center text-white rounded-lg hover:bg-[#2d5372] px-3 focus:ring-[#2d5372]">
@@ -105,7 +105,7 @@ const Home = () => {
           </div>
           <Link to={'/FormAccredited'}>
             <Boutton
-              icon="addaccredited"
+              icon="exportscvs"
               title={'اضافة معتمد '}
               className="bg-[#92A709] hover:bg-[#5b6806] focus:ring-[#92A709]"
             />

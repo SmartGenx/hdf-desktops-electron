@@ -25,16 +25,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@renderer/components/ui/select'
-// export interface Directorate {
-//   id: number
-//   globalId: string
-//   governorateGlobalId?: string
-//   name: string
-//   deleted: boolean
-//   version: number
-//   lastModified: Date
-//   Governorate?: Directorate
-// }
+
 export interface Category {
   id: number
   globalId: string
@@ -46,6 +37,7 @@ export interface Category {
   lastModified: Date
 }
 const FilterDrawer = () => {
+  const [isOpen, setIsOpen] = useState(false)
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const authToken = useAuthHeader()
@@ -146,7 +138,7 @@ const FilterDrawer = () => {
     selectedDisease.forEach((id) =>
       params.append('applicant[diseasesApplicants][some][Disease][name][contains]', id)
     )
-
+    setIsOpen(false)
     navigate(`/Reports?${params.toString()}`, { replace: true })
   }
   if (isDirectoratesPending || isdiseasePending) return 'Loading...'
@@ -154,7 +146,7 @@ const FilterDrawer = () => {
     return 'An error has occurred: ' + (diseaseeError?.message || directoratesError?.message)
 
   return (
-    <Drawer direction="left">
+    <Drawer open={isOpen} onOpenChange={setIsOpen} direction="left">
       <DrawerTrigger asChild>
         <Button variant="outline" className="border-[#434749]">
           <SlidersHorizontal fill="#434749" stroke="#434749" />

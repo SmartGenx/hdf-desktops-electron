@@ -30,41 +30,16 @@ const FilterDrawer = () => {
   const navigate = useNavigate()
   const [statuses, _setstatuse] = useState<{ label: string; name: string }[]>([
     { label: 'مستمر', name: 'مستمر' },
-    { label: 'موقف', name: 'موقف' }
+    { label: 'موقف', name: 'موقف' },
+    { label: 'منتهي', name: 'منتهي' }
   ])
-
+  const [isOpen, setIsOpen] = useState(false)
   const [selectedDoctor, setSelectedDoctor] = useState<string>('')
   const [selectedTreatmentSite, setSelectedTreatmentSite] = useState<string>('')
   const [selectedStatus, setSelectedStatus] = useState<string>('')
   const [selectedSquares, setSelectedSquares] = useState<string[]>([])
-  // const handleDoctorChange = (doctor: string) => {
-  //   const params = new URLSearchParams(searchParams.toString())
-  //   params.set('doctor', doctor)
-
-  //   navigate(`/accredited?${params.toString()}`, { replace: true })
-  // }
-
-  // const handleTreatmentSiteChange = (treatmentSite: string) => {
-  //   const params = new URLSearchParams(searchParams.toString())
-  //   params.set('treatmentSite', treatmentSite)
-
-  //   navigate(`/accredited?${params.toString()}`, { replace: true })
-  // }
-  // const handleStateChange = (state: string) => {
-  //   const params = new URLSearchParams(searchParams.toString())
-  //   params.set('state', state)
-
-  //   navigate(`/accredited?${params.toString()}`, { replace: true })
-  // }
-  // const handleSquareCheckboxChange = (squareGlobalId: string) => {
-  //   const params = new URLSearchParams(searchParams.toString())
-  //   params.set('squareGlobalId', squareGlobalId)
-
-  //   navigate(`/accredited?${params.toString()}`, { replace: true })
-  // }
 
   useEffect(() => {
-    // Initialize second set of filters
     const doctor = searchParams.get('doctor') || ''
     const treatmentSite = searchParams.get('treatmentSite') || ''
     const status = searchParams.get('state') || ''
@@ -145,13 +120,13 @@ const FilterDrawer = () => {
     }
 
     selectedSquares.forEach((id) => params.append('squareGlobalId', id))
-
+    setIsOpen(false)
     // Navigate to the desired route with all filters
     navigate(`/accredited?${params.toString()}`, { replace: true })
     // Adjust the route based on where you want to apply the filters
   }
   return (
-    <Drawer direction="left">
+    <Drawer open={isOpen} onOpenChange={setIsOpen} direction="left">
       <DrawerTrigger asChild>
         <Button variant="outline" className="border-[#434749]">
           <SlidersHorizontal fill="#434749" stroke="#434749" />
@@ -163,10 +138,6 @@ const FilterDrawer = () => {
           <div className=" font-bold text-xl border-b-2 border-[#DEDEDE] w-full flex justify-center pb-2">
             <DrawerTitle> فلترة</DrawerTitle>
           </div>
-
-          {/* <DrawerClose>
-            <X className="w-5 h-5 text-gray-600" />
-          </DrawerClose> */}
         </DrawerHeader>
 
         <form id="formId">

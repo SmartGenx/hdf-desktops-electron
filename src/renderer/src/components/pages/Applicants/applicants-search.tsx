@@ -13,7 +13,7 @@ const ApplicantsSearch = () => {
   const location = useLocation()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-  // const queryClient = useQueryClient()
+ 
   const pathname = location.pathname
   const selectedVal = searchParams.get('query')
   const { data: applicant } = useQuery({

@@ -61,9 +61,6 @@ export default function CategoryTabel({ info, page, total }: Props) {
       page={page.toString()}
       total={Number(total)}
 
-      // onRowClick={(_, { original }) => {
-      //   navigate(`/state-affairs/info/${}`)
-      // }}
     />
   )
 }
