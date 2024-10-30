@@ -37,7 +37,7 @@ export default function FollowTheRecipes() {
           'applicant[diseasesApplicants][some][Disease][name][contains]': dieases,
           'state[contains]': state,
           page: page || 1,
-          pageSize: 5
+          pageSize: 4
         },
         headers: {
           Authorization: authToken()

@@ -458,7 +458,7 @@ class ApplicantService {
             numberOfRfid: dismissal.Accredited.applicant.phoneNumber
           }
           const Month = dismissal.month
-          const year=dismissal.year
+          const year = dismissal.year
           console.log('🚀 ~ ApplicantService ~ reports ~ Month:', Month)
           const state = dismissal.Accredited.state
           const Namedirectorate = dismissal.Accredited.applicant.directorate.name
@@ -526,7 +526,7 @@ class ApplicantService {
           numberOfRfid: dismissal.Accredited.applicant.phoneNumber
         }
         const Month = dismissal.month
-        const year=dismissal.year
+        const year = dismissal.year
         const state = dismissal.Accredited.state
         const Namedirectorate = dismissal.Accredited.applicant.directorate.name
         const Namecategory = dismissal.Accredited.applicant.category.SupportRatio + '%'
@@ -558,98 +558,106 @@ class ApplicantService {
   //no need
   async ApplicantByCategory(applicantfilter) {
     try {
-    const page = applicantfilter?.page
-    const pageSize = applicantfilter?.pageSize
-    delete applicantfilter?.page
-    delete applicantfilter?.pageSize
+      const page = applicantfilter?.page
+      const pageSize = applicantfilter?.pageSize
+      delete applicantfilter?.page
+      delete applicantfilter?.pageSize
 
-    if (page && pageSize) {
-      const skip = (page - 1) * pageSize
-      const take = pageSize
+      if (page && pageSize) {
+        const skip = (page - 1) * pageSize
+        const take = pageSize
 
-      const Applicant = await this.prisma.applicant.findMany({
-        where: {
-          ...applicantfilter,
-          accredited: false,
-          deleted: false
-        },
+        const Applicant = await this.prisma.applicant.findMany({
+          where: {
+            ...applicantfilter,
+            accredited: false,
+            deleted: false
+          },
 
-        include: {
-          directorate: true,
-          category: true,
-          diseasesApplicants: {
-            include: {
-              Disease: true
+          include: {
+            directorate: true,
+            category: true,
+            diseasesApplicants: {
+              include: {
+                Disease: true
+              }
             }
+
+            // Make sure this relationship is correctly defined in your Prisma schema
+          },
+          skip: +skip,
+          take: +take
+        })
+        const total = await this.prisma.applicant.count({
+          where: {
+            ...applicantfilter,
+            accredited: false,
+            deleted: false
           }
+        })
 
-          // Make sure this relationship is correctly defined in your Prisma schema
-        },
-        skip: +skip,
-        take: +take
-      })
-      const total = await this.prisma.applicant.count({
-        where: applicantfilter
-      })
+        const reports = Applicant.map((Applican) => {
+          const applicant = {
+            name: Applican.name,
+            submissionDate: Applican.submissionDate.toISOString().split('T')[0],
+            phoneNumber: Applican.phoneNumber
+          }
+          const categoryName = Applican.category.name
+          const Namedirectorate = Applican.directorate.name
+          const diseaseNames = Applican.diseasesApplicants.map((da) => da.Disease.name).join(', ')
+          return new ApplicantByCategoryViewModel(
+            applicant,
+            diseaseNames,
+            Namedirectorate,
+            categoryName
+          )
+        })
 
-      const reports = Applicant.map((Applican) => {
-        const applicant = {
-          name: Applican.name,
-          submissionDate: Applican.submissionDate.toISOString().split('T')[0],
-          phoneNumber: Applican.phoneNumber
+        return {
+          info: reports,
+          total: total,
+          page: page,
+          pageSize: pageSize
         }
-        const categoryName = Applican.category.name
-        const Namedirectorate = Applican.directorate.name
-        const diseaseNames = Applican.diseasesApplicants.map((da) => da.Disease.name).join(', ')
-        return new ApplicantByCategoryViewModel(
-          applicant,
-          diseaseNames,
-          Namedirectorate,
-          categoryName
-        )
-      })
+      } else {
+        const Applicant = await this.prisma.applicant.findMany({
+          where: {
+            ...applicantfilter,
+            accredited: false,
+            deleted: false
+          },
 
-      return {
-        info: reports,
-        total: total,
-        page: page,
-        pageSize: pageSize
+          include: {
+            directorate: true,
+            category: true,
+            diseasesApplicants: {
+              include: {
+                Disease: true
+              }
+            }
+
+            // Make sure this relationship is correctly defined in your Prisma schema
+          }
+        })
+        const reports = Applicant.map((Applican) => {
+          const applicant = {
+            name: Applican.name,
+            submissionDate: Applican.submissionDate.toISOString().split('T')[0],
+            phoneNumber: Applican.phoneNumber
+          }
+          const categoryName = Applican.category.name
+          const Namedirectorate = Applican.directorate.name
+          const diseaseNames = Applican.diseasesApplicants.map((da) => da.Disease.name).join(', ')
+          return new ApplicantByCategoryViewModel(
+            applicant,
+            diseaseNames,
+            Namedirectorate,
+            categoryName
+          )
+        })
+
+        return reports
       }
-    } else {
-      const Applicant = await this.prisma.applicant.findMany({
-        where: applicantfilter,
-
-        include: {
-          directorate: true,
-          category: true,
-          diseasesApplicants: {
-            include: {
-              Disease: true
-            }
-          }
-
-          // Make sure this relationship is correctly defined in your Prisma schema
-        }
-      })
-      const reports = Applicant.map((Applican) => {
-        const applicant = {
-          name: Applican.name,
-          submissionDate: Applican.submissionDate.toISOString().split('T')[0],
-          phoneNumber: Applican.phoneNumber
-        }
-        const categoryName = Applican.category.name
-        const Namedirectorate = Applican.directorate.name
-        const diseaseNames = Applican.diseasesApplicants.map((da) => da.Disease.name).join(', ')
-        return new ApplicantByCategoryViewModel(
-          applicant,
-          diseaseNames,
-          Namedirectorate,
-          categoryName
-        )
-      })
-
-      return reports
-    }
     } catch (error) {
       console.error('Error fetching applicant report:', error)
       throw new DatabaseError('Error deleting accreditation.', error)

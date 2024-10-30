@@ -56,7 +56,7 @@ const Home = () => {
           categoryGlobalId: categoryGlobalId,
           gender: gender,
           page: page || 1,
-          pageSize: 5
+          pageSize: 4
         },
         headers: {
           Authorization: authToken()
