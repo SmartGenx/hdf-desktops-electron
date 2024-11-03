@@ -1,0 +1,254 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+
+
+    url      = env("DATABASE_URL")
+
+
+}
+
+model User {
+  id               Int       @id @default(autoincrement())
+  globalId         String    @unique
+  name             String
+  email            String    @unique
+  password         String
+  isActive         Boolean   @default(true)
+  phone            String?
+  address          String?
+  profileImage     String?
+  resetToken       String?
+  deleted          Boolean   @default(false)
+  resetTokenExpiry DateTime?
+  version          Int       @default(1) // Version field for conflict resolution
+  lastModified     DateTime  @updatedAt // Timestamp field for conflict resolution
+  roleGlobalId     String
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  role             Role      @relation(fields: [roleGlobalId], references: [globalId])
+
+  @@unique([id, globalId])
+}
+
+// Role
+model Role {
+  id           Int      @id @default(autoincrement())
+  globalId     String   @unique
+  name         String   @unique
+  deleted      Boolean  @default(false)
+  version      Int      @default(1) // Version field for conflict resolution
+  lastModified DateTime @updatedAt // Timestamp field for conflict resolution
+  users        User[]
+
+  @@unique([id, globalId])
+}
+
+model Accredited {
+  id                Int            @id @default(autoincrement())
+  globalId          String         @unique
+  squareGlobalId    String?
+  treatmentSite     String
+  doctor            String
+  state             String
+  numberOfRfid      Int
+  formNumber        Int
+  deleted           Boolean        @default(false)
+  applicantGlobalId String
+  pharmacyGlobalId  String
+  version           Int            @default(1) // Version field for conflict resolution
+  applicant         Applicant      @relation(fields: [applicantGlobalId], references: [globalId])
+  square            Square?        @relation(fields: [squareGlobalId], references: [globalId])
+  pharmacy          Pharmacy       @relation(fields: [pharmacyGlobalId], references: [globalId])
+  attachment        Attachment[]
+  dismissal         Dismissal[]
+  prescription      Prescription[]
+  lastModified      DateTime       @updatedAt // Timestamp field for conflict resolution
+
+  @@unique([id, globalId])
+}
+
+model Applicant {
+  id                  Int                  @id @default(autoincrement())
+  globalId            String               @unique
+  name                String
+  age                 Int
+  dateOfBirth         DateTime
+  placeOfBirth        String
+  currentResidence    String
+  gender              String               @db.Char(1)
+  directorateGlobalId String
+  phoneNumber         String
+  submissionDate      DateTime
+  deleted             Boolean              @default(false)
+  accredited          Boolean              @default(false)
+  categoryGlobalId    String
+  state               String
+  version             Int                  @default(1) // Version field for conflict resolution
+  lastModified        DateTime             @updatedAt // Timestamp field for conflict resolution
+  Accredited          Accredited[]
+  category            Category             @relation(fields: [categoryGlobalId], references: [globalId])
+  directorate         Directorate          @relation(fields: [directorateGlobalId], references: [globalId])
+  diseasesApplicants  DiseasesApplicants[]
+  craeteAt DateTime @default(now())
+
+  @@unique([id, globalId])
+}
+
+model Prescription {
+  id                 Int        @id @default(autoincrement())
+  globalId           String     @unique
+  prescriptionDate   DateTime
+  renewalDate        DateTime
+  attachedUrl        String
+  deleted            Boolean    @default(false)
+  accreditedGlobalId String
+  version            Int        @default(1) // Version field for conflict resolution
+  lastModified       DateTime   @updatedAt // Timestamp field for conflict resolution
+  accredited         Accredited @relation(fields: [accreditedGlobalId], references: [globalId])
+
+  @@unique([id, globalId])
+}
+
+model Attachment {
+  id                 Int        @id @default(autoincrement())
+  globalId           String     @unique
+  attachmentFile     String
+  type               String
+  deleted            Boolean    @default(false)
+  accreditedGlobalId String
+  version            Int        @default(1) // Version field for conflict resolution
+  lastModified       DateTime   @updatedAt // Timestamp field for conflict resolution
+  accredited         Accredited @relation(fields: [accreditedGlobalId], references: [globalId])
+
+  @@unique([id, globalId])
+}
+
+model Category {
+  id           Int         @id @default(autoincrement())
+  globalId     String      @unique
+  name         String
+  SupportRatio Int
+  deleted      Boolean     @default(false)
+  description  String
+  version      Int         @default(1) // Version field for conflict resolution
+  lastModified DateTime    @updatedAt // Timestamp field for conflict resolution
+  Applicant    Applicant[]
+}
+
+model Directorate {
+  id                  Int         @id @default(autoincrement())
+  globalId            String      @unique
+  governorateGlobalId String
+  name                String
+  deleted             Boolean     @default(false)
+  version             Int         @default(1) // Version field for conflict resolution
+  Applicant           Applicant[]
+  Governorate         Governorate @relation(fields: [governorateGlobalId], references: [globalId])
+  lastModified        DateTime    @updatedAt // Timestamp field for conflict resolution
+
+  @@unique([id, globalId])
+}
+
+model Disease {
+  id                 Int                  @id @default(autoincrement())
+  globalId           String               @unique
+  name               String
+  deleted            Boolean              @default(false)
+  description        String
+  version            Int                  @default(1) // Version field for conflict resolution
+  lastModified       DateTime             @updatedAt // Timestamp field for conflict resolution
+  DiseasesApplicants DiseasesApplicants[]
+
+  @@unique([id, globalId])
+}
+
+model DiseasesApplicants {
+  id                Int       @id @default(autoincrement())
+  globalId          String    @unique
+  diseaseGlobalId   String
+  deleted           Boolean   @default(false)
+  applicantGlobalId String
+  version           Int       @default(1) // Version field for conflict resolution
+  Applicant         Applicant @relation(fields: [applicantGlobalId], references: [globalId])
+  Disease           Disease   @relation(fields: [diseaseGlobalId], references: [globalId])
+  lastModified      DateTime  @updatedAt // Timestamp field for conflict resolution
+
+  @@unique([id, globalId])
+}
+
+model Dismissal {
+  id                 Int        @id @default(autoincrement())
+  globalId           String     @unique
+  month              String
+  year               String
+  dateToDay          DateTime
+  state              String
+  totalAmount        Float
+  amountPaid         Float
+  approvedAmount     Float
+  openDismissal      Boolean    @default(false)
+  deleted            Boolean    @default(false)
+  accreditedGlobalId String
+  version            Int        @default(1) // Version field for conflict resolution
+  Accredited         Accredited @relation(fields: [accreditedGlobalId], references: [globalId])
+  lastModified       DateTime   @updatedAt // Timestamp field for conflict resolution
+
+  @@unique([id, globalId])
+}
+
+model Governorate {
+  id           Int           @id @default(autoincrement())
+  globalId     String        @unique
+  name         String
+  deleted      Boolean       @default(false)
+  version      Int           @default(1) // Version field for conflict resolution
+  Directorate  Directorate[]
+  Pharmacy     Pharmacy[]
+  lastModified DateTime      @updatedAt // Timestamp field for conflict resolution
+
+  @@unique([id, globalId])
+}
+
+model Pharmacy {
+  id                  Int          @id @default(autoincrement())
+  globalId            String       @unique
+  name                String
+  location            String
+  startDispenseDate   Int
+  endispenseDate      Int
+  deleted             Boolean      @default(false)
+  governorateGlobalId String
+  Governorate         Governorate  @relation(fields: [governorateGlobalId], references: [globalId])
+  version             Int          @default(1) // Version field for conflict resolution
+  Accredited          Accredited[]
+  lastModified        DateTime     @updatedAt // Timestamp field for conflict resolution
+
+  @@unique([id, globalId])
+}
+
+model Square {
+  id           Int          @id @default(autoincrement())
+  globalId     String       @unique
+  name         String
+  deleted      Boolean      @default(false)
+  version      Int          @default(1) // Version field for conflict resolution
+  Accredited   Accredited[]
+  lastModified DateTime     @updatedAt // Timestamp field for conflict resolution
+
+  @@unique([id, globalId])
+}
+
+model BackUp {
+  id       Int    @id @default(autoincrement())
+  globalId String @unique
+  userName     String
+  path         String
+  createAt     DateTime @default(now())
+  deleted      Boolean  @default(false)
+  version      Int      @default(1) // Version field for conflict resolution
+  lastModified DateTime @updatedAt // Timestamp field for conflict resolution
+}
