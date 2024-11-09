@@ -502,6 +502,80 @@ class ApplicantService {
       } catch (error) {
         throw new DatabaseError('Error deleting accreditation.', error)
       }
+    } else {
+      const dismissal = await this.prisma.dismissal.findMany({
+        where: {
+          Accredited: {
+            applicant: {
+              gender: {
+                contains: filterParams?.gender
+              },
+              directorate: {
+                name: {
+                  contains: filterParams?.directorate
+                }
+              },
+              diseasesApplicants: {
+                some: {
+                  Disease: {
+                    name: {
+                      contains: filterParams?.disease
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        include: {
+          Accredited: {
+            include: {
+              applicant: {
+                include: {
+                  directorate: true,
+                  category: true,
+                  diseasesApplicants: {
+                    include: {
+                      Disease: true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        // Make sure this relationship is correctly defined in your Prisma schema
+      })
+      const reports = dismissal?.map((dismissal) => {
+        const applicant = {
+          name: dismissal.Accredited.applicant.name,
+          gender: dismissal.Accredited.applicant.gender,
+          phoneNumber: dismissal.Accredited.applicant.phoneNumber,
+          numberOfRfid: dismissal.Accredited.applicant.phoneNumber
+        }
+        const state = dismissal.Accredited.state
+        const Namedirectorate = dismissal.Accredited.applicant.directorate.name
+        const Namecategory = dismissal.Accredited.applicant.category.SupportRatio + '%'
+        const diseaseNames = dismissal.Accredited.applicant.diseasesApplicants
+          .map((da) => da.Disease.name)
+          .join(', ')
+
+        const dismissals = {
+          totalAmount: dismissal.totalAmount,
+
+          approvedAmount: dismissal.approvedAmount
+        }
+        return new ApplicantByDirectorateViewModel(
+          applicant,
+          diseaseNames,
+          Namedirectorate,
+          state,
+          dismissals,
+          Namecategory
+        )
+      })
+      return reports
     }
   }
 
@@ -513,73 +587,133 @@ class ApplicantService {
       const pageSize = applicantfilter?.pageSize
       delete applicantfilter?.page
       delete applicantfilter?.pageSize
-      const skip = (+page - 1) * +pageSize
-      const take = +pageSize
-      const Applicant = await this.prisma.applicant.findMany({
-        where: {
-          deleted: false,
-          accredited: false,
-          category: {
-            name: {
-              contains: applicantfilter?.category
-            }
-          },
-          diseasesApplicants: {
-            some: {
-              Disease: {
-                name: {
-                  contains: applicantfilter?.disease
+
+      if (page && pageSize) {
+        const skip = (page - 1) * pageSize
+        const take = pageSize
+
+        const Applicant = await this.prisma.applicant.findMany({
+          where: {
+            deleted: false,
+            accredited: false,
+            category: {
+              name: {
+                contains: applicantfilter?.category
+              }
+            },
+            diseasesApplicants: {
+              some: {
+                Disease: {
+                  name: {
+                    contains: applicantfilter?.disease
+                  }
                 }
+              }
+            },
+            directorate: {
+              name: {
+                contains: applicantfilter?.directorate
               }
             }
           },
-          directorate: {
-            name: {
-              contains: applicantfilter?.directorate
+
+          include: {
+            directorate: true,
+            category: true,
+            diseasesApplicants: {
+              include: {
+                Disease: true
+              }
             }
+
+            // Make sure this relationship is correctly defined in your Prisma schema
+          },
+          skip: +skip,
+          take: +take
+        })
+        const total = await this.prisma.applicant.count({
+          where: applicantfilter
+        })
+
+        const reports = Applicant.map((Applican) => {
+          const applicant = {
+            name: Applican.name,
+            submissionDate: Applican.submissionDate.toISOString().split('T')[0],
+            phoneNumber: Applican.phoneNumber
           }
-        },
+          const categoryName = Applican.category.name
+          const Namedirectorate = Applican.directorate.name
+          const diseaseNames = Applican.diseasesApplicants.map((da) => da.Disease.name).join(', ')
+          return new ApplicantByCategoryViewModel(
+            applicant,
+            diseaseNames,
+            Namedirectorate,
+            categoryName
+          )
+        })
 
-        include: {
-          directorate: true,
-          category: true,
-          diseasesApplicants: {
-            include: {
-              Disease: true
-            }
-          }
-
-          // Make sure this relationship is correctly defined in your Prisma schema
-        },
-        skip: +skip,
-        take: +take
-      })
-      const total = await this.prisma.applicant.count({
-        where: applicantfilter
-      })
-
-      const reports = Applicant.map((Applican) => {
-        const applicant = {
-          name: Applican.name,
-          submissionDate: Applican.submissionDate.toISOString().split('T')[0],
-          phoneNumber: Applican.phoneNumber
+        return {
+          info: reports,
+          total: total,
+          page: page,
+          pageSize: pageSize
         }
-        const categoryName = Applican.category.name
-        const Namedirectorate = Applican.directorate.name
-        const diseaseNames = Applican.diseasesApplicants.map((da) => da.Disease.name).join(', ')
-        return new ApplicantByCategoryViewModel(
-          applicant,
-          diseaseNames,
-          Namedirectorate,
-          categoryName
-        )
-      })
+      } else {
+        const Applicant = await this.prisma.applicant.findMany({
+          where: {
+            deleted: false,
+            accredited: false,
+            category: {
+              name: {
+                contains: applicantfilter?.category
+              }
+            },
+            diseasesApplicants: {
+              some: {
+                Disease: {
+                  name: {
+                    contains: applicantfilter?.disease
+                  }
+                }
+              }
+            },
+            directorate: {
+              name: {
+                contains: applicantfilter?.directorate
+              }
+            }
+          },
 
-      return {
-        info: reports,
-        total: total,
-        page: page,
-        pageSize: pageSize
+          include: {
+            directorate: true,
+            category: true,
+            diseasesApplicants: {
+              include: {
+                Disease: true
+              }
+            }
+
+            // Make sure this relationship is correctly defined in your Prisma schema
+          }
+        })
+        const reports = Applicant.map((Applican) => {
+          const applicant = {
+            name: Applican.name,
+            submissionDate: Applican.submissionDate.toISOString().split('T')[0],
+            phoneNumber: Applican.phoneNumber
+          }
+          const categoryName = Applican.category.name
+          const Namedirectorate = Applican.directorate.name
+          const diseaseNames = Applican.diseasesApplicants.map((da) => da.Disease.name).join(', ')
+          return new ApplicantByCategoryViewModel(
+            applicant,
+            diseaseNames,
+            Namedirectorate,
+            categoryName
+          )
+        })
+
+        return reports
       }
     } catch (error) {
       console.error('Error fetching applicant report:', error)
