@@ -42,7 +42,7 @@ class CategoryService {
         where: { name },
       })
       if(existingCategory) {
-        throw new NotFoundError(`A category with the name '${name}' already exists.`);
+        throw new NotFoundError(`موجودة بالفعل${name} هذي الفئة`);
       }
       return await this.prisma.category.create({
         data: {
@@ -77,7 +77,7 @@ class CategoryService {
       const existingCategoryName = await this.prisma.category.findFirst({ where: { name: data.name } })
 
       if (existingCategoryName) {
-        throw new NotFoundError(`A category with the name '${data.name}' already exists.`);
+        throw new NotFoundError(`موجودة بالفعل${data.name} هذي الفئة`);
       }
 
 

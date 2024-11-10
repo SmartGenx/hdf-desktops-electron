@@ -45,7 +45,7 @@ class GovernorateService {
         where: { name },
       })
       if(existingGovernorate) {
-        throw new ValidationError(`A governorate with the name '${name}' already exists.`);
+        throw new ValidationError(`موجودة بالفعل${name} هذي المحافظة`);
       }
       return await this.prisma.governorate.create({
         data: {
@@ -74,9 +74,9 @@ class GovernorateService {
       const existingGovernorateName = await this.prisma.governorate.findFirst({ where: { name: data.name } })
 
       if (existingGovernorateName) {
-        throw new ValidationError(`A governorate with the name '${data.name}' already exists.`);
+        throw new ValidationError(`موجودة بالفعل${data.name} هذي المحافظة`);
       }
-      
+
 
       return await this.prisma.governorate.update({
         where: { globalId: id },

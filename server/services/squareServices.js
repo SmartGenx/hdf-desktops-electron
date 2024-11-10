@@ -41,7 +41,7 @@ class SquareService {
         where: { name: name },
       })
       if(existingSquare) {
-        throw new ValidationError(`A square with the name '${name}' already exists.`);
+        throw new ValidationError(`موجودة بالفعل${name} هذي المربع`);
       }
       return await this.prisma.square.create({
         data: {
@@ -72,7 +72,7 @@ class SquareService {
       const existingSquareName = await this.prisma.square.findFirst({ where: { name: data.name } })
 
       if (existingSquareName) {
-        throw new ValidationError(`A square with the name '${data.name}' already exists.`);
+        throw new ValidationError(`موجودة بالفعل${data.name} هذي المربع`);
       }
 
       return await this.prisma.square.update({

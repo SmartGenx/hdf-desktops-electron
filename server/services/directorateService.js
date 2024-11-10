@@ -46,7 +46,7 @@ class DirectorateService {
         where: { name: data.name },
       })
       if(existingDirectorate) {
-        throw new ValidationError(`A directorate with the name '${data.name}' already exists.`);
+        throw new ValidationError(`موجودة بالفعل${data.name} هذي المديرية`);
       }
       return await this.prisma.Directorate.create({
         data: { ...data, globalId: globalId },
@@ -75,7 +75,7 @@ class DirectorateService {
       const existingDirectorateName = await this.prisma.Directorate.findFirst({ where: { name: data.name } })
 
       if (existingDirectorateName) {
-        throw new ValidationError(`A directorate with the name '${data.name}' already exists.`);
+        throw new ValidationError(`موجودة بالفعل${data.name} هذي المديرية`);
       }
 
       return await this.prisma.Directorate.update({

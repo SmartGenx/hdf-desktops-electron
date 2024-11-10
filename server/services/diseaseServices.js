@@ -40,7 +40,7 @@ class DiseaseService {
         where: { name: name },
       })
       if(existingDisease) {
-        throw new ValidationError(`A disease with the name '${name}' already exists.`);
+        throw new ValidationError(`موجودة بالفعل${name} هذي المرض`);
       }
       return await this.prisma.disease.create({
         data: {
@@ -74,7 +74,7 @@ class DiseaseService {
       const existingDiseaseName = await this.prisma.disease.findFirst({ where: { name: data.name } })
 
       if (existingDiseaseName) {
-        throw new ValidationError(`A disease with the name '${data.name}' already exists.`);
+        throw new ValidationError(`موجودة بالفعل${data.name} هذي المرض`);
       }
 
       return await this.prisma.disease.update({
