@@ -41,7 +41,7 @@ class PharmacyService {
         where: { name: PharmacyData.name },
       })
       if(existingPharmacy) {
-        throw new ValidationError(`موجودة بالفعل${PharmacyData.name} هذي الصيدلة`);
+        throw new ValidationError(`هذي الصيدلة  ${PharmacyData.name} موجودة بالفعل `);
       }
       return await this.prisma.pharmacy.create({
         data: {
@@ -75,7 +75,7 @@ class PharmacyService {
       const existingPharmacyName = await this.prisma.pharmacy.findFirst({ where: { name: data.name } })
 
       if (existingPharmacyName) {
-        throw new ValidationError(`موجودة بالفعل${data.name} هذي الصيدلية`);
+        throw new ValidationError(`هذي الصيدلة  ${data.name} موجودة بالفعل `);
       }
 
       return await this.prisma.pharmacy.update({

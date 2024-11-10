@@ -42,7 +42,7 @@ class CategoryService {
         where: { name },
       })
       if(existingCategory) {
-        throw new NotFoundError(`موجودة بالفعل${name} هذي الفئة`);
+        throw new ValidationError(`هذي الفئة  ${name}  موجودة بالفعل `);
       }
       return await this.prisma.category.create({
         data: {
@@ -57,7 +57,7 @@ class CategoryService {
 
         throw new ValidationError(`A category with the name '${name}' already exists.`);
       }
-      else if (error instanceof NotFoundError) {
+      else if (error instanceof ValidationError) {
         throw error
 
       }
@@ -77,7 +77,7 @@ class CategoryService {
       const existingCategoryName = await this.prisma.category.findFirst({ where: { name: data.name } })
 
       if (existingCategoryName) {
-        throw new NotFoundError(`موجودة بالفعل${data.name} هذي الفئة`);
+        throw new ValidationError(`هذي الفئة  ${data.name}  موجودة بالفعل `);
       }
 
 
@@ -89,7 +89,7 @@ class CategoryService {
         },
       });
     } catch (error) {
-      if( error instanceof NotFoundError) {
+      if( error instanceof ValidationError) {
         throw error
       }
       throw new DatabaseError('Error updating category.', error);
