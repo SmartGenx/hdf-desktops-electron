@@ -37,6 +37,12 @@ class SquareService {
       const timestamp = Date.now();
       const uniqueId = uuidv4();
       const globalId = `${process.env.LOCAL_DB_ID}-${uniqueId}-${timestamp}`; //remove name artib
+      const existingSquare = await this.prisma.square.findFirst({
+        where: { name: name },
+      })
+      if(existingSquare) {
+        throw new ValidationError(`A square with the name '${name}' already exists.`);
+      }
       return await this.prisma.square.create({
         data: {
           name,
@@ -46,7 +52,11 @@ class SquareService {
     } catch (error) {
       if (error.code === 'P2002') {
         throw new ValidationError(`A square with the name '${name}' already exists.`);
-      } else {
+      }
+      else if (error instanceof ValidationError) {
+        throw error
+      }
+       else {
         throw new DatabaseError('Error creating new square.', error);
       }
     }
@@ -59,6 +69,11 @@ class SquareService {
       if (!existingSquare) {
         throw new NotFoundError(`Square with id ${id} not found.`);
       }
+      const existingSquareName = await this.prisma.square.findFirst({ where: { name: data.name } })
+
+      if (existingSquareName) {
+        throw new ValidationError(`A square with the name '${data.name}' already exists.`);
+      }
 
       return await this.prisma.square.update({
         where: { globalId: id },
@@ -68,7 +83,14 @@ class SquareService {
         },
       });
     } catch (error) {
-      throw new DatabaseError('Error updating square.', error);
+      if( error instanceof ValidationError) {
+        throw error
+      }
+      else{
+
+        throw new DatabaseError('Error updating square.', error);
+      }
+
     }
   }
 

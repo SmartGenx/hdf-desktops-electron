@@ -36,6 +36,12 @@ class DiseaseService {
       const timestamp = Date.now();
       const uniqueId = uuidv4();
       const globalId = `${process.env.LOCAL_DB_ID}-${name}-${uniqueId}-${timestamp}`;
+      const existingDisease = await this.prisma.disease.findFirst({
+        where: { name: name },
+      })
+      if(existingDisease) {
+        throw new ValidationError(`A disease with the name '${name}' already exists.`);
+      }
       return await this.prisma.disease.create({
         data: {
           name,
@@ -47,7 +53,11 @@ class DiseaseService {
     } catch (error) {
       if (error.code === 'P2002') {
         throw new ValidationError(`A disease with the name '${name}' already exists.`);
-      } else {
+      }
+      else if (error instanceof ValidationError) {
+        throw error
+      }
+       else {
         throw new DatabaseError('Error creating new disease.', error);
       }
     }
@@ -61,6 +71,12 @@ class DiseaseService {
         throw new NotFoundError(`Disease with id ${id} not found.`);
       }
 
+      const existingDiseaseName = await this.prisma.disease.findFirst({ where: { name: data.name } })
+
+      if (existingDiseaseName) {
+        throw new ValidationError(`A disease with the name '${data.name}' already exists.`);
+      }
+
       return await this.prisma.disease.update({
         where: { globalId: id },
         data: {
@@ -69,6 +85,12 @@ class DiseaseService {
         },
       });
     } catch (error) {
+      if( error instanceof ValidationError) {
+        throw error
+      }
+      else if( error instanceof NotFoundError) {
+        throw error
+      }
       throw new DatabaseError('Error updating disease.', error);
     }
   }

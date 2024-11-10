@@ -38,6 +38,12 @@ class CategoryService {
       const timestamp = Date.now();
       const uniqueId = uuidv4();
       const globalId = `${process.env.LOCAL_DB_ID}-${name}-${uniqueId}-${timestamp}`;
+      const existingCategory = await this.prisma.category.findFirst({
+        where: { name },
+      })
+      if(existingCategory) {
+        throw new NotFoundError(`A category with the name '${name}' already exists.`);
+      }
       return await this.prisma.category.create({
         data: {
           name,
@@ -48,8 +54,14 @@ class CategoryService {
       });
     } catch (error) {
       if (error.code === 'P2002') {
+
         throw new ValidationError(`A category with the name '${name}' already exists.`);
-      } else {
+      }
+      else if (error instanceof NotFoundError) {
+        throw error
+
+      }
+      else {
         throw new DatabaseError('Error creating new category.', error);
       }
     }
@@ -62,6 +74,12 @@ class CategoryService {
       if (!existingCategory) {
         throw new NotFoundError(`Category with id ${id} not found.`);
       }
+      const existingCategoryName = await this.prisma.category.findFirst({ where: { name: data.name } })
+
+      if (existingCategoryName) {
+        throw new NotFoundError(`A category with the name '${data.name}' already exists.`);
+      }
+
 
       return await this.prisma.category.update({
         where: { globalId: id },
@@ -71,6 +89,9 @@ class CategoryService {
         },
       });
     } catch (error) {
+      if( error instanceof NotFoundError) {
+        throw error
+      }
       throw new DatabaseError('Error updating category.', error);
     }
   }

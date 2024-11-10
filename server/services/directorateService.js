@@ -42,13 +42,23 @@ class DirectorateService {
       const timestamp = Date.now();
       const uniqueId = uuidv4();
       const globalId = `${process.env.LOCAL_DB_ID}-${uniqueId}-${timestamp}`; //remove name artib
+      const existingDirectorate = await this.prisma.Directorate.findFirst({
+        where: { name: data.name },
+      })
+      if(existingDirectorate) {
+        throw new ValidationError(`A directorate with the name '${data.name}' already exists.`);
+      }
       return await this.prisma.Directorate.create({
         data: { ...data, globalId: globalId },
       });
     } catch (error) {
       if (error.code === 'P2002') {
         throw new ValidationError(`A directorate with the name '${data.name}' already exists.`);
-      } else {
+      }
+      else if (error instanceof ValidationError) {
+        throw error
+      }
+      else {
         throw new DatabaseError('Error creating new directorate.', error);
       }
     }
@@ -61,6 +71,13 @@ class DirectorateService {
       if (!existingDirectorate) {
         throw new NotFoundError(`Directorate with id ${id} not found.`);
       }
+
+      const existingDirectorateName = await this.prisma.Directorate.findFirst({ where: { name: data.name } })
+
+      if (existingDirectorateName) {
+        throw new ValidationError(`A directorate with the name '${data.name}' already exists.`);
+      }
+
       return await this.prisma.Directorate.update({
         where: { globalId: id },
         data: {
@@ -69,6 +86,12 @@ class DirectorateService {
         },
       });
     } catch (error) {
+      if( error instanceof ValidationError) {
+        throw error
+      }
+      else if( error instanceof NotFoundError) {
+        throw error
+      }
       throw new DatabaseError('Error updating directorate.', error);
     }
   }

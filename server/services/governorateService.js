@@ -41,6 +41,12 @@ class GovernorateService {
       const timestamp = Date.now();
       const uniqueId = uuidv4();
       const globalId = `${process.env.LOCAL_DB_ID}-${uniqueId}-${timestamp}`; //remove name artib
+      const existingGovernorate = await this.prisma.governorate.findFirst({
+        where: { name },
+      })
+      if(existingGovernorate) {
+        throw new ValidationError(`A governorate with the name '${name}' already exists.`);
+      }
       return await this.prisma.governorate.create({
         data: {
           name,
@@ -65,6 +71,12 @@ class GovernorateService {
       if (!existingGovernorate) {
         throw new NotFoundError(`Governorate with id ${id} not found.`);
       }
+      const existingGovernorateName = await this.prisma.governorate.findFirst({ where: { name: data.name } })
+
+      if (existingGovernorateName) {
+        throw new ValidationError(`A governorate with the name '${data.name}' already exists.`);
+      }
+      
 
       return await this.prisma.governorate.update({
         where: { globalId: id },

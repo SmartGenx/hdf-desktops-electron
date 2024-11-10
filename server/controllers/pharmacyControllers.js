@@ -47,7 +47,9 @@ class PharmacyController {
 
       res.status(201).json(newPharmacy);
     } catch (error) {
-      next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
+      // next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
+      res.status(500).json({ message: `${error}` });
+
     }
   }
 
@@ -67,7 +69,9 @@ class PharmacyController {
       }
       res.status(200).json(updatedPharmacy);
     } catch (error) {
-      next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
+      // next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
+      res.status(500).json({ message: `${error}` });
+
     }
   }
 

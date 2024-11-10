@@ -46,9 +46,11 @@ class CategoryController {
       const { name, SupportRatio, description } = req.body;
       const newCategory = await CategoryService.createCategory(name, SupportRatio, description);
 
+
       res.status(201).json(newCategory);
     } catch (error) {
-      next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
+      // next(new ApiError(500, 'InternalServer', `${error}`))
+      res.status(500).json({ message: `${error}` });
     }
   }
 
@@ -71,7 +73,7 @@ class CategoryController {
 
       res.status(200).json(updatedCategory);
     } catch (error) {
-      next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
+      res.status(500).json({ message: `${error}` });
     }
   }
 

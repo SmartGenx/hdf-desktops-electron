@@ -46,7 +46,8 @@ class DirectorateController {
       const newDirectorate = await DirectorateService.createDirectorate(data);
       res.status(201).json(newDirectorate);
     } catch (error) {
-      next(new ApiError(500, "InternalServer", "Internal Server Error"));
+      // next(new ApiError(500, "InternalServer", "Internal Server Error"));
+      res.status(500).json({ message: `${error}` });
     }
   }
 
@@ -69,7 +70,8 @@ class DirectorateController {
       }
       res.status(200).json(updatedDirectorate);
     } catch (error) {
-      next(new ApiError(500, "InternalServer", "Internal Server Error"));
+      // next(new ApiError(500, "InternalServer", "Internal Server Error"));
+      res.status(500).json({ message: `${error}` });
     }
   }
 

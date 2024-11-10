@@ -37,6 +37,12 @@ class PharmacyService {
       const timestamp = Date.now();
       const uniqueId = uuidv4();
       const globalId = `${process.env.LOCAL_DB_ID}-${uniqueId}-${timestamp}`;
+      const existingPharmacy = await this.prisma.pharmacy.findFirst({
+        where: { name: PharmacyData.name },
+      })
+      if(existingPharmacy) {
+        throw new ValidationError(`A pharmacy with the name '${PharmacyData.name}' already exists.`);
+      }
       return await this.prisma.pharmacy.create({
         data: {
           ...PharmacyData, // Spread the PharmacyData object to map its properties to the database fields
@@ -46,7 +52,11 @@ class PharmacyService {
     } catch (error) {
       if (error.code === 'P2002') {
         throw new ValidationError(`A pharmacy with the given unique constraint already exists.`);
-      } else {
+      }
+      else if (error instanceof ValidationError) {
+        throw error
+      }
+      else {
         // It's often helpful to log the error for debugging purposes
         console.error('Error creating new pharmacy:', error);
         throw new DatabaseError('Error creating new pharmacy.', error);
@@ -62,6 +72,12 @@ class PharmacyService {
         throw new NotFoundError(`Pharmacy with id ${id} not found.`);
       }
 
+      const existingPharmacyName = await this.prisma.pharmacy.findFirst({ where: { name: data.name } })
+
+      if (existingPharmacyName) {
+        throw new ValidationError(`A pharmacy with the name '${data.name}' already exists.`);
+      }
+
       return await this.prisma.pharmacy.update({
         where: { globalId: id },
         data: {
@@ -70,6 +86,12 @@ class PharmacyService {
         },
       });
     } catch (error) {
+      if( error instanceof ValidationError) {
+        throw error
+      }
+      else if( error instanceof NotFoundError) {
+        throw error
+      }
       throw new DatabaseError('Error updating pharmacy.', error);
     }
   }
