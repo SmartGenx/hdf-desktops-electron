@@ -41,13 +41,15 @@ class DatabaseService {
     this.localPrisma = new PrismaClient({
       datasources: {
         db: { url: 'postgresql://postgres:12345@localhost:5432/hdf-production?schema=public' }
+        // db: { url: 'postgresql://postgres:123456789@3.108.217.185:5432/hdf?schema=public' }
 
         // db: { url: 'postgresql://postgres:123456789@3.108.217.185:5432/hdf-web?schema=public' }
       }
     })
     this.cloudPrisma = new PrismaClient({
       datasources: {
-        db: { url: 'postgresql://postgres:123456789@3.108.217.185:5432/hdf-production?schema=public' }
+        db: { url: 'postgresql://postgres:123456789@3.108.217.185:5432/hdf?schema=public' }
+        // db: { url: 'postgresql://postgres:123456789@3.108.217.185:5432/hdf-production?schema=public' }
       },
       __internal: {
         engine: {

@@ -51,3 +51,6 @@ synchronizeAll().catch(console.error);
 setInterval(() => {
   synchronizeAll().catch(console.error);
 }, 3600000); // كل ساعة
+module.exports = {
+  synchronizeAll
+};
