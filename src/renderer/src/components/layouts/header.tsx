@@ -1,8 +1,11 @@
 import { useState } from 'react'
 // import ThemeToggle from "@/components/layout/ThemeToggle/theme-toggle";
 import useCurrentNav from '@renderer/hooks/useCurrentNav'
-import { MenuIcon, X } from 'lucide-react'
+import { LoaderIcon, MenuIcon, RefreshCcw, X } from 'lucide-react'
 import UserNav from './user-nav'
+import { useMutation } from '@tanstack/react-query'
+import { postApi } from '@renderer/lib/http'
+import { toast } from '../ui/use-toast'
 
 export default function Header() {
   const currentPath = useCurrentNav()
@@ -12,7 +15,27 @@ export default function Header() {
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen)
   }
- 
+  const mutation = useMutation({
+    mutationFn: () => postApi('/syncProcess', {}),
+    onSuccess: () => {
+      toast({
+        title: 'تمت المزامنه بنجاح',
+        description: 'تم المزامنه بنجاح',
+        variant: 'success'
+      })
+    },
+    onError: (error: any) => {
+      toast({
+        title: 'فشلت العملية',
+        description: error?.message || 'حدث خطأ غير متوقع.',
+        variant: 'destructive'
+      })
+      console.error('Error adding governorate:', error.message)
+    }
+  })
+  function onSubmit() {
+    mutation.mutate();
+  }
   return (
     <>
       <div className="top-6 z-20  shadow-lg  border bg-background">
@@ -30,7 +53,15 @@ export default function Header() {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* <ThemeToggle /> */}
+            <span className="bg-[#8ebdff] text-white hover:text-black cursor-pointer p-2 rounded-lg" onClick={onSubmit}>
+              {mutation.isPending ? (
+                <LoaderIcon className="animate-spin duration-1000" />
+              ) : (
+                <>
+                  <RefreshCcw />
+                </>
+              )}
+            </span>
             <UserNav />
           </div>
         </nav>

@@ -83,10 +83,12 @@ export default function EditDirectorateForm({ id }: Props) {
 
       queryClient.invalidateQueries({queryKey:["directorate"]})
     },
-    onError(error) {
+    onError(error:any) {
+      const errorMessage = error?.response?.data?.message || 'حدث خطأ ما'
+     
       toast({
         title: 'لم تتم العملية',
-        description: error.message,
+        description: errorMessage,
         variant: 'destructive'
       })
     }
