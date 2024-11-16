@@ -91,7 +91,6 @@ export default function Directorate() {
   })
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
- 
     mutate(values)
   }
 
@@ -124,7 +123,14 @@ export default function Directorate() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={(value) => {
+                        field.onChange(value)
+                        form.setValue('governorateGlobalId', value) // Update the value in the form
+                      }}
+                      value={field.value || ''} // Make sure the value is derived from the form
+                      defaultValue={field.value}
+                    >
                       <SelectTrigger className="">
                         <SelectValue placeholder="اختار محافظة" />
                       </SelectTrigger>
