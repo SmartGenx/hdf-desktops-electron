@@ -32,7 +32,7 @@ const corsOptions = {
 
 async function ExpressApp() {
   try {
-    await databaseService.switchDatabaseBasedOnConnectivity()
+    await databaseService.switchDatabaseBasedOnConnectivity()/
     await databaseService.user()
 
     const syncProcess = fork(path.join(__dirname, 'syncProcess.js'));
