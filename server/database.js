@@ -40,7 +40,7 @@ class DatabaseService {
     // Initialize both Prisma clients for local and cloud databases
     this.localPrisma = new PrismaClient({
       datasources: {
-        db: { url: 'postgresql://postgres:123@localhost:5432/hdf-production?schema=public' }
+        db: { url: 'postgresql://postgres:12345@localhost:5432/hdf-production?schema=public' }
         // db: { url: 'postgresql://postgres:123456789@3.108.217.185:5432/hdf?schema=public' }
 
         // db: { url: 'postgresql://postgres:123456789@3.108.217.185:5432/hdf-web?schema=public' }
@@ -307,43 +307,64 @@ class DatabaseService {
     if (!online) {
       return
     }
+
     try {
+      // الحصول على وقت آخر مزامنة
+      const syncStatus = await this.localPrisma.syncStatus.findUnique({
+        where: { modelName },
+      })
+      const lastSyncedAt = syncStatus ? syncStatus.lastSyncedAt : new Date(0) // إذا لم يكن هناك سجل مزامنة سابق، استخدم تاريخ قديم جدًا
+
+      // جلب السجلات التي تم إنشاؤها أو تعديلها بعد آخر مزامنة
       const localRecords = await this.localPrisma[modelName].findMany({
-        // Include conditions to select records that need synchronization
+        where: {
+          OR: [
+            { createdAt: { gt: lastSyncedAt } },
+            { lastModified: { gt: lastSyncedAt } },
+          ],
+        },
       })
 
-      // Use interactive transaction
-      await this.cloudPrisma.$transaction(async (prisma) => {
-        for (const record of localRecords) {
-          const cloudRecord = await prisma[modelName].findUnique({
-            where: { globalId: record.globalId }
-          })
+      // معالجة كل سجل على حدة مع التعامل مع الأخطاء بشكل فردي
+      for (const record of localRecords) {
+        try {
+          await this.cloudPrisma.$transaction(async (prisma) => {
+            const cloudRecord = await prisma[modelName].findUnique({
+              where: { globalId: record.globalId }
+            })
 
-          // Only synchronize if the cloud record is missing or outdated
-          if (!cloudRecord || (cloudRecord && cloudRecord.version < record.version)) {
-            const { id, ...dataForSync } = record // Exclude local id from synchronization data
-            if (cloudRecord) {
-              // Update cloud record if it exists but is outdated
-              await prisma[modelName].update({
-                where: { globalId: record.globalId },
-                data: {
-                  ...dataForSync,
-                  version: record.version,
-                  lastModified: new Date()
-                }
-              })
-            } else {
-              // Insert new record into cloud if it doesn't exist
-              await prisma[modelName].create({
-                data: {
-                  ...dataForSync,
-                  globalId: record.globalId // Ensure globalId is included
-                }
-              })
+            if (!cloudRecord || (cloudRecord.version < record.version)) {
+              const { id, ...dataForSync } = record // استبعاد الـ id المحلي من بيانات المزامنة
+
+              if (cloudRecord) {
+                // تحديث السجل السحابي إذا كان موجودًا ولكنه قديم
+                await prisma[modelName].update({
+                  where: { globalId: record.globalId },
+                  data: {
+                    ...dataForSync,
+                    version: record.version,
+                    lastModified: new Date()
+                  }
+                })
+              } else {
+                // إنشاء سجل جديد في السحابة إذا لم يكن موجودًا
+                await prisma[modelName].create({
+                  data: {
+                    ...dataForSync,
+                    globalId: record.globalId // ضمان تضمين الـ globalId
+                  }
+                })
+              }
             }
-          }
+          })
+        } catch (recordError) {
+          console.error(`Synchronization failed for record with globalId ${record.globalId}:`, recordError)
+          // يمكنك إضافة منطق إضافي هنا لمعالجة التعارضات بشكل خاص إذا لزم الأمر
         }
-      })
+      }
+
+      // تحديث وقت آخر مزامنة بعد نجاح المزامنة
+      await this.updateLastSyncedAt(modelName)
     } catch (error) {
       console.error(`Synchronization failed for ${modelName}:`, error)
     }
@@ -354,43 +375,72 @@ class DatabaseService {
     if (!online) {
       return
     }
+
     try {
+      // الحصول على وقت آخر مزامنة
+      const syncStatus = await this.localPrisma.syncStatus.findUnique({
+        where: { modelName },
+      })
+      const lastSyncedAt = syncStatus ? syncStatus.lastSyncedAt : new Date(0)
+
+      // جلب السجلات السحابية التي تم تعديلها بعد آخر مزامنة
       const updates = await this.cloudPrisma[modelName].findMany({
-        // Include conditions to select updated records, possibly based on version or timestamps
+        where: {
+          lastModified: { gt: lastSyncedAt }, // استخدم lastModified بدلاً من updatedAt إذا كان موجودًا
+        },
       })
 
-      // Use interactive transaction
-      await this.localPrisma.$transaction(async (prisma) => {
-        for (const update of updates) {
-          const existingRecord = await prisma[modelName].findUnique({
-            where: { globalId: update.globalId }
-          })
+      // معالجة كل تحديث على حدة مع التعامل مع الأخطاء بشكل فردي
+      for (const update of updates) {
+        try {
+          await this.localPrisma.$transaction(async (prisma) => {
+            const existingRecord = await prisma[modelName].findUnique({
+              where: { globalId: update.globalId }
+            })
 
-          // Only apply update if it's a newer version
-          if (!existingRecord || (existingRecord && existingRecord.version < update.version)) {
-            const { id, ...dataForUpdate } = update // Exclude cloud id from update data
-            if (existingRecord) {
-              // Update local record if it exists but is outdated
-              await prisma[modelName].update({
-                where: { globalId: update.globalId },
-                data: dataForUpdate
-              })
-            } else {
-              // Insert new record locally if it doesn't exist
-              await prisma[modelName].create({
-                data: {
-                  ...dataForUpdate,
-                  globalId: update.globalId // Ensure globalId is included
-                }
-              })
+            if (!existingRecord || (existingRecord.version < update.version)) {
+              const { id, ...dataForUpdate } = update // استبعاد الـ id السحابي من بيانات التحديث
+
+              if (existingRecord) {
+                // تحديث السجل المحلي إذا كان موجودًا ولكنه قديم
+                await prisma[modelName].update({
+                  where: { globalId: update.globalId },
+                  data: dataForUpdate
+                })
+              } else {
+                // إنشاء سجل جديد محليًا إذا لم يكن موجودًا
+                await prisma[modelName].create({
+                  data: {
+                    ...dataForUpdate,
+                    globalId: update.globalId // ضمان تضمين الـ globalId
+                  }
+                })
+              }
             }
-          }
+          })
+        } catch (updateError) {
+          console.error(`Failed to apply update for record with globalId ${update.globalId}:`, updateError.message)
+          // يمكنك إضافة منطق إضافي هنا لمعالجة التعارضات بشكل خاص إذا لزم الأمر
         }
-      })
+      }
+
+      // تحديث وقت آخر مزامنة بعد نجاح عملية جلب التحديثات
+      await this.updateLastSyncedAt(modelName)
     } catch (error) {
       console.error(`Failed to fetch updates for ${modelName}:`, error.message)
     }
   }
+  async updateLastSyncedAt(modelName) {
+    try {
+      await this.localPrisma.syncStatus.upsert({
+        where: { modelName },
+        update: { lastSyncedAt: new Date() },
+        create: { modelName, lastSyncedAt: new Date() },
+      })
+      console.log(`تم تحديث وقت آخر مزامنة لـ ${modelName} بنجاح.`)
+    } catch (error) {
+      console.error(`فشل تحديث وقت آخر مزامنة لـ ${modelName}:`, error)
+    }}
 
   async synchronizeS3ToLocal() {
     try {

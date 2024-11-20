@@ -5,10 +5,8 @@ generator client {
 datasource db {
   provider = "postgresql"
 
-
-    url      = "postgresql://postgres:123@localhost:5432/hdf-production?schema=public"
-
-
+  // url      = "postgresql://postgres:123@localhost:5432/hdf-production?schema=public"
+  url = env("DATABASE_URL")
 }
 
 model User {
@@ -42,6 +40,7 @@ model Role {
   deleted      Boolean  @default(false)
   version      Int      @default(1) // Version field for conflict resolution
   lastModified DateTime @updatedAt // Timestamp field for conflict resolution
+  createdAt    DateTime @default(now())
   users        User[]
 
   @@unique([id, globalId])
@@ -60,6 +59,7 @@ model Accredited {
   applicantGlobalId String
   pharmacyGlobalId  String
   version           Int            @default(1) // Version field for conflict resolution
+  createdAt         DateTime       @default(now())
   applicant         Applicant      @relation(fields: [applicantGlobalId], references: [globalId])
   square            Square?        @relation(fields: [squareGlobalId], references: [globalId])
   pharmacy          Pharmacy       @relation(fields: [pharmacyGlobalId], references: [globalId])
@@ -93,7 +93,7 @@ model Applicant {
   category            Category             @relation(fields: [categoryGlobalId], references: [globalId])
   directorate         Directorate          @relation(fields: [directorateGlobalId], references: [globalId])
   diseasesApplicants  DiseasesApplicants[]
-  craeteAt DateTime @default(now())
+  createdAt           DateTime             @default(now())
 
   @@unique([id, globalId])
 }
@@ -108,6 +108,7 @@ model Prescription {
   accreditedGlobalId String
   version            Int        @default(1) // Version field for conflict resolution
   lastModified       DateTime   @updatedAt // Timestamp field for conflict resolution
+  createdAt          DateTime   @default(now())
   accredited         Accredited @relation(fields: [accreditedGlobalId], references: [globalId])
 
   @@unique([id, globalId])
@@ -122,6 +123,7 @@ model Attachment {
   accreditedGlobalId String
   version            Int        @default(1) // Version field for conflict resolution
   lastModified       DateTime   @updatedAt // Timestamp field for conflict resolution
+  createdAt          DateTime   @default(now())
   accredited         Accredited @relation(fields: [accreditedGlobalId], references: [globalId])
 
   @@unique([id, globalId])
@@ -136,6 +138,7 @@ model Category {
   description  String
   version      Int         @default(1) // Version field for conflict resolution
   lastModified DateTime    @updatedAt // Timestamp field for conflict resolution
+  createdAt    DateTime    @default(now())
   Applicant    Applicant[]
 }
 
@@ -149,6 +152,7 @@ model Directorate {
   Applicant           Applicant[]
   Governorate         Governorate @relation(fields: [governorateGlobalId], references: [globalId])
   lastModified        DateTime    @updatedAt // Timestamp field for conflict resolution
+  createdAt           DateTime    @default(now())
 
   @@unique([id, globalId])
 }
@@ -161,6 +165,7 @@ model Disease {
   description        String
   version            Int                  @default(1) // Version field for conflict resolution
   lastModified       DateTime             @updatedAt // Timestamp field for conflict resolution
+  createdAt          DateTime             @default(now())
   DiseasesApplicants DiseasesApplicants[]
 
   @@unique([id, globalId])
@@ -176,6 +181,7 @@ model DiseasesApplicants {
   Applicant         Applicant @relation(fields: [applicantGlobalId], references: [globalId])
   Disease           Disease   @relation(fields: [diseaseGlobalId], references: [globalId])
   lastModified      DateTime  @updatedAt // Timestamp field for conflict resolution
+  createdAt         DateTime  @default(now())
 
   @@unique([id, globalId])
 }
@@ -196,6 +202,7 @@ model Dismissal {
   version            Int        @default(1) // Version field for conflict resolution
   Accredited         Accredited @relation(fields: [accreditedGlobalId], references: [globalId])
   lastModified       DateTime   @updatedAt // Timestamp field for conflict resolution
+  createdAt          DateTime   @default(now())
 
   @@unique([id, globalId])
 }
@@ -209,6 +216,7 @@ model Governorate {
   Directorate  Directorate[]
   Pharmacy     Pharmacy[]
   lastModified DateTime      @updatedAt // Timestamp field for conflict resolution
+  createdAt    DateTime      @default(now())
 
   @@unique([id, globalId])
 }
@@ -226,6 +234,7 @@ model Pharmacy {
   version             Int          @default(1) // Version field for conflict resolution
   Accredited          Accredited[]
   lastModified        DateTime     @updatedAt // Timestamp field for conflict resolution
+  createdAt           DateTime     @default(now())
 
   @@unique([id, globalId])
 }
@@ -238,17 +247,25 @@ model Square {
   version      Int          @default(1) // Version field for conflict resolution
   Accredited   Accredited[]
   lastModified DateTime     @updatedAt // Timestamp field for conflict resolution
+  createdAt    DateTime     @default(now())
 
   @@unique([id, globalId])
 }
 
 model BackUp {
-  id       Int    @id @default(autoincrement())
-  globalId String @unique
+  id           Int      @id @default(autoincrement())
+  globalId     String   @unique
   userName     String
   path         String
   createAt     DateTime @default(now())
   deleted      Boolean  @default(false)
   version      Int      @default(1) // Version field for conflict resolution
   lastModified DateTime @updatedAt // Timestamp field for conflict resolution
+}
+
+model SyncStatus {
+  id           Int      @id @default(autoincrement())
+  modelName    String   @unique
+  lastSyncedAt DateTime
+
 }
