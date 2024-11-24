@@ -24,6 +24,7 @@ const synchronizeAllTables = async () => {
     await databaseService.synchronizeTable(table);
 
     await databaseService.fetchUpdatesFromServer(table);
+    await databaseService.updateLastSyncedAt(table);
   }
 };
 
