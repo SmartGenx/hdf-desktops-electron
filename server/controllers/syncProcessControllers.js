@@ -1,4 +1,6 @@
 const { synchronizeAll } = require('../syncProcess');
+const { databaseService } = require('../database');
+
 const { validationResult } = require('express-validator');
 const ApiError = require('../errors/ApiError');
 const DatabaseError = require('../errors/DatabaseError');
@@ -18,7 +20,15 @@ class syncProcessControllers {
       next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
     }
   }
-
+  async checkPendingSyncData(req, res, next) {
+    try {
+      const hasPending = await databaseService.hasPendingSyncData();
+      res.status(200).json({ hasPendingData: hasPending });
+    } catch (error) {
+      console.error('خطأ في التحقق من البيانات المعلقة:', error);
+      next(new ApiError(500, 'InternalServer', 'خطأ في الخادم الداخلي'));
+    }
+  }
 }
 
 module.exports = new syncProcessControllers();

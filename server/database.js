@@ -305,7 +305,7 @@ class DatabaseService {
   async synchronizeTable(modelName) {
     const online = await this.isOnline();
     if (!online) {
-      return;
+      return false; // لم تتم المزامنة
     }
     try {
       // الحصول على وقت آخر مزامنة
@@ -313,7 +313,7 @@ class DatabaseService {
         where: { modelName },
       });
       const lastSyncedAt = syncStatus ? syncStatus.lastSyncedAt : new Date(0);
-
+  
       // جلب السجلات المحلية التي تم إنشاؤها أو تعديلها بعد آخر مزامنة
       const localRecords = await this.localPrisma[modelName].findMany({
         where: {
@@ -323,7 +323,11 @@ class DatabaseService {
           ],
         },
       });
-
+  
+      // مؤشر لنجاح المزامنة
+      let allRecordsSynced = true;
+      let recordsProcessed = false; // مؤشر لمعرفة ما إذا تمت معالجة سجلات
+  
       // معالجة كل سجل على حدة
       for (const record of localRecords) {
         try {
@@ -331,7 +335,7 @@ class DatabaseService {
             const cloudRecord = await prisma[modelName].findUnique({
               where: { globalId: record.globalId },
             });
-
+  
             if (!cloudRecord || cloudRecord.lastModified < record.lastModified) {
               const { id, ...dataForSync } = record; // استبعاد الـ id المحلي
               if (cloudRecord) {
@@ -352,28 +356,36 @@ class DatabaseService {
                   },
                 });
               }
+              recordsProcessed = true; // تمت معالجة سجل واحد على الأقل
             }
           });
         } catch (recordError) {
           console.error(
-            `Synchronization failed for record with globalId ${record.globalId}:`,
+            `فشل مزامنة السجل بالمعرف ${record.globalId}:`,
             recordError
           );
-          // يمكنك إضافة منطق إضافي هنا لمعالجة التعارضات بشكل خاص إذا لزم الأمر
+          allRecordsSynced = false;
+          // يمكنك إضافة منطق إضافي لمعالجة الأخطاء إذا لزم الأمر
         }
       }
-      // تحديث وقت آخر مزامنة
-      // await this.updateLastSyncedAt(modelName);
+  
+      if (!allRecordsSynced) {
+        throw new Error(`فشلت مزامنة بعض السجلات في الجدول ${modelName}`);
+      }
+  
+      return recordsProcessed; // إرجاع ما إذا تمت معالجة سجلات
     } catch (error) {
-      console.error(`Synchronization failed for ${modelName}:`, error);
+      console.error(`فشل المزامنة للجدول ${modelName}:`, error);
+      throw error; // إعادة رمي الخطأ لمنع تحديث lastSyncedAt
     }
   }
+  
 
   async fetchUpdatesFromServer(modelName) {
     const online = await this.isOnline();
     if (!online) {
-      console.log(`Skipping synchronization for ${modelName} because offline.`);
-      return;
+      console.log(`تخطي المزامنة للجدول ${modelName} بسبب عدم الاتصال.`);
+      return false; // لم تتم المزامنة
     }
     try {
       // الحصول على وقت آخر مزامنة
@@ -381,8 +393,7 @@ class DatabaseService {
         where: { modelName },
       });
       const lastSyncedAt = syncStatus ? syncStatus.lastSyncedAt : new Date(0);
-      console.log(`Last synced at for ${modelName}: ${lastSyncedAt}`);
-
+  
       // جلب السجلات السحابية التي تم إنشاؤها أو تعديلها بعد آخر مزامنة
       const updates = await this.cloudPrisma[modelName].findMany({
         where: {
@@ -392,55 +403,65 @@ class DatabaseService {
           ],
         },
       });
-      console.log(`Fetched ${updates.length} updates from the server for ${modelName}`);
-      console.log(`Updates fetched:`, updates);
-
+  
       if (updates.length === 0) {
-        console.log(`No updates found for ${modelName}`);
-        return;
+        console.log(`لا توجد تحديثات للجدول ${modelName}`);
+        return false; // لا توجد تحديثات
       }
-
-      // معالجة كل تحديث على حدة
-      for (const update of updates) {
-        try {
-          console.log(`Processing update for record with globalId ${update.globalId}`);
-          const existingRecord = await this.localPrisma[modelName].findUnique({
-            where: { globalId: update.globalId },
-          });
-          if (!existingRecord) {
-            // السجل غير موجود محليًا، لذا يجب إنشاؤه
-            console.log(`Creating new local record with globalId ${update.globalId}`);
-            await this.localPrisma[modelName].create({
-              data: {
-                ...update,
-                globalId: update.globalId,
-              },
-            });
-          } else if (existingRecord.lastModified < update.lastModified) {
-            // السجل موجود ولكنه قديم، لذا يجب تحديثه
-            console.log(`Updating local record with globalId ${update.globalId}`);
-            const { id, ...dataForUpdate } = update;
-            await this.localPrisma[modelName].update({
+  
+      // مؤشر لنجاح المزامنة
+      let allUpdatesApplied = true;
+      let updatesApplied = false; // مؤشر لمعرفة ما إذا تمت معالجة تحديثات
+  
+      // بدء معاملة في قاعدة البيانات المحلية
+      await this.localPrisma.$transaction(async (prisma) => {
+        for (const update of updates) {
+          try {
+            const existingRecord = await prisma[modelName].findUnique({
               where: { globalId: update.globalId },
-              data: dataForUpdate,
             });
-          } else {
-            console.log(`No need to update local record with globalId ${update.globalId}`);
+            if (!existingRecord) {
+              // السجل غير موجود محليًا، لذا يجب إنشاؤه
+              await prisma[modelName].create({
+                data: {
+                  ...update,
+                  globalId: update.globalId,
+                },
+              });
+              updatesApplied = true; // تمت معالجة تحديث
+            } else if (existingRecord.lastModified < update.lastModified) {
+              // السجل موجود ولكنه قديم، لذا يجب تحديثه
+              const { id, ...dataForUpdate } = update;
+              await prisma[modelName].update({
+                where: { globalId: update.globalId },
+                data: dataForUpdate,
+              });
+              updatesApplied = true; // تمت معالجة تحديث
+            }
+          } catch (updateError) {
+            console.error(
+              `فشل تطبيق التحديث للسجل بالمعرف ${update.globalId}:`,
+              updateError.message
+            );
+            allUpdatesApplied = false;
+            // يمكنك إضافة منطق إضافي لمعالجة الأخطاء إذا لزم الأمر
+            // يمكنك اختيار إعادة رمي الخطأ لإيقاف المعاملة بالكامل
+            throw updateError;
           }
-        } catch (updateError) {
-          console.error(
-            `Failed to apply update for record with globalId ${update.globalId}:`,
-            updateError.message
-          );
         }
+      });
+  
+      if (!allUpdatesApplied) {
+        throw new Error(`فشلت بعض التحديثات للجدول ${modelName}`);
       }
-      // تحديث وقت آخر مزامنة
-      // await this.updateLastSyncedAt(modelName);
-      console.log(`Successfully updated last synced time for ${modelName}`);
+  
+      return updatesApplied; // إرجاع ما إذا تمت معالجة تحديثات
     } catch (error) {
-      console.error(`Failed to fetch updates for ${modelName}:`, error.message);
+      console.error(`فشل جلب التحديثات للجدول ${modelName}:`, error.message);
+      throw error; // إعادة رمي الخطأ لمنع تحديث lastSyncedAt
     }
   }
+  
 
 
 
@@ -550,8 +571,55 @@ class DatabaseService {
       console.error('Failed to synchronize local files to S3:', error)
     }
   }
-}
 
+async hasPendingSyncData() {
+  const tables = [
+    'role',
+    'user',
+    'category',
+    'governorate',
+    'directorate',
+    'pharmacy',
+    'square',
+    'disease',
+    'applicant',
+    'accredited',
+    'diseasesApplicants',
+    'prescription',
+    'attachment',
+    'dismissal',
+  ];
+
+  for (const table of tables) {
+    const syncStatus = await this.localPrisma.syncStatus.findUnique({
+      where: { modelName: table },
+    });
+    const lastSyncedAt = syncStatus ? syncStatus.lastSyncedAt : new Date(0);
+
+    const countlocal = await this.cloudPrisma[table].count({
+      where: {
+        OR: [
+          { createdAt: { gt: lastSyncedAt } },
+          { lastModified: { gt: lastSyncedAt } },
+        ],
+      },
+    });
+
+    const countCloud = await this.localPrisma[table].count({
+      where: {
+        OR: [
+          { createdAt: { gt: lastSyncedAt } },
+          { lastModified: { gt: lastSyncedAt } },
+        ],
+      },
+    });
+    if (countlocal > 0 || countCloud > 0) {
+      return true;
+    }
+  }
+  return false;
+}
+}
 const databaseService = new DatabaseService()
 
 module.exports = {
