@@ -313,7 +313,7 @@ class DatabaseService {
         where: { modelName },
       });
       const lastSyncedAt = syncStatus ? syncStatus.lastSyncedAt : new Date(0);
-  
+
       // جلب السجلات المحلية التي تم إنشاؤها أو تعديلها بعد آخر مزامنة
       const localRecords = await this.localPrisma[modelName].findMany({
         where: {
@@ -323,11 +323,11 @@ class DatabaseService {
           ],
         },
       });
-  
+
       // مؤشر لنجاح المزامنة
       let allRecordsSynced = true;
       let recordsProcessed = false; // مؤشر لمعرفة ما إذا تمت معالجة سجلات
-  
+
       // معالجة كل سجل على حدة
       for (const record of localRecords) {
         try {
@@ -335,7 +335,7 @@ class DatabaseService {
             const cloudRecord = await prisma[modelName].findUnique({
               where: { globalId: record.globalId },
             });
-  
+
             if (!cloudRecord || cloudRecord.lastModified < record.lastModified) {
               const { id, ...dataForSync } = record; // استبعاد الـ id المحلي
               if (cloudRecord) {
@@ -368,18 +368,18 @@ class DatabaseService {
           // يمكنك إضافة منطق إضافي لمعالجة الأخطاء إذا لزم الأمر
         }
       }
-  
+
       if (!allRecordsSynced) {
         throw new Error(`فشلت مزامنة بعض السجلات في الجدول ${modelName}`);
       }
-  
+
       return recordsProcessed; // إرجاع ما إذا تمت معالجة سجلات
     } catch (error) {
       console.error(`فشل المزامنة للجدول ${modelName}:`, error);
       throw error; // إعادة رمي الخطأ لمنع تحديث lastSyncedAt
     }
   }
-  
+
 
   async fetchUpdatesFromServer(modelName) {
     const online = await this.isOnline();
@@ -393,7 +393,7 @@ class DatabaseService {
         where: { modelName },
       });
       const lastSyncedAt = syncStatus ? syncStatus.lastSyncedAt : new Date(0);
-  
+
       // جلب السجلات السحابية التي تم إنشاؤها أو تعديلها بعد آخر مزامنة
       const updates = await this.cloudPrisma[modelName].findMany({
         where: {
@@ -403,16 +403,16 @@ class DatabaseService {
           ],
         },
       });
-  
+
       if (updates.length === 0) {
         console.log(`لا توجد تحديثات للجدول ${modelName}`);
         return false; // لا توجد تحديثات
       }
-  
+
       // مؤشر لنجاح المزامنة
       let allUpdatesApplied = true;
       let updatesApplied = false; // مؤشر لمعرفة ما إذا تمت معالجة تحديثات
-  
+
       // بدء معاملة في قاعدة البيانات المحلية
       await this.localPrisma.$transaction(async (prisma) => {
         for (const update of updates) {
@@ -450,18 +450,18 @@ class DatabaseService {
           }
         }
       });
-  
+
       if (!allUpdatesApplied) {
         throw new Error(`فشلت بعض التحديثات للجدول ${modelName}`);
       }
-  
+
       return updatesApplied; // إرجاع ما إذا تمت معالجة تحديثات
     } catch (error) {
       console.error(`فشل جلب التحديثات للجدول ${modelName}:`, error.message);
       throw error; // إعادة رمي الخطأ لمنع تحديث lastSyncedAt
     }
   }
-  
+
 
 
 

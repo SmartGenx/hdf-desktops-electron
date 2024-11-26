@@ -3,16 +3,20 @@ import useCurrentNav from '@renderer/hooks/useCurrentNav'
 import { LoaderIcon, MenuIcon, RefreshCcw, X } from 'lucide-react'
 import UserNav from './user-nav'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { postApi } from '@renderer/lib/http'
+import { getApi, postApi } from '@renderer/lib/http'
 import { toast } from '../ui/use-toast'
 
+
 export default function Header() {
+ 
   const currentPath = useCurrentNav()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen)
   }
-
+type Data ={
+  hasPendingData:boolean
+}
   // الميوتيشن للمزامنة
   const mutation = useMutation({
     mutationFn: () => postApi('/syncProcess', {}),
@@ -42,13 +46,15 @@ export default function Header() {
     refetch: refetchPendingData
   } = useQuery({
     queryKey: ['pendingSyncData'],
-    queryFn: () => fetch('/api/syncProcess').then(res => res.json()),
+    queryFn: () => getApi<Data>('/syncProcess'),
     refetchInterval: 5000, // اختياري: إعادة الجلب كل 5 ثوانٍ لتحديث الحالة
   })
+
 
   function onSubmit() {
     mutation.mutate()
   }
+  console.log("🚀 ~ Header ~ data:", pendingData)
 
   return (
     <>
@@ -67,9 +73,10 @@ export default function Header() {
 
           <div className="flex items-center gap-3">
             <button
+
               className="bg-[#8ebdff] text-white hover:text-black cursor-pointer p-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={onSubmit}
-              disabled={!pendingData?.hasPendingData || isPendingDataLoading}
+              disabled={!isPendingDataLoading && !pendingData?.data?.hasPendingData}
             >
               {mutation.isPending ? (
                 <LoaderIcon className="animate-spin duration-1000" />
