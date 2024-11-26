@@ -32,7 +32,7 @@ const {
 } = require('../server/middleware/upload') // Ensure you have an AttachmentController
 const sanitize = require('sanitize-filename')
 const dotenv = require('dotenv')
-
+const { DateTime } = require('luxon');
 dotenv.config()
 
 class DatabaseService {
@@ -463,14 +463,21 @@ class DatabaseService {
   }
 
 
-
+  async  getCurrentTimeForAden() {
+    // تعيين المنطقة الزمنية بشكل مباشر
+    const adenTime = DateTime.now().setZone('Asia/Aden');
+    return adenTime.toJSDate(); // تحويل إلى كائن Date عادي
+  }
 
   async updateLastSyncedAt(modelName) {
     try {
+      // eslint-disable-next-line no-undef
+      const currentTime = await getCurrentTimeForAden();
+      console.log("🚀 ~ updateLastSyncedAt ~ currentTime:", currentTime)
       await this.localPrisma.syncStatus.upsert({
         where: { modelName },
-        update: { lastSyncedAt: new Date() },
-        create: { modelName, lastSyncedAt: new Date() }
+        update: { lastSyncedAt:currentTime },
+        create: { modelName, lastSyncedAt:currentTime }
       })
       console.log(`The last synchronization time for ${modelName} was successfully updated.`);
 

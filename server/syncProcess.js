@@ -27,9 +27,11 @@ const synchronizeAllTables = async () => {
 
       if ((recordsProcessed || updatesApplied)) {
         await databaseService.updateLastSyncedAt(table);
-        console.log(`تم تحديث وقت آخر مزامنة للجدول ${table}`);
+        console.log(`The last synchronization time for table ${table} was successfully updated.`);
+
       } else {
-        console.log(`لم تتم معالجة أي سجلات للجدول ${table}، لذلك لن يتم تحديث وقت آخر مزامنة.`);
+        console.log(`No records were processed for table ${table}, so the last synchronization time will not be updated.`);
+
       }
     } catch (error) {
       console.error(`فشل المزامنة للجدول ${table}:`, error);

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react';
 import useCurrentNav from '@renderer/hooks/useCurrentNav'
 import { LoaderIcon, MenuIcon, RefreshCcw, X } from 'lucide-react'
 import UserNav from './user-nav'
@@ -7,8 +7,10 @@ import { getApi, postApi } from '@renderer/lib/http'
 import { toast } from '../ui/use-toast'
 
 
+
 export default function Header() {
- 
+  const isConnected = useInternetStatus();
+
   const currentPath = useCurrentNav()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const toggleSidebar = () => {
@@ -28,6 +30,7 @@ type Data ={
       })
       // إعادة جلب حالة البيانات المعلقة بعد المزامنة
       refetchPendingData()
+      window.location.reload();
     },
     onError: (error: any) => {
       toast({
@@ -76,7 +79,7 @@ type Data ={
 
               className="bg-[#8ebdff] text-white hover:text-black cursor-pointer p-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={onSubmit}
-              disabled={!isPendingDataLoading && !pendingData?.data?.hasPendingData}
+              disabled={!isConnected}
             >
               {mutation.isPending ? (
                 <LoaderIcon className="animate-spin duration-1000" />
@@ -93,4 +96,23 @@ type Data ={
       </div>
     </>
   )
+}
+
+
+function useInternetStatus() {
+  const [isConnected, setIsConnected] = useState(navigator.onLine);
+
+  useEffect(() => {
+    const updateOnlineStatus = () => setIsConnected(navigator.onLine);
+
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+
+    return () => {
+      window.removeEventListener('online', updateOnlineStatus);
+      window.removeEventListener('offline', updateOnlineStatus);
+    };
+  }, []);
+
+  return isConnected;
 }
