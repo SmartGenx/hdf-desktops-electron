@@ -8,7 +8,7 @@ import { toast } from '../ui/use-toast'
 
 
 export default function Header() {
-  const [isActive, setIsActive] = useState(false)
+ 
   const currentPath = useCurrentNav()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const toggleSidebar = () => {
