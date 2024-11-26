@@ -21,18 +21,17 @@ const backupServices = require('../server/services/backupServices') // Adjust th
 const { v4 } = require('uuid') // Make sure to import uuid
 const bcrypt = require('bcryptjs')
 const fs = require('fs').promises
-const AWS = require('aws-sdk')
+const fetch = require('node-fetch');
+
 const path = require('path')
 const {
   uploadFileToS3,
-  checkFileInS3,
   checkFileExistenceInS3,
   listFilesInS3Bucket,
   downloadFileFromS3
 } = require('../server/middleware/upload') // Ensure you have an AttachmentController
 const sanitize = require('sanitize-filename')
 const dotenv = require('dotenv')
-const { DateTime } = require('luxon');
 dotenv.config()
 
 class DatabaseService {
@@ -463,28 +462,32 @@ class DatabaseService {
   }
 
 
-  async  getCurrentTimeForAden() {
-    // تعيين المنطقة الزمنية بشكل مباشر
-    const adenTime = DateTime.now().setZone('Asia/Aden');
-    return adenTime.toJSDate(); // تحويل إلى كائن Date عادي
-  }
 
+
+  async  getCurrentTimeForRiyadh() {
+    const response = await fetch('https://timeapi.io/api/Time/current/zone?timeZone=Asia/Riyadh');
+    if (!response.ok) {
+      throw new Error('فشل الحصول على الوقت من timeapi.io');
+    }
+    const data = await response.json();
+    return new Date(data.dateTime);
+  }
+  
   async updateLastSyncedAt(modelName) {
     try {
-      // eslint-disable-next-line no-undef
-      const currentTime = await getCurrentTimeForAden();
-      console.log("🚀 ~ updateLastSyncedAt ~ currentTime:", currentTime)
+      const currentTime = await getCurrentTimeForRiyadh();
+      console.log("🚀 ~ updateLastSyncedAt ~ currentTime:", currentTime);
       await this.localPrisma.syncStatus.upsert({
         where: { modelName },
-        update: { lastSyncedAt:currentTime },
-        create: { modelName, lastSyncedAt:currentTime }
-      })
+        update: { lastSyncedAt: currentTime },
+        create: { modelName, lastSyncedAt: currentTime }
+      });
       console.log(`The last synchronization time for ${modelName} was successfully updated.`);
-
     } catch (error) {
-      console.error(`فشل تحديث وقت آخر مزامنة لـ ${modelName}:`, error)
+      console.error(`فشل تحديث وقت آخر مزامنة للجدول ${modelName}:`, error);
     }
   }
+  
 
   async synchronizeS3ToLocal() {
     try {
