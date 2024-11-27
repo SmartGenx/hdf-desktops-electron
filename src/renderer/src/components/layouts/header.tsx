@@ -1,24 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 import useCurrentNav from '@renderer/hooks/useCurrentNav'
 import { LoaderIcon, MenuIcon, RefreshCcw, X } from 'lucide-react'
 import UserNav from './user-nav'
-import { useMutation, useQuery } from '@tanstack/react-query'
-import { getApi, postApi } from '@renderer/lib/http'
+import { useMutation,  } from '@tanstack/react-query'
+import {postApi } from '@renderer/lib/http'
 import { toast } from '../ui/use-toast'
 
-
-
 export default function Header() {
-  const isConnected = useInternetStatus();
+  const isConnected = useInternetStatus()
 
   const currentPath = useCurrentNav()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen)
   }
-type Data ={
-  hasPendingData:boolean
-}
+
   // الميوتيشن للمزامنة
   const mutation = useMutation({
     mutationFn: () => postApi('/syncProcess', {}),
@@ -29,8 +25,8 @@ type Data ={
         variant: 'success'
       })
       // إعادة جلب حالة البيانات المعلقة بعد المزامنة
-      refetchPendingData()
-      window.location.reload();
+      // refetchPendingData()
+      window.location.reload()
     },
     onError: (error: any) => {
       toast({
@@ -43,21 +39,20 @@ type Data ={
   })
 
   // الاستعلام للتحقق من وجود بيانات معلقة
-  const {
-    data: pendingData,
-    isLoading: isPendingDataLoading,
-    refetch: refetchPendingData
-  } = useQuery({
-    queryKey: ['pendingSyncData'],
-    queryFn: () => getApi<Data>('/syncProcess'),
-    refetchInterval: 5000, // اختياري: إعادة الجلب كل 5 ثوانٍ لتحديث الحالة
-  })
-
+  // const {
+  //   data: pendingData,
+  //   isLoading: isPendingDataLoading,
+  //   refetch: refetchPendingData
+  // } = useQuery({
+  //   queryKey: ['pendingSyncData'],
+  //   queryFn: () => getApi<Data>('/syncProcess'),
+  //   refetchInterval: 5000, // اختياري: إعادة الجلب كل 5 ثوانٍ لتحديث الحالة
+  // })
 
   function onSubmit() {
     mutation.mutate()
   }
-  console.log("🚀 ~ Header ~ data:", pendingData)
+  // console.log("🚀 ~ Header ~ data:", pendingData)
 
   return (
     <>
@@ -76,7 +71,6 @@ type Data ={
 
           <div className="flex items-center gap-3">
             <button
-
               className="bg-[#8ebdff] text-white hover:text-black cursor-pointer p-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={onSubmit}
               disabled={!isConnected}
@@ -98,21 +92,20 @@ type Data ={
   )
 }
 
-
 function useInternetStatus() {
-  const [isConnected, setIsConnected] = useState(navigator.onLine);
+  const [isConnected, setIsConnected] = useState(navigator.onLine)
 
   useEffect(() => {
-    const updateOnlineStatus = () => setIsConnected(navigator.onLine);
+    const updateOnlineStatus = () => setIsConnected(navigator.onLine)
 
-    window.addEventListener('online', updateOnlineStatus);
-    window.addEventListener('offline', updateOnlineStatus);
+    window.addEventListener('online', updateOnlineStatus)
+    window.addEventListener('offline', updateOnlineStatus)
 
     return () => {
-      window.removeEventListener('online', updateOnlineStatus);
-      window.removeEventListener('offline', updateOnlineStatus);
-    };
-  }, []);
+      window.removeEventListener('online', updateOnlineStatus)
+      window.removeEventListener('offline', updateOnlineStatus)
+    }
+  }, [])
 
-  return isConnected;
+  return isConnected
 }

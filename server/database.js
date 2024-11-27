@@ -47,7 +47,7 @@ class DatabaseService {
     })
     this.cloudPrisma = new PrismaClient({
       datasources: {
-        db: { url: 'postgresql://postgres:123456789@3.108.217.185:5432/hdf?schema=public' }
+        db: { url: 'postgresql://postgres:123456789@15.207.99.236:5432/hdf?schema=public' }
         // db: { url: 'postgresql://postgres:123456789@3.108.217.185:5432/hdf-production?schema=public' }
       },
       __internal: {
@@ -464,30 +464,26 @@ class DatabaseService {
 
 
 
-  async  getCurrentTimeForRiyadh() {
-    const response = await fetch('https://timeapi.io/api/Time/current/zone?timeZone=Asia/Riyadh');
-    if (!response.ok) {
-      throw new Error('فشل الحصول على الوقت من timeapi.io');
-    }
-    const data = await response.json();
-    return new Date(data.dateTime);
-  }
-  
+
+
   async updateLastSyncedAt(modelName) {
     try {
-      const currentTime = await getCurrentTimeForRiyadh();
-      console.log("🚀 ~ updateLastSyncedAt ~ currentTime:", currentTime);
+      const response = await fetch('https://timeapi.io/api/Time/current/zone?timeZone=Asia/Riyadh');
+      const data = await response.json();
+      console.log("🚀 ~ updateLastSyncedAt ~ currentTime:", data.dateTime);
+      console.log("🚀 ~ updateLastSyncedAt ~ currentTime:", new Date());
+
       await this.localPrisma.syncStatus.upsert({
         where: { modelName },
-        update: { lastSyncedAt: currentTime },
-        create: { modelName, lastSyncedAt: currentTime }
+        update: { lastSyncedAt: new Date(data.dateTime) },
+        create: { modelName, lastSyncedAt: new Date(data.dateTime) }
       });
       console.log(`The last synchronization time for ${modelName} was successfully updated.`);
     } catch (error) {
       console.error(`فشل تحديث وقت آخر مزامنة للجدول ${modelName}:`, error);
     }
   }
-  
+
 
   async synchronizeS3ToLocal() {
     try {
