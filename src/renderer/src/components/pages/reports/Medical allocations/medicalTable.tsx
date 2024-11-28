@@ -11,8 +11,18 @@ type Props = {
 }
 
 const monthNames = [
-  'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-  'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+  'يناير',
+  'فبراير',
+  'مارس',
+  'أبريل',
+  'مايو',
+  'يونيو',
+  'يوليو',
+  'أغسطس',
+  'سبتمبر',
+  'أكتوبر',
+  'نوفمبر',
+  'ديسمبر'
 ]
 
 export default function MedicalTable({ info, page, total, pageSize }: Props) {
@@ -81,10 +91,9 @@ export default function MedicalTable({ info, page, total, pageSize }: Props) {
         accessorKey: 'Months',
         header: 'الشهر',
         cell: ({ row }) => {
-          const monthIndex = row.original.Months ;
+          const monthIndex = row.original.Months
 
-
-          return  monthNames[parseInt(monthIndex) - 1];
+          return monthNames[parseInt(monthIndex) - 1]
         }
       },
       {
@@ -103,6 +112,11 @@ export default function MedicalTable({ info, page, total, pageSize }: Props) {
         cell: ({ row }) => row.original.supportRatio
       },
       {
+        accessorKey: '',
+        header: 'مساهمة المؤسسة',
+        cell: ({ row }) => ( row.original.totalAmount - row.original.approvedAmount )
+      },
+      {
         accessorKey: 'approvedAmount',
         header: 'مساهمة المريض',
         cell: ({ row }) => row.original.approvedAmount + ' ريال'
@@ -118,7 +132,6 @@ export default function MedicalTable({ info, page, total, pageSize }: Props) {
       page={page.toString()}
       total={Number(total)}
       pageSize={Number(pageSize)}
-     
     />
   )
 }

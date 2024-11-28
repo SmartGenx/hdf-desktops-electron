@@ -106,7 +106,7 @@ const Home = () => {
           <Link to={'/FormAccredited'}>
             <Boutton
               icon="exportscvs"
-              title={'اضافة معتمد '}
+              title={'إعتماد متقدم '}
               className="bg-[#92A709] hover:bg-[#5b6806] focus:ring-[#92A709]"
             />
           </Link>

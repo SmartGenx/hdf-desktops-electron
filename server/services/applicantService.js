@@ -470,7 +470,7 @@ class ApplicantService {
           const dismissals = {
             totalAmount: dismissal.totalAmount,
 
-            approvedAmount: dismissal.approvedAmount
+            approvedAmount: dismissal.amountPaid
           }
           return new ApplicantByDirectorateViewModel(
             applicant,
@@ -537,7 +537,7 @@ class ApplicantService {
         const dismissals = {
           totalAmount: dismissal.totalAmount,
 
-          approvedAmount: dismissal.approvedAmount
+          approvedAmount: dismissal.amountPaid
         }
         return new ApplicantByDirectorateViewModel(
           applicant,

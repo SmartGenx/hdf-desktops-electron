@@ -233,26 +233,19 @@ export default function FormAccredited() {
               >
                 <div className="  flex flex-col gap-6 ">
                   <div className="grid grid-cols-3 gap-2">
-                    <div className="col-span-1">
+                    <div className="col-span-1 ">
                       <label htmlFor="" className="text-[#A2A1A8]">
-                        اسم الدكتور
+                        المتقدم
                       </label>
-                      <FormField
-                        control={form.control}
-                        name="doctor"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <FormInput
-                                label="ادخل اسم الدكتور"
-                                type="text"
-                                {...field}
-                                disabled={delayedSubmitting}
-                                className="text-right bg-[#EFF1F9]/50 rounded-[8px]"
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
+                      <Combobox
+                        options={applicantType}
+                        valueKey="id"
+                        displayKey="name"
+                        placeholder="أختر المتقدم"
+                        emptyMessage="لم يتم العثور على المتقدم"
+                        onSelect={(applicantTypies) =>
+                          setSelectedApplicantType(applicantTypies as applicantType)
+                        }
                       />
                     </div>
                     <div className="col-span-1">
@@ -320,6 +313,28 @@ export default function FormAccredited() {
                   <div className="grid grid-cols-3 gap-2">
                     <div className="col-span-1">
                       <label htmlFor="" className="text-[#A2A1A8]">
+                        اسم الدكتور
+                      </label>
+                      <FormField
+                        control={form.control}
+                        name="doctor"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <FormInput
+                                label="ادخل اسم الدكتور"
+                                type="text"
+                                {...field}
+                                disabled={delayedSubmitting}
+                                className="text-right bg-[#EFF1F9]/50 rounded-[8px]"
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="col-span-1">
+                      <label htmlFor="" className="text-[#A2A1A8]">
                         رقم الاستمارة
                       </label>
                       <FormField
@@ -370,6 +385,9 @@ export default function FormAccredited() {
                         )}
                       />
                     </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2">
                     <div className="col-span-1">
                       <label htmlFor="" className="text-[#A2A1A8]">
                         الصيدلية
@@ -383,9 +401,7 @@ export default function FormAccredited() {
                         onSelect={(pharmacies) => setSelectedPharmacy(pharmacies as Pharmacy)}
                       />
                     </div>
-                  </div>
 
-                  <div className="grid grid-cols-3 gap-2">
                     <div className="col-span-1 ">
                       <label htmlFor="" className="text-[#A2A1A8]">
                         المربع
@@ -419,21 +435,6 @@ export default function FormAccredited() {
                             </FormControl>
                           </FormItem>
                         )}
-                      />
-                    </div>
-                    <div className="col-span-1 ">
-                      <label htmlFor="" className="text-[#A2A1A8]">
-                        المتقدم
-                      </label>
-                      <Combobox
-                        options={applicantType}
-                        valueKey="id"
-                        displayKey="name"
-                        placeholder="أختر المتقدم"
-                        emptyMessage="لم يتم العثور على المتقدم"
-                        onSelect={(applicantTypies) =>
-                          setSelectedApplicantType(applicantTypies as applicantType)
-                        }
                       />
                     </div>
                   </div>
@@ -527,7 +528,7 @@ export default function FormAccredited() {
                 </div>
                 <div className="flex justify-end gap-4 ">
                   <Button type="submit" className="w-[120px] bg-[#196CB0] hover:bg-[#2b4d68]">
-                    إظافة
+                    اعتماد
                   </Button>
                   <Button
                     variant="outline"
