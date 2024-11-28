@@ -93,14 +93,11 @@ export default function FormApplicant() {
     resolver: zodResolver(formSchema)
   })
 
-  const [states, _setStates] = useState([
-    { value: 'active', label: 'نشط' },
-    { value: 'not active', label: 'غير نشط' }
-  ])
   const [gender, _setGender] = useState([
     { value: 'M', label: 'ذكر' },
     { value: 'F', label: 'انثى' }
   ])
+  const [states, _setStates] = useState('نشط')
   const [delayedSubmitting, _setDelayedSubmitting] = useState(form.formState.isSubmitting)
   React.useEffect(() => {
     const fetchData = async () => {
@@ -162,7 +159,7 @@ export default function FormApplicant() {
           submissionDate: new Date(data.submissionDate).toISOString(),
           diseaseGlobalId: data.diseaseGlobalId,
           categoryGlobalId: data.categoryGlobalId,
-          state: data.state
+          state: states
         },
         {
           headers: {
@@ -188,6 +185,7 @@ export default function FormApplicant() {
     }
   })
   React.useEffect(() => {
+    form.setValue("state",states)
     if (selectedDirectorate?.globalId) {
       form.setValue('directorateGlobalId', selectedDirectorate.globalId)
     } else {
@@ -435,39 +433,6 @@ export default function FormApplicant() {
                         onSelect={(categories) => setSelectedCategory(categories as Category)}
                       />
                     </div>
-                    <div className="col-span-1 ">
-                      <label htmlFor="" className="text-[#A2A1A8]">
-                        الحالة
-                      </label>
-                      <FormField
-                        control={form.control}
-                        name="state"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <SelectTrigger className="">
-                                  <SelectValue placeholder="اختر الحالة" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectGroup>
-                                    <SelectLabel>الحالات</SelectLabel>
-                                    {states.map((state) => (
-                                      <SelectItem key={state.value} value={state.label}>
-                                        {state.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectGroup>
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-2">
                     <div className="col-span-1">
                       <label htmlFor="" className="text-[#A2A1A8]">
                         مكان الميلاد
@@ -490,6 +455,9 @@ export default function FormApplicant() {
                         )}
                       />
                     </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2">
                     <div className="col-span-1 ">
                       <label htmlFor="" className="text-[#A2A1A8]">
                         تاريخ التقديم
@@ -515,7 +483,7 @@ export default function FormApplicant() {
                   </div>
                 </div>
                 <Button type="submit" className="w-[120px] bg-[#196CB0] hover:bg-[#2b4d68]">
-                  إظافة
+                  إضافة
                 </Button>
               </form>
             </Form>
