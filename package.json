@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@auth-kit/react-router": "^3.1.3",
-    "@aws-sdk/client-s3": "^3.633.0",
+    "@aws-sdk/client-s3": "^3.705.0",
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^3.0.0",
     "@heroicons/react": "^2.1.5",
@@ -50,7 +50,6 @@
     "@tanstack/react-query": "^5.51.23",
     "@tanstack/react-query-devtools": "^5.51.23",
     "@tanstack/react-table": "^8.20.1",
-    "aws-sdk": "^2.1677.0",
     "axios": "^1.7.3",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
@@ -61,27 +60,17 @@
     "class-variance-authority": "^0.7.0",
     "cmdk": "^1.0.0",
     "cors": "^2.8.5",
-    "date-fns": "^3.6.0",
     "dotenv": "^16.4.5",
-    "ejs": "^3.1.10",
-    "exceljs": "^4.4.0",
     "express": "^4.19.2",
     "express-validator": "^7.2.0",
     "fs": "^0.0.1-security",
-    "html-pdf": "^1.5.0",
-    "jimp": "^0.22.12",
-    "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",
-    "jspdf": "^2.5.2",
-    "jspdf-autotable": "^3.8.3",
     "lucide-react": "^0.427.0",
     "multer": "^1.4.5-lts.1",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "path": "^0.12.7",
-    "pdfkit": "^0.15.0",
     "prisma": "^5.18.0",
-    "puppeteer": "^23.1.0",
     "qrcode.react": "^4.0.1",
     "react-auth-kit": "^2.12.4",
     "react-barcode": "^1.5.3",
@@ -134,7 +123,14 @@
       "main/**/*",
       "preload/**/*",
       "renderer/**/*",
-      "server/**/*"
+      "!**/node_modules/**/test/**/*",
+      "!**/node_modules/**/docs/**/*",
+      "!**/node_modules/**/examples/**/*",
+      "!**/node_modules/**/demo/**/*",
+      "!**/*.map",
+      "!**/tsconfig.*",
+      "!**/*.test.js",
+      "!**/*.spec.js"
     ],
     "extraResources": [
       {
@@ -144,13 +140,7 @@
           "**/*"
         ]
       },
-      {
-        "from": "node_modules",
-        "to": "node_modules",
-        "filter": [
-          "**/*"
-        ]
-      },
+
       {
         "from": "prisma",
         "to": "prisma",
