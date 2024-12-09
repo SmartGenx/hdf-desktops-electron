@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain, Menu } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, Menu  } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 
@@ -72,6 +72,12 @@ app.whenReady().then(() => {
   } else {
     serverPath = join(__dirname, '../../../server/index.js')
   }
+  // dialog.showMessageBox({
+  //   type: 'info',
+  //   title: 'Server Path',
+  //   message: `Starting server with path: ${serverPath}`,
+  //   buttons: ['OK']
+  // })
   // }
 
   // } // const serverPath = resolve(__dirname, '../../server/index')

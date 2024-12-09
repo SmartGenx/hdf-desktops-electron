@@ -9,8 +9,6 @@ const convertEqualsToInt = require('../utilty/convertToInt')
 const convertTopLevelStringBooleans = require('../utilty/convertTopLevelStringBooleans')
 
 const { v4: uuidv4 } = require('uuid')
-const { name } = require('ejs')
-const { skip } = require('node:test')
 class ApplicantService {
   constructor(prisma) {
     this.prisma = prisma

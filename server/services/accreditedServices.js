@@ -1,4 +1,3 @@
-const { name } = require('ejs')
 const DatabaseError = require('../errors/DatabaseError')
 const NotFoundError = require('../errors/NotFoundError')
 const ValidationError = require('../errors/ValidationError')
@@ -266,63 +265,133 @@ class AccreditedService {
     }
   }
 
+  // async createAccreditation(AccreditedData, fileAtch, filePt) {
+  //   try {
+  //     const timestamp = Date.now()
+  //     const uniqueId = uuidv4()
+  //     const globalId = `${process.env.LOCAL_DB_ID}-${uniqueId}-${timestamp}` //remove name artib
+  //     const {
+  //       numberOfRfid,
+  //       type,
+  //       formNumber,
+  //       prescriptionDate,
+  //       applicantId,
+  //       pharmacyId,
+  //       squareId,
+  //       ...rest
+  //     } = AccreditedData
+
+  //     const accreited = await this.prisma.accredited.create({
+  //       data: {
+  //         numberOfRfid: +numberOfRfid,
+  //         formNumber: +formNumber,
+  //         ...rest,
+  //         globalId: globalId
+  //       }
+  //     })
+
+  //     const atch = await this.prisma.attachment.create({
+  //       data: {
+  //         type: type, // Use shorthand property names
+  //         accreditedGlobalId: accreited.globalId, // Use shorthand property names
+  //         attachmentFile: fileAtch,
+  //         globalId: `${process.env.LOCAL_DB_ID}-${uuidv4()}-${new Date()}` // Assign the generated global ID
+  //       }
+  //     })
+
+  //     const renewalDate = new Date()
+  //     renewalDate.setMonth(renewalDate.getMonth() + 6)
+
+  //     const pt = await this.prisma.prescription.create({
+  //       data: {
+  //         prescriptionDate: prescriptionDate,
+  //         renewalDate,
+  //         attachedUrl: filePt,
+  //         accreditedGlobalId: accreited.globalId,
+  //         globalId: `${process.env.LOCAL_DB_ID}-${uuidv4()}-${new Date()}` // Assign the generated global ID
+  //       }
+  //     })
+  //     const app = await this.prisma.applicant.update({
+  //       where: { globalId: AccreditedData.applicantGlobalId },
+  //       data: {
+  //         accredited: true
+  //       }
+  //     })
+
+  //     return accreited
+  //   } catch (error) {
+  //     throw new DatabaseError('Error updating accreditation.', error)
+  //   }
+  // }
   async createAccreditation(AccreditedData, fileAtch, filePt) {
-    try {
-      const timestamp = Date.now()
-      const uniqueId = uuidv4()
-      const globalId = `${process.env.LOCAL_DB_ID}-${uniqueId}-${timestamp}` //remove name artib
-      const {
-        numberOfRfid,
-        type,
-        formNumber,
-        prescriptionDate,
-        applicantId,
-        pharmacyId,
-        squareId,
-        ...rest
-      } = AccreditedData
+    const transaction = await this.prisma.$transaction(async (prisma) => {
+      try {
+        const timestamp = Date.now()
+        const uniqueId = uuidv4()
+        const globalId = `${process.env.LOCAL_DB_ID}-${uniqueId}-${timestamp}` // remove name artib
+        const {
+          numberOfRfid,
+          type,
+          formNumber,
+          prescriptionDate,
+          applicantId,
+          pharmacyId,
+          squareId,
+          ...rest
+        } = AccreditedData
 
-      const accreited = await this.prisma.accredited.create({
-        data: {
-          numberOfRfid: +numberOfRfid,
-          formNumber: +formNumber,
-          ...rest,
-          globalId: globalId
-        }
-      })
+        // Create accreditation record
+        const accreited = await prisma.accredited.create({
+          data: {
+            numberOfRfid: +numberOfRfid,
+            formNumber: +formNumber,
+            ...rest,
+            globalId: globalId
+          }
+        })
 
-      const atch = await this.prisma.attachment.create({
-        data: {
-          type: type, // Use shorthand property names
-          accreditedGlobalId: accreited.globalId, // Use shorthand property names
-          attachmentFile: fileAtch,
-          globalId: `${process.env.LOCAL_DB_ID}-${uuidv4()}-${new Date()}` // Assign the generated global ID
-        }
-      })
+        // Create attachment record
+        const atch = await prisma.attachment.create({
+          data: {
+            type: type, // Use shorthand property names
+            accreditedGlobalId: accreited.globalId, // Use shorthand property names
+            attachmentFile: fileAtch,
+            globalId: `${process.env.LOCAL_DB_ID}-${uuidv4()}-${new Date()}` // Assign the generated global ID
+          }
+        })
 
-      const renewalDate = new Date()
-      renewalDate.setMonth(renewalDate.getMonth() + 6)
+        // Set renewal date
+        const renewalDate = new Date()
+        renewalDate.setMonth(renewalDate.getMonth() + 6)
 
-      const pt = await this.prisma.prescription.create({
-        data: {
-          prescriptionDate: prescriptionDate,
-          renewalDate,
-          attachedUrl: filePt,
-          accreditedGlobalId: accreited.globalId,
-          globalId: `${process.env.LOCAL_DB_ID}-${uuidv4()}-${new Date()}` // Assign the generated global ID
-        }
-      })
-      const app = await this.prisma.applicant.update({
-        where: { globalId: AccreditedData.applicantGlobalId },
-        data: {
-          accredited: true
-        }
-      })
+        // Create prescription record
+        const pt = await prisma.prescription.create({
+          data: {
+            prescriptionDate: prescriptionDate,
+            renewalDate,
+            attachedUrl: filePt,
+            accreditedGlobalId: accreited.globalId,
+            globalId: `${process.env.LOCAL_DB_ID}-${uuidv4()}-${new Date()}` // Assign the generated global ID
+          }
+        })
 
-      return accreited
-    } catch (error) {
-      throw new DatabaseError('Error updating accreditation.', error)
-    }
+        // Update applicant accreditation status
+        const app = await prisma.applicant.update({
+          where: { globalId: AccreditedData.applicantGlobalId },
+          data: {
+            accredited: true
+          }
+        })
+
+        // Return the accreditation record (or any other data if needed)
+        return accreited
+      } catch (error) {
+        // In case of an error, Prisma will automatically rollback the transaction
+        throw new DatabaseError('Error updating accreditation.', error)
+      }
+    })
+
+    return transaction
   }
   async updateAccreditation(id, AccreditedData, fileAtch, filePt) {
     try {
@@ -534,7 +603,7 @@ class AccreditedService {
     } else {
       const Accredited = await this.prisma.accredited.findMany({
         where:
-         
+
           dataFilter,
 
         include: {

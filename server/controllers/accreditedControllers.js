@@ -4,13 +4,8 @@ const ApiError = require('../errors/ApiError')
 const DatabaseError = require('../errors/DatabaseError')
 const ValidationError = require('../errors/ValidationError')
 const NotFoundError = require('../errors/NotFoundError')
-const ejs = require('ejs')
-const bwipjs = require('bwip-js')
-const puppeteer = require('puppeteer')
-const ExcelJS = require('exceljs')
 const path = require('path')
 const fs = require('fs')
-const { number } = require('zod')
 class AccreditedController {
   // Fetch all accreditations
   async fileUploadController(req, res, next) {
@@ -106,6 +101,7 @@ class AccreditedController {
       if (!errors.isEmpty()) {
         return next(new ValidationError('Validation Failed', errors.array()))
       }
+
       const fileAtch = req.atch
       const filePt = req.pt
       const AccreditedData = req.body
@@ -246,140 +242,9 @@ class AccreditedController {
     // }
   }
 
-  async exportAllAccreditedsToPDF(req, res, next) {
-    try {
-      const AccreditedService = databaseService.getAccreditedService()
-      const dataFillter = req.query
 
-      const accrediteds = await AccreditedService.AccreditedByPrescriptionServer(dataFillter)
 
-      // Ensure applicants data is available
-      if (!accrediteds || accrediteds.length === 0) {
-        return res.status(404).send('No applicants found.')
-      }
-      const imagePath = path.join(__dirname, '..', '..', 'static', 'images', '12123212-01.png')
-      const imageData = fs.readFileSync(imagePath)
-      const base64Image = imageData.toString('base64')
-      const logoImageSrc = `data:image/png;base64,${base64Image}`
 
-      const imagePath2 = path.join(__dirname, '..', '..', 'static', 'images', '3232332-03.png')
-      const imageData2 = fs.readFileSync(imagePath2)
-      const base64Image2 = imageData2.toString('base64')
-      const logoImageSrc2 = `data:image/png;base64,${base64Image2}`
-
-      const fullPath = path.join(__dirname, '..', '..', 'views', 'accrediteds.ejs')
-      const htmlContent = await ejs.renderFile(fullPath, {
-        accrediteds: accrediteds,
-        logoImageSrc: logoImageSrc,
-        logoImageSrc2: logoImageSrc2
-      })
-      // Launch Puppeteer
-      const browser = await puppeteer.launch({
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-      })
-      const page = await browser.newPage()
-
-      // Set HTML content and wait for page to render
-      await page.setContent(htmlContent, { waitUntil: 'networkidle0' })
-
-      // Generate PDF from HTML
-      const pdfBuffer = await page.pdf({
-        format: 'A4',
-        landscape: true // This sets the page orientation to horizontal
-      })
-
-      // Close the browser
-      await browser.close()
-
-      // Set headers and send the PDF buffer
-      res.setHeader('Content-Type', 'application/pdf')
-      // Generate a more generic filename as it includes multiple applicants
-      res.setHeader('Content-Disposition', 'attachment; filename="accrediteds.pdf"')
-      res.send(pdfBuffer)
-    } catch (error) {
-      next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
-    }
-  }
-
-  async exportAllAccreditedByPrescriptionToExcel(req, res, next) {
-    try {
-      const AccreditedService = databaseService.getAccreditedService()
-      const dataFillter = req.query
-      const accreditedData = await AccreditedService.AccreditedByPrescriptionServer(dataFillter) // Assume there's a function to fetch data by prescription
-      // Convert each accredited data to the AccreditedByPrescription model
-      const accreditedList = accreditedData
-      const workbook = new ExcelJS.Workbook()
-      const worksheet = workbook.addWorksheet('Accredited by Prescription')
-      worksheet.columns = [
-        { header: 'الاسم', key: 'name', width: 30 },
-        { header: 'نوع المرض', key: 'disease', width: 30 },
-        { header: 'المنطقة', key: 'directorate', width: 30 },
-        { header: 'رقم الجوال', key: 'phoneNumber', width: 35 },
-        {
-          header: 'تاريخ تقديم الوصفة',
-          key: 'orescriptionDate',
-          width: 40,
-          style: { numFmt: 'mm/dd/yyyy' }
-        },
-        {
-          header: 'تاريخ انتهاء الوصفة',
-          key: 'renewalDate',
-          width: 20,
-          style: { numFmt: 'mm/dd/yyyy' }
-        },
-        { header: 'عدد الايام المتبقية', key: 'days', width: 10 },
-        { header: 'عدد الاشهر النتبقية', key: 'Months', width: 10 }
-      ]
-
-      // Apply styling to the header row
-      worksheet.getRow(1).font = {
-        bold: true,
-        size: 14,
-        color: { argb: 'FFFFFF' }
-      }
-      worksheet.getRow(1).fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: '0000FF' }
-      }
-
-      accreditedList.forEach((accredited) => {
-        worksheet.addRow({
-          name: accredited.name,
-          disease: accredited.disease,
-          directorate: accredited.directorate,
-          phoneNumber: accredited.phoneNumber,
-          orescriptionDate: new Date(accredited.orescriptionDate),
-          renewalDate: new Date(accredited.renewalDate),
-          days: accredited.days,
-          Months: accredited.Months
-        })
-      })
-      // Adjust column width to fit content
-      worksheet.columns.forEach((column) => {
-        let maxLength = 0
-        column.eachCell({ includeEmpty: true }, (cell) => {
-          let cellLength = cell.value ? cell.value.toString().length : 10
-          if (cellLength > maxLength) {
-            maxLength = cellLength
-          }
-        })
-        column.width = maxLength < 10 ? 10 : maxLength
-      })
-
-      res.setHeader(
-        'Content-Type',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      )
-      res.setHeader('Content-Disposition', 'attachment; filename="accredited_by_prescription.xlsx"')
-
-      await workbook.xlsx.write(res)
-      res.end()
-    } catch (error) {
-      next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
-    }
-  }
 }
 
 module.exports = new AccreditedController()

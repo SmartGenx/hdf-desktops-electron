@@ -11,13 +11,8 @@ applicantRouter.put('/ApplicantAccredited/:id', ApplicantController.updateApplic
 
 // Get all applicants
 applicantRouter.get('/', ApplicantController.getAllOrSearchApplicants);
-applicantRouter.get('/ApplicantByDirectorateViewModelPdf/:id', ApplicantController.exportAllApplicantsByDirectorateToPDF);
-applicantRouter.get('/ApplicantByDirectorateViewModelPdf', ApplicantController.exportAllAccreditedAfterDismissal);
 applicantRouter.get('/ApplicantByDirectorateViewModel', ApplicantController.getAllAccreditedAfterDismissal);
-applicantRouter.get('/ApplicantByDirectorateViewModelExcel', ApplicantController.exportAllApplicantsByDirectorateToExcel);
-applicantRouter.get('/applicantsReportCategoryExcel', ApplicantController.exportApplicantsReportCategoryToExcel);
 applicantRouter.get('/applicantsReportCategory', ApplicantController.ApplicantReportCategory);
-applicantRouter.get('/applicantsReportCategoryPdf', ApplicantController.exportApplicantsReportCategoryToPDF);
 applicantRouter.get('/count', ApplicantController.countAllApplicants);
 applicantRouter.get('/ApplicantMonthlyGenderCount', ApplicantController.getApplicantMonthlyGenderCounts);
 // Get an applicant by ID
