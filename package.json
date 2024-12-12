@@ -59,6 +59,8 @@
     "child_process": "^1.0.2",
     "class-variance-authority": "^0.7.0",
     "cmdk": "^1.0.0",
+    "electron-log": "^5.2.4",
+    "electron-updater": "^6.3.9",
     "lucide-react": "^0.427.0",
     "passport": "^0.7.0",
     "qrcode.react": "^4.0.1",
@@ -72,7 +74,8 @@
     "react-to-print": "^2.15.1",
     "tailwindcss-animate": "^1.0.7",
     "util": "^0.12.5",
-    "vaul": "^0.9.1"
+    "vaul": "^0.9.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^2.0.0",
@@ -99,7 +102,15 @@
     "typescript": "^5.5.2",
     "vite": "^5.3.1"
   },
+  "repository": "https://github.com/SmartGenx/hdf-desktops-electron",
   "build": {
+    "appId": "com.samithabet.autoupdate",
+    "publish": {
+      "provider": "github",
+      "owner": "SmartGenx",
+      "repo": "hdf-desktops-electron",
+      "private": true
+    },
     "win": {
       "icon": "resources/logo.ico"
     },
@@ -126,7 +137,6 @@
           "**/*"
         ]
       },
-
       {
         "from": "prisma",
         "to": "prisma",

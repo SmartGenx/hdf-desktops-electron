@@ -133,7 +133,7 @@ export default function MedicalAllocationsIndex() {
   )
 
   const totalOriginationAmount = ApplicantByDirectorateViewModelDataCard?.data.reduce(
-    (acc, current) => acc + ((current.totalAmount - current.approvedAmount) || 0),
+    (acc, current) => acc + (current.totalAmount - current.approvedAmount || 0),
     0
   )
   const componentRef = useRef<HTMLTableElement>(null)
@@ -196,7 +196,7 @@ export default function MedicalAllocationsIndex() {
             <p>{totalAmountSum}</p>
           </div>
           <div>
-            <p>اجمالي مساهمة المؤسسة	</p>
+            <p>اجمالي مساهمة المؤسسة </p>
             <p>{totalOriginationAmount}</p>
           </div>
           <div>

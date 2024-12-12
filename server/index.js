@@ -7,6 +7,8 @@ const { fork } = require('child_process');
 require('dotenv').config();
 
 
+const util = require('util')
+const fs = require('fs')
 const mkdir = util.promisify(fs.mkdir)
 const corsOptions = {
   origin: '*',
@@ -15,15 +17,17 @@ const corsOptions = {
 }
 const app = express();
 app.use(cors(corsOptions));
-app.use(express.json()); 
+app.use(express.json());
+app.use('/api', rootRouter)
 
 async function ensureProfileDirExists(profileDir) {
   try {
-    await mkdir(profileDir)
+    await mkdir(profileDir);
   } catch (error) {
-    if (error.code !== 'EXIST') {
-      throw error
+    if (error.code !== 'EEXIST') { // Corrected the error code
+      throw error;
     }
+    console.log(`Directory already exists: ${profileDir}`);
   }
 }
 
