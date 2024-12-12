@@ -1,11 +1,13 @@
-import { app, shell, BrowserWindow, ipcMain, Menu  } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, Menu,dialog  } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-
+import log from 'electron-log';
+import { autoUpdater } from 'electron-updater';
 import { spawn } from 'child_process'
+let mainWindow: BrowserWindow
 function createWindow(): void {
   const iconPath = join(__dirname, '../../../resources/logo.ico')
-  const mainWindow = new BrowserWindow({
+   mainWindow = new BrowserWindow({
     width: 1700,
     height: 1000,
     show: false,
@@ -61,6 +63,7 @@ app.whenReady().then(() => {
 
   createWindow()
 
+
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
@@ -95,7 +98,84 @@ app.whenReady().then(() => {
   serverProcess.on('close', (code) => {
     console.log(`Server process exited with code ${code}`)
   })
+  checkForUpdates();
+
 })
+function checkForUpdates() {
+  autoUpdater.checkForUpdates();
+
+  // Event: Update available
+  autoUpdater.on('update-available', (info) => {
+    log.info('Update available:', info);
+    dialog
+      .showMessageBox({
+        type: 'info',
+        title: 'Update Available',
+        message: `A new version (${info.version}) is available. Current version: ${app.getVersion()}. Would you like to download it?`,
+        buttons: ['Yes', 'No'],
+      })
+      .then((result) => {
+        if (result.response === 0) {
+          // Start downloading the update
+          autoUpdater.downloadUpdate();
+          dialog.showMessageBox({
+            type: 'info',
+            title: 'Downloading Update',
+            message: 'The update is being downloaded. Please wait.',
+            buttons: ['OK'],
+          });
+        }
+      });
+  });
+
+  // Event: No updates available
+  autoUpdater.on('update-not-available', (info) => {
+    log.info('No updates available:', info);
+    dialog.showMessageBox({
+      type: 'info',
+      title: 'No Updates',
+      message: 'You are using the latest version.',
+      buttons: ['OK'],
+    });
+  });
+
+  // Event: Download progress
+  autoUpdater.on('download-progress', (progress) => {
+    log.info(
+      `Download progress: ${progress.percent.toFixed(2)}% (${progress.transferred}/${progress.total} bytes)`
+    );
+    if (mainWindow) {
+      mainWindow.setProgressBar(progress.percent / 100);
+    }
+  });
+
+  // Event: Update downloaded
+  autoUpdater.on('update-downloaded', (info) => {
+    log.info('Update downloaded:', info);
+    dialog
+      .showMessageBox({
+        type: 'info',
+        title: 'Update Ready',
+        message:
+          'The update has been downloaded. The application will now restart to install the update.',
+        buttons: ['Restart Now'],
+      })
+      .then(() => {
+        autoUpdater.quitAndInstall(); // Restart and install the update
+      });
+  });
+
+  // Event: Error
+  autoUpdater.on('error', (error) => {
+    log.error('Error during update:', error);
+    dialog.showMessageBox({
+      type: 'error',
+      title: 'Update Error',
+      message: `An error occurred while checking for updates: ${error.message}`,
+      buttons: ['OK'],
+    });
+  });
+}
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
