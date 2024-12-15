@@ -108,22 +108,24 @@ function checkForUpdates() {
   autoUpdater.on('update-available', (info) => {
     log.info('Update available:', info);
     dialog
-      .showMessageBox({
-        type: 'info',
-        title: 'Update Available',
-        message: `A new version (${info.version}) is available. Current version: ${app.getVersion()}. Would you like to download it?`,
-        buttons: ['Yes', 'No'],
-      })
+    .showMessageBox({
+      type: 'info',
+      title: 'تحديث متوفر',
+      message: `نسخة جديدة (${info.version}) متوفرة. النسخة الحالية: ${app.getVersion()}. هل ترغب في تنزيلها؟`,
+      buttons: ['نعم', 'لا'],
+    })
+    
       .then((result) => {
         if (result.response === 0) {
           // Start downloading the update
           autoUpdater.downloadUpdate();
           dialog.showMessageBox({
             type: 'info',
-            title: 'Downloading Update',
-            message: 'The update is being downloaded. Please wait.',
-            buttons: ['OK'],
+            title: 'جارٍ تنزيل التحديث',
+            message: 'التحديث قيد التنزيل. يرجى الانتظار.',
+            buttons: ['موافق'],
           });
+          
         }
       });
   });
@@ -133,10 +135,11 @@ function checkForUpdates() {
     log.info('No updates available:', info);
     dialog.showMessageBox({
       type: 'info',
-      title: 'No Updates',
-      message: 'You are using the latest version.',
-      buttons: ['OK'],
+      title: 'لا توجد تحديثات',
+      message: 'أنت تستخدم أحدث إصدار.',
+      buttons: ['موافق'],
     });
+    
   });
 
   // Event: Download progress
@@ -152,14 +155,14 @@ function checkForUpdates() {
   // Event: Update downloaded
   autoUpdater.on('update-downloaded', (info) => {
     log.info('Update downloaded:', info);
-    dialog
-      .showMessageBox({
-        type: 'info',
-        title: 'Update Ready',
-        message:
-          'The update has been downloaded. The application will now restart to install the update.',
-        buttons: ['Restart Now'],
-      })
+    dialog.showMessageBox({
+      type: 'info',
+      title: 'التحديث جاهز',
+      message:
+        'تم تنزيل التحديث. ستتم إعادة تشغيل التطبيق الآن لتثبيت التحديث.',
+      buttons: ['أعد التشغيل الآن'],
+    })
+    
       .then(() => {
         autoUpdater.quitAndInstall(); // Restart and install the update
       });
@@ -170,10 +173,11 @@ function checkForUpdates() {
     log.error('Error during update:', error);
     dialog.showMessageBox({
       type: 'error',
-      title: 'Update Error',
-      message: `An error occurred while checking for updates: ${error.message}`,
-      buttons: ['OK'],
+      title: 'خطأ في التحديث',
+      message: `حدث خطأ أثناء التحقق من التحديثات: ${error.message}`,
+      buttons: ['موافق'],
     });
+    
   });
 }
 
