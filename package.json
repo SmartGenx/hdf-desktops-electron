@@ -112,11 +112,10 @@
   "resolutions": {
     "cli-table3": "^0.6.2"
   },
-"repository": {
-  "type": "git",
-  "url": "git+https://github.com/SmartGenx/hdf-desktops-electron.git"
-}
-,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SmartGenx/hdf-desktops-electron.git"
+  },
   "build": {
     "appId": "com.samithabet.autoupdate",
     "publish": {
