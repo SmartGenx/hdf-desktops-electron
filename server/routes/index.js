@@ -15,6 +15,7 @@ const { roleRouter } = require('./roleRoutes')
 const { attachmentRouter } = require('./attachmentRoutes')
 const { statisticsRouter } = require('./statisticsRoutes')
 const { backUpRouter } = require('./backUpRoutes')
+const {syncProcessRouter} = require('./syncProcessRoutes')
 
 const rootRouter = express.Router()
 
@@ -34,5 +35,6 @@ rootRouter.use('/attachment', attachmentRouter)
 rootRouter.use('/role', roleRouter)
 rootRouter.use('/statistics', statisticsRouter)
 rootRouter.use('/backUp', backUpRouter)
+rootRouter.use('/syncProcess', syncProcessRouter)
 
 module.exports = { rootRouter } // Export the root router directly

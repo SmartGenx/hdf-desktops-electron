@@ -7,20 +7,30 @@ import { Button } from '@renderer/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@renderer/components/ui/form'
 import { Input } from '@renderer/components/ui/input'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import {  Governorate, Pharmacy } from '@renderer/types'
+import { Governorate, Pharmacy } from '@renderer/types'
 import { getApi, putApi } from '@renderer/lib/http'
 import { useAuthHeader } from 'react-auth-kit'
 import { toast } from '@renderer/components/ui/use-toast'
 import { AlertDialogAction, AlertDialogCancel } from '@renderer/components/ui/alert-dialog'
 import { useEffect } from 'react'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@renderer/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue
+} from '@renderer/components/ui/select'
 const formSchema = z.object({
   governorateGlobalId: z.string(),
   name: z.string(),
   location: z.string(),
-  startDispenseDate: z.coerce.number().min(1).max(31,{message:"الرقم يجب أن يكون أقل أو مساوي 31"}),
-  endispenseDate: z.coerce.number().min(1).max(31),
- 
+  startDispenseDate: z.coerce
+    .number()
+    .min(1)
+    .max(31, { message: 'الرقم يجب أن يكون أقل أو مساوي 31' }),
+  endispenseDate: z.coerce.number().min(1).max(31)
 })
 interface Props {
   id: string
@@ -28,7 +38,7 @@ interface Props {
 export default function EditPharmacyForm({ id }: Props) {
   const authToken = useAuthHeader()
   const queryClient = useQueryClient()
-  const { data: pharmacy,isSuccess } = useQuery({
+  const { data: pharmacy, isSuccess } = useQuery({
     queryKey: ['pharmacy', id],
     queryFn: async () =>
       await getApi<Pharmacy>(`/pharmacy/${id}`, {
@@ -49,21 +59,18 @@ export default function EditPharmacyForm({ id }: Props) {
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    
+    resolver: zodResolver(formSchema)
   })
   useEffect(() => {
     if (isSuccess) {
       form.reset({
-        name:pharmacy.data.name,
-        endispenseDate:pharmacy.data.endispenseDate,
-        location:pharmacy.data.location,
-        governorateGlobalId:pharmacy.data.governorateGlobalId,
-        startDispenseDate:pharmacy.data.startDispenseDate
+        name: pharmacy.data.name,
+        endispenseDate: pharmacy.data.endispenseDate,
+        location: pharmacy.data.location,
+        governorateGlobalId: pharmacy.data.governorateGlobalId,
+        startDispenseDate: pharmacy.data.startDispenseDate
       })
     }
-  
-    
   }, [pharmacy])
   const { mutate } = useMutation({
     mutationKey: ['editPharmacy'],
@@ -71,7 +78,11 @@ export default function EditPharmacyForm({ id }: Props) {
       // Return the API call to be executed
       return putApi(
         `/pharmacy/${id}`,
-        { ...values },
+        {
+          ...values,
+          startDispenseDate: +values.startDispenseDate,
+          endispenseDate: +values.endispenseDate
+        },
         {
           headers: {
             Authorization: `${authToken()}`
@@ -86,12 +97,14 @@ export default function EditPharmacyForm({ id }: Props) {
         variant: 'success'
       })
 
-      queryClient.invalidateQueries({queryKey:["pharmacy"]})
+      queryClient.invalidateQueries({ queryKey: ['pharmacy'] })
     },
-    onError(error) {
+    onError(error: any) {
+      const errorMessage = error?.response?.data?.message || 'حدث خطأ ما'
+     
       toast({
         title: 'لم تتم العملية',
-        description: error.message,
+        description: errorMessage,
         variant: 'destructive'
       })
     }
@@ -110,7 +123,7 @@ export default function EditPharmacyForm({ id }: Props) {
               control={form.control}
               name="name"
               render={({ field }) => (
-                <FormItem className='col-span-3'>
+                <FormItem className="col-span-3">
                   <FormControl>
                     <Input
                       label="إضافة صيدلية"
@@ -128,20 +141,25 @@ export default function EditPharmacyForm({ id }: Props) {
               control={form.control}
               name="governorateGlobalId"
               render={({ field }) => (
-                <FormItem className='col-span-3'>
+                <FormItem className="col-span-3">
                   <FormControl>
-                    <Select value={field.value} onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <SelectTrigger className="">
                         <SelectValue placeholder="إضافة محافظة" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
                           <SelectLabel>المحافظات</SelectLabel>
-                          {governorates && governorates.data.map((governorate) => (
-                            <SelectItem key={governorate.id} value={String(governorate.globalId)}>
-                              {governorate.name}
-                            </SelectItem>
-                          ))}
+                          {governorates &&
+                            governorates.data.map((governorate) => (
+                              <SelectItem key={governorate.id} value={String(governorate.globalId)}>
+                                {governorate.name}
+                              </SelectItem>
+                            ))}
                         </SelectGroup>
                       </SelectContent>
                     </Select>
@@ -154,7 +172,7 @@ export default function EditPharmacyForm({ id }: Props) {
               control={form.control}
               name="location"
               render={({ field }) => (
-                <FormItem className='col-span-2'>
+                <FormItem className="col-span-2">
                   <FormControl>
                     <Input
                       label="الموقع"
@@ -172,7 +190,7 @@ export default function EditPharmacyForm({ id }: Props) {
               control={form.control}
               name="startDispenseDate"
               render={({ field }) => (
-                <FormItem className='col-span-2'>
+                <FormItem className="col-span-2">
                   <FormControl>
                     <Input
                       label="تاريخ بدء الصرف"
@@ -190,7 +208,7 @@ export default function EditPharmacyForm({ id }: Props) {
               control={form.control}
               name="endispenseDate"
               render={({ field }) => (
-                <FormItem className='col-span-2'>
+                <FormItem className="col-span-2">
                   <FormControl>
                     <Input
                       label="تاريخ انتهاء الصرف"
@@ -207,7 +225,7 @@ export default function EditPharmacyForm({ id }: Props) {
           </div>
           <div className="flex justify-between">
             <AlertDialogCancel className="text-muted-foregrounds">إلغاء</AlertDialogCancel>
-            <Button variant={'Hdf'} type='button'>
+            <Button variant={'Hdf'} type="button">
               <AlertDialogAction
                 className="bg-transparent w-fit hover:bg-transparent"
                 onClick={() => {
@@ -218,7 +236,6 @@ export default function EditPharmacyForm({ id }: Props) {
               </AlertDialogAction>
             </Button>
           </div>
-          
         </form>
       </Form>
     </div>

@@ -7,7 +7,7 @@ import { Button } from '@renderer/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@renderer/components/ui/form'
 import { Input } from '@renderer/components/ui/input'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import {  DiseasesApplicant } from '@renderer/types'
+import { DiseasesApplicant } from '@renderer/types'
 import { getApi, putApi } from '@renderer/lib/http'
 import { useAuthHeader } from 'react-auth-kit'
 import { toast } from '@renderer/components/ui/use-toast'
@@ -15,8 +15,7 @@ import { AlertDialogAction, AlertDialogCancel } from '@renderer/components/ui/al
 import { useEffect } from 'react'
 const formSchema = z.object({
   name: z.string(),
-  description: z.string(),
- 
+  description: z.string()
 })
 interface Props {
   id: string
@@ -24,8 +23,8 @@ interface Props {
 export default function EditDiseaseForm({ id }: Props) {
   const authToken = useAuthHeader()
   const queryClient = useQueryClient()
-  
-  const { data: disease,isSuccess } = useQuery({
+
+  const { data: disease, isSuccess } = useQuery({
     queryKey: ['disease', id],
     queryFn: async () =>
       await getApi<DiseasesApplicant>(`/disease/${id}`, {
@@ -35,21 +34,17 @@ export default function EditDiseaseForm({ id }: Props) {
       })
   })
 
-
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    
+    resolver: zodResolver(formSchema)
   })
   useEffect(() => {
     if (isSuccess) {
       form.reset({
-        name:disease.data.name,
-        description:disease.data.description
+        name: disease.data.name,
+        description: disease.data.description
       })
     }
-  
-    
   }, [disease])
   const { mutate } = useMutation({
     mutationKey: ['editDisease'],
@@ -72,12 +67,14 @@ export default function EditDiseaseForm({ id }: Props) {
         variant: 'success'
       })
 
-      queryClient.invalidateQueries({queryKey:["disease"]})
+      queryClient.invalidateQueries({ queryKey: ['disease'] })
     },
-    onError(error) {
+    onError(error: any) {
+      const errorMessage = error?.response?.data?.message || 'حدث خطأ ما'
+      
       toast({
         title: 'لم تتم العملية',
-        description: error.message,
+        description: errorMessage,
         variant: 'destructive'
       })
     }
@@ -91,7 +88,7 @@ export default function EditDiseaseForm({ id }: Props) {
     <div className="space-y-3">
       <Form {...form}>
         <form className="space-y-3">
-        <div className="grid w-full grid-cols-2 gap-x-2">
+          <div className="grid w-full grid-cols-2 gap-x-2">
             <FormField
               control={form.control}
               name="name"
@@ -128,11 +125,10 @@ export default function EditDiseaseForm({ id }: Props) {
                 </FormItem>
               )}
             />
-            
           </div>
           <div className="flex justify-between">
             <AlertDialogCancel className="text-muted-foregrounds">إلغاء</AlertDialogCancel>
-            <Button variant={'Hdf'} type='button'>
+            <Button variant={'Hdf'} type="button">
               <AlertDialogAction
                 className="bg-transparent w-fit hover:bg-transparent"
                 onClick={() => {

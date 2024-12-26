@@ -29,6 +29,7 @@ CREATE TABLE "Role" (
     "deleted" BOOLEAN NOT NULL DEFAULT false,
     "version" INTEGER NOT NULL DEFAULT 1,
     "lastModified" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Role_pkey" PRIMARY KEY ("id")
 );
@@ -47,6 +48,7 @@ CREATE TABLE "Accredited" (
     "applicantGlobalId" TEXT NOT NULL,
     "pharmacyGlobalId" TEXT NOT NULL,
     "version" INTEGER NOT NULL DEFAULT 1,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "lastModified" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Accredited_pkey" PRIMARY KEY ("id")
@@ -71,7 +73,7 @@ CREATE TABLE "Applicant" (
     "state" TEXT NOT NULL,
     "version" INTEGER NOT NULL DEFAULT 1,
     "lastModified" TIMESTAMP(3) NOT NULL,
-    "craeteAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Applicant_pkey" PRIMARY KEY ("id")
 );
@@ -87,6 +89,7 @@ CREATE TABLE "Prescription" (
     "accreditedGlobalId" TEXT NOT NULL,
     "version" INTEGER NOT NULL DEFAULT 1,
     "lastModified" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Prescription_pkey" PRIMARY KEY ("id")
 );
@@ -101,6 +104,7 @@ CREATE TABLE "Attachment" (
     "accreditedGlobalId" TEXT NOT NULL,
     "version" INTEGER NOT NULL DEFAULT 1,
     "lastModified" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Attachment_pkey" PRIMARY KEY ("id")
 );
@@ -115,6 +119,7 @@ CREATE TABLE "Category" (
     "description" TEXT NOT NULL,
     "version" INTEGER NOT NULL DEFAULT 1,
     "lastModified" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Category_pkey" PRIMARY KEY ("id")
 );
@@ -128,6 +133,7 @@ CREATE TABLE "Directorate" (
     "deleted" BOOLEAN NOT NULL DEFAULT false,
     "version" INTEGER NOT NULL DEFAULT 1,
     "lastModified" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Directorate_pkey" PRIMARY KEY ("id")
 );
@@ -141,6 +147,7 @@ CREATE TABLE "Disease" (
     "description" TEXT NOT NULL,
     "version" INTEGER NOT NULL DEFAULT 1,
     "lastModified" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Disease_pkey" PRIMARY KEY ("id")
 );
@@ -154,6 +161,7 @@ CREATE TABLE "DiseasesApplicants" (
     "applicantGlobalId" TEXT NOT NULL,
     "version" INTEGER NOT NULL DEFAULT 1,
     "lastModified" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "DiseasesApplicants_pkey" PRIMARY KEY ("id")
 );
@@ -174,6 +182,7 @@ CREATE TABLE "Dismissal" (
     "accreditedGlobalId" TEXT NOT NULL,
     "version" INTEGER NOT NULL DEFAULT 1,
     "lastModified" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Dismissal_pkey" PRIMARY KEY ("id")
 );
@@ -186,6 +195,7 @@ CREATE TABLE "Governorate" (
     "deleted" BOOLEAN NOT NULL DEFAULT false,
     "version" INTEGER NOT NULL DEFAULT 1,
     "lastModified" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Governorate_pkey" PRIMARY KEY ("id")
 );
@@ -202,6 +212,7 @@ CREATE TABLE "Pharmacy" (
     "governorateGlobalId" TEXT NOT NULL,
     "version" INTEGER NOT NULL DEFAULT 1,
     "lastModified" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Pharmacy_pkey" PRIMARY KEY ("id")
 );
@@ -214,6 +225,7 @@ CREATE TABLE "Square" (
     "deleted" BOOLEAN NOT NULL DEFAULT false,
     "version" INTEGER NOT NULL DEFAULT 1,
     "lastModified" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Square_pkey" PRIMARY KEY ("id")
 );
@@ -230,6 +242,15 @@ CREATE TABLE "BackUp" (
     "lastModified" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "BackUp_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "SyncStatus" (
+    "id" SERIAL NOT NULL,
+    "modelName" TEXT NOT NULL,
+    "lastSyncedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "SyncStatus_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -321,6 +342,9 @@ CREATE UNIQUE INDEX "Square_id_globalId_key" ON "Square"("id", "globalId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "BackUp_globalId_key" ON "BackUp"("globalId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "SyncStatus_modelName_key" ON "SyncStatus"("modelName");
 
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_roleGlobalId_fkey" FOREIGN KEY ("roleGlobalId") REFERENCES "Role"("globalId") ON DELETE RESTRICT ON UPDATE CASCADE;

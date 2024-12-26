@@ -21,11 +21,24 @@ const synchronizeAllTables = async () => {
   ];
 
   for (const table of tables) {
-    await databaseService.synchronizeTable(table);
+    try {
+      const recordsProcessed = await databaseService.synchronizeTable(table);
+      const updatesApplied = await databaseService.fetchUpdatesFromServer(table);
 
-    await databaseService.fetchUpdatesFromServer(table);
+      if ((recordsProcessed || updatesApplied)) {
+        await databaseService.updateLastSyncedAt(table);
+        console.log(`The last synchronization time for table ${table} was successfully updated.`);
+
+      } else {
+        console.log(`No records were processed for table ${table}, so the last synchronization time will not be updated.`);
+
+      }
+    } catch (error) {
+      console.error(`فشل المزامنة للجدول ${table}:`, error);
+    }
   }
 };
+
 
 const synchronizeBuckets = async () => {
   await databaseService.synchronizeS3ToLocal();
@@ -34,20 +47,14 @@ const synchronizeBuckets = async () => {
 
 const synchronizeAll = async () => {
   try {
-    // مزامنة جميع الجداول
     await synchronizeAllTables();
 
-    // مزامنة البوكيت
     await synchronizeBuckets();
   } catch (error) {
     console.error('Error during synchronization:', error);
   }
 };
 
-// تشغيل المزامنة عند بدء العملية
-synchronizeAll().catch(console.error);
-
-// جدولة المزامنة لتعمل كل ساعة
-setInterval(() => {
-  synchronizeAll().catch(console.error);
-}, 3600000); // كل ساعة
+module.exports = {
+  synchronizeAll
+};

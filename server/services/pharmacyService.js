@@ -74,8 +74,17 @@ class PharmacyService {
 
       const existingPharmacyName = await this.prisma.pharmacy.findFirst({ where: { name: data.name } })
 
-      if (existingPharmacyName) {
-        throw new ValidationError(`هذي الصيدلة  ${data.name} موجودة بالفعل `);
+      if (!existingPharmacyName) {
+        return await this.prisma.pharmacy.update({
+          where: { globalId: id },
+          data: {
+            ...data,
+            version: { increment: 1 }, // Increment version for conflict resolution
+          },
+        });
+      }
+      if (existingPharmacyName.globalId !== existingPharmacy.globalId) {
+        throw new ValidationError(`هذي الصيدلة  ${data.name}  موجودة بالفعل `)
       }
 
       return await this.prisma.pharmacy.update({

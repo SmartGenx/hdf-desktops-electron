@@ -26,11 +26,7 @@ accreditedRouter.put(
 // Get all accreditations
 accreditedRouter.get('/', AccreditedController.getAllOrSearchApplicants)
 accreditedRouter.get('/all', AccreditedController.getAllApplicants)
-accreditedRouter.get('/exportAllAccreditedsToPdf', AccreditedController.exportAllAccreditedsToPDF)
-accreditedRouter.get(
-  '/exportAllAccreditedsToPExcl',
-  AccreditedController.exportAllAccreditedByPrescriptionToExcel
-)
+
 accreditedRouter.get('/AllAccreditedsForPdf', AccreditedController.AccreditedByPrescriptionServers)
 
 accreditedRouter.get('/card', AccreditedController.exportAllBarcodeCardToPDF)

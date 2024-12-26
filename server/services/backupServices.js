@@ -1,17 +1,11 @@
 
 const DatabaseError = require('../errors/DatabaseError')
-const NotFoundError = require('../errors/NotFoundError')
-const ValidationError = require('../errors/ValidationError')
-const ApplicantByDirectorateViewModel = require('../viewModels/ApplicantByDirectorateViewModel')
-const ApplicantByCategoryViewModel = require('../viewModels/ApplicantByCategoryViewModel ')
 const convertStringNumbers = require('../../server/utilty/convertToInt')
 
 const convertEqualsToInt = require('../utilty/convertToInt')
 const convertTopLevelStringBooleans = require('../utilty/convertTopLevelStringBooleans')
 
 const { v4: uuidv4 } = require('uuid')
-const { name } = require('ejs')
-const { skip } = require('node:test')
 class backupServices {
   constructor(prisma) {
     this.prisma = prisma

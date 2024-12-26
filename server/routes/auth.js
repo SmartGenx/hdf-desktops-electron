@@ -1,6 +1,6 @@
 const Router = require('express')
-const { authMiddleware } = require('../middleware/auth')
-const { adminMiddleware } = require('../middleware/admin')
+// const { authMiddleware } = require('../middleware/auth')
+// const { adminMiddleware } = require('../middleware/admin')
 const AuthController = require('../controllers/auth')
 const { upload, copyFileToProfileDir } = require('../middleware/uploadLoacl') // Ensure you have an AttachmentController
 

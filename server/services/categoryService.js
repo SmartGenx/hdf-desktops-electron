@@ -76,8 +76,17 @@ class CategoryService {
       }
       const existingCategoryName = await this.prisma.category.findFirst({ where: { name: data.name } })
 
-      if (existingCategoryName) {
-        throw new ValidationError(`هذي الفئة  ${data.name}  موجودة بالفعل `);
+      if (!existingCategoryName) {
+        return await this.prisma.category.update({
+          where: { globalId: id },
+          data: {
+            ...data,
+            version: { increment: 1 },
+          },
+        });
+      }
+      if (existingCategoryName.globalId !== existingCategory.globalId) {
+        throw new ValidationError(`هذي الفئة  ${data.name}  موجودة بالفعل `)
       }
 
 

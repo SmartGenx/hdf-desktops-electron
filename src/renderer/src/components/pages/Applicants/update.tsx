@@ -110,12 +110,7 @@ export default function UpdateApplicant() {
     resolver: zodResolver(formSchema)
   })
 
-  const [states, _setStates] = useState([
-    { value: 'نشط', label: 'نشط' },
-    { value: 'غير نشط', label: 'غير نشط' }
-
-    // Add more options as needed
-  ])
+  const [states, _setStates] = useState('نشط')
   const [delayedSubmitting, _setDelayedSubmitting] = useState(form.formState.isSubmitting)
 
   React.useEffect(() => {
@@ -177,8 +172,8 @@ export default function UpdateApplicant() {
       })
   })
 
-
   React.useEffect(() => {
+    form.setValue('state', states)
     if (applicants?.data) {
       form.reset({
         name: applicants?.data[0].name,
@@ -214,7 +209,7 @@ export default function UpdateApplicant() {
           submissionDate: new Date(data.submissionDate).toISOString(),
           diseaseGlobalId: data.diseaseGlobalId,
           categoryGlobalId: data.categoryGlobalId,
-          state: data.state
+          state: states
         },
         {
           headers: {
@@ -272,7 +267,6 @@ export default function UpdateApplicant() {
 
           <div>
             <Form {...form}>
-             
               <form
                 id="formId"
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -531,47 +525,6 @@ export default function UpdateApplicant() {
                         )}
                       />
                     </div>
-                    <div className="col-span-1 ">
-                      <label htmlFor="" className="text-[#A2A1A8]">
-                        الحالة
-                      </label>
-                      <FormField
-                        control={form.control}
-                        name="state"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Select
-                                onValueChange={field.onChange}
-                                value={
-                                  field.value
-                                    ? String(field.value)
-                                    : String(applicants?.data[0].state)
-                                }
-                                defaultValue={field.value}
-                              >
-                                <SelectTrigger className="">
-                                  <SelectValue placeholder="اخر الحالة" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectGroup>
-                                    <SelectLabel>الحالات</SelectLabel>
-                                    {states.map((state) => (
-                                      <SelectItem key={state.value} value={state.value}>
-                                        {state.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectGroup>
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-2">
                     <div className="col-span-1">
                       <label htmlFor="" className="text-[#A2A1A8] ">
                         مكان الميلاد
@@ -593,6 +546,10 @@ export default function UpdateApplicant() {
                         )}
                       />
                     </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2">
+                    
                     <div className="col-span-1 ">
                       <label htmlFor="" className="text-[#A2A1A8] ">
                         تاريخ التقديم
