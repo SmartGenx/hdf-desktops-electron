@@ -24,6 +24,7 @@
     "build:mac": "electron-vite build && electron-builder --mac",
     "build:linux": "electron-vite build && electron-builder --linux",
     "prisma:generate": "prisma generate",
+    "prepare": "husky install",
     "prisma:migrate": "prisma migrate deploy"
   },
   "dependencies": {
