@@ -1,21 +1,62 @@
-import { useState } from 'react'
-// import ThemeToggle from "@/components/layout/ThemeToggle/theme-toggle";
+import { useState, useEffect } from 'react'
 import useCurrentNav from '@renderer/hooks/useCurrentNav'
-import { MenuIcon, X } from 'lucide-react'
+import { LoaderIcon, MenuIcon, RefreshCcw, X } from 'lucide-react'
 import UserNav from './user-nav'
+import { useMutation,  } from '@tanstack/react-query'
+import {postApi } from '@renderer/lib/http'
+import { toast } from '../ui/use-toast'
 
 export default function Header() {
+  const isConnected = useInternetStatus()
+
   const currentPath = useCurrentNav()
-
   const [sidebarOpen, setSidebarOpen] = useState(false)
-
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen)
   }
- 
+
+  // الميوتيشن للمزامنة
+  const mutation = useMutation({
+    mutationFn: () => postApi('/syncProcess', {}),
+    onSuccess: () => {
+      toast({
+        title: 'تمت المزامنة بنجاح',
+        description: 'تمت المزامنة بنجاح',
+        variant: 'success'
+      })
+      // إعادة جلب حالة البيانات المعلقة بعد المزامنة
+      // refetchPendingData()
+      window.location.reload()
+    },
+    onError: (error: any) => {
+      toast({
+        title: 'فشلت العملية',
+        description: error?.message || 'حدث خطأ غير متوقع.',
+        variant: 'destructive'
+      })
+      console.error('Error during synchronization:', error.message)
+    }
+  })
+
+  // الاستعلام للتحقق من وجود بيانات معلقة
+  // const {
+  //   data: pendingData,
+  //   isLoading: isPendingDataLoading,
+  //   refetch: refetchPendingData
+  // } = useQuery({
+  //   queryKey: ['pendingSyncData'],
+  //   queryFn: () => getApi<Data>('/syncProcess'),
+  //   refetchInterval: 5000, // اختياري: إعادة الجلب كل 5 ثوانٍ لتحديث الحالة
+  // })
+
+  function onSubmit() {
+    mutation.mutate()
+  }
+  // console.log("🚀 ~ Header ~ data:", pendingData)
+
   return (
     <>
-      <div className="top-6 z-20  shadow-lg  border bg-background">
+      <div className="top-6 z-20 shadow-lg border bg-background">
         <nav className="flex h-14 items-center justify-between px-4">
           <div className="flex items-center sm:hidden">
             <button className="text-xl focus:outline-none " onClick={toggleSidebar}>
@@ -25,19 +66,46 @@ export default function Header() {
           </div>
 
           <div className="hidden items-center sm:flex gap-1">
-            {/* <DoubleArrowRightIcon /> */}
             <h1 className="text-xl font-bold">{currentPath?.label}</h1>
           </div>
 
           <div className="flex items-center gap-3">
-            {/* <ThemeToggle /> */}
+            <button
+              className="bg-[#8ebdff] text-white hover:text-black cursor-pointer p-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={onSubmit}
+              disabled={!isConnected}
+            >
+              {mutation.isPending ? (
+                <LoaderIcon className="animate-spin duration-1000" />
+              ) : (
+                <>
+                  <RefreshCcw />
+                </>
+              )}
+            </button>
             <UserNav />
           </div>
         </nav>
         <div className="mb-2 px-4"></div>
       </div>
-
-      {/* {sidebarOpen && <MobileSidebar isOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />} */}
     </>
   )
+}
+
+function useInternetStatus() {
+  const [isConnected, setIsConnected] = useState(navigator.onLine)
+
+  useEffect(() => {
+    const updateOnlineStatus = () => setIsConnected(navigator.onLine)
+
+    window.addEventListener('online', updateOnlineStatus)
+    window.addEventListener('offline', updateOnlineStatus)
+
+    return () => {
+      window.removeEventListener('online', updateOnlineStatus)
+      window.removeEventListener('offline', updateOnlineStatus)
+    }
+  }, [])
+
+  return isConnected
 }

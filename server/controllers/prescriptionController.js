@@ -4,20 +4,18 @@ const ApiError = require('../errors/ApiError')
 const DatabaseError = require('../errors/DatabaseError')
 const ValidationError = require('../errors/ValidationError')
 const NotFoundError = require('../errors/NotFoundError')
-const { file } = require('pdfkit')
-
 class PrescriptionController {
   // Fetch all attachments
   async getAllPrescription(req, res, next) {
-    // try {
+    try {
       const PrescriptionService = databaseService.getPrescriptionService()
       const fillterData = req.query
       const attachments = await PrescriptionService.getAllPrescriptions(fillterData)
       res.status(200).json(attachments)
-    // } catch (error) {
-    //   console.error(error)
-    //   next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
-    // }
+    } catch (error) {
+      console.error(error)
+      next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
+    }
   }
 
   // Fetch a single attachment by its ID

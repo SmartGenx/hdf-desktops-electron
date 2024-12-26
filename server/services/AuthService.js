@@ -1,6 +1,6 @@
 const { hash, compare } = require('bcryptjs')
-const jwt = require('jsonwebtoken')
-const { JWT_SECRET } = require('../secrets')
+// const jwt = require('jsonwebtoken')/
+// const { JWT_SECRET } = require('../secrets')/
 const crypto = require('crypto')
 const DatabaseError = require('../errors/DatabaseError')
 require('dotenv').config()
@@ -59,10 +59,10 @@ class AuthService {
         throw new Error('Invalid email or password')
       }
 
-      const token = jwt.sign({ userId: existingUser.id, name: existingUser.name }, JWT_SECRET)
+      // const token = jwt.sign({ userId: existingUser.id, name: existingUser.name }, JWT_SECRET)
 
       return {
-        token,
+      
         user: {
           role: existingUser.role.name,
           name: existingUser.name,

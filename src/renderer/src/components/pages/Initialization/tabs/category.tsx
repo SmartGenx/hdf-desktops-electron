@@ -117,7 +117,7 @@ export default function Category() {
                     <Input
                       label="النسبة"
                       placeholder="النسبة"
-                      type="number"
+                      type="text"
                       {...field}
                       value={Number(field.value)}
                     />

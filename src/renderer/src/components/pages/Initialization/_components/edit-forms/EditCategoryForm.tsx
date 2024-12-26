@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { Button } from '@renderer/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@renderer/components/ui/form'
 import { Input } from '@renderer/components/ui/input'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Category as CategoryType } from '@renderer/types'
 import { getApi, putApi } from '@renderer/lib/http'
 import { useAuthHeader } from 'react-auth-kit'
@@ -21,8 +21,8 @@ interface Props {
 }
 export default function EditCategoryForm({ id }: Props) {
   const authToken = useAuthHeader()
-  const { data: category,isSuccess: isCategorySuccess } = useQuery({
-
+  const queryClient = useQueryClient()
+  const { data: category, isSuccess: isCategorySuccess } = useQuery({
     queryKey: ['category', id],
     queryFn: async () =>
       await getApi<CategoryType>(`/category/${id}`, {
@@ -50,8 +50,6 @@ export default function EditCategoryForm({ id }: Props) {
       })
     }
   }, [category])
-  
-  
 
   const { mutate } = useMutation({
     mutationKey: ['editCategory'],
@@ -73,11 +71,14 @@ export default function EditCategoryForm({ id }: Props) {
         description: 'تمت التعديل بنجاح',
         variant: 'success'
       })
+      queryClient.invalidateQueries({ queryKey: ['category'] })
     },
-    onError(error) {
+    onError(error: any) {
+      const errorMessage = error?.response?.data?.message || 'حدث خطأ ما'
+
       toast({
         title: 'لم تتم العملية',
-        description: error.message,
+        description: errorMessage,
         variant: 'destructive'
       })
     }

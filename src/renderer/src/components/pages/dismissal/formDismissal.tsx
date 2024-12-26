@@ -692,7 +692,7 @@ export default function FormDismissal() {
                   <Button
                     variant="outline"
                     className="w-[120px]"
-                    onClick={() => navigate('/accredited')}
+                    onClick={() => navigate('/dismissal')}
                   >
                     الغاء
                   </Button>

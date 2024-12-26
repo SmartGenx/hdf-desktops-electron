@@ -63,6 +63,7 @@ export default function MedicalAllocationsIndex() {
       })
   })
 
+  console.log('ApplicantByDirectorateViewModelData', ApplicantByDirectorateViewModelData?.data)
   const {
     isPending: isPeningCardCard,
     isError: isErrorCard,
@@ -85,6 +86,12 @@ export default function MedicalAllocationsIndex() {
         }
       })
   })
+
+  console.log(
+    'ApplicantByDirectorateViewModelDataCard',
+    ApplicantByDirectorateViewModelDataCard?.data
+  )
+
   useEffect(() => {
     if (ApplicantByDirectorateViewModelDataCard?.data) {
       const dataToExport = ApplicantByDirectorateViewModelDataCard?.data.map((item) => {
@@ -97,6 +104,7 @@ export default function MedicalAllocationsIndex() {
           الحاله: item.state,
           'تكلفة العلاج': item.totalAmount,
           'نسبة الخصم': item.supportRatio,
+          'مساهمة المؤسسة	': item.totalAmount - item.approvedAmount,
           '	مساهمة المريض': item.approvedAmount
         }
       })
@@ -124,6 +132,10 @@ export default function MedicalAllocationsIndex() {
     0
   )
 
+  const totalOriginationAmount = ApplicantByDirectorateViewModelDataCard?.data.reduce(
+    (acc, current) => acc + (current.totalAmount - current.approvedAmount || 0),
+    0
+  )
   const componentRef = useRef<HTMLTableElement>(null)
   if (isPendingViewModel && isPeningCardCard)
     return (
@@ -183,7 +195,10 @@ export default function MedicalAllocationsIndex() {
             <p>اجمالي تكلفة العلاج</p>
             <p>{totalAmountSum}</p>
           </div>
-
+          <div>
+            <p>اجمالي مساهمة المؤسسة </p>
+            <p>{totalOriginationAmount}</p>
+          </div>
           <div>
             <p>مساهمة المريض</p>
             <p>{totalApprovedAmount}</p>

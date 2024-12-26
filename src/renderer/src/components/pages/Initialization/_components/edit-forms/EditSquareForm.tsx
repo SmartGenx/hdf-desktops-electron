@@ -71,10 +71,12 @@ export default function EditSquareForm({ id }: Props) {
 
       queryClient.invalidateQueries({queryKey:["square"]})
     },
-    onError(error) {
+    onError(error:any) {
+      const errorMessage = error?.response?.data?.message || 'حدث خطأ ما'
+     
       toast({
         title: 'لم تتم العملية',
-        description: error.message,
+        description: errorMessage,
         variant: 'destructive'
       })
     }
