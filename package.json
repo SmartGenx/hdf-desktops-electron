@@ -1,6 +1,7 @@
 {
   "name": "HDF",
   "version": "v1.0.2",
+
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
   "author": "SMART_GENX",
@@ -24,6 +25,7 @@
     "build:mac": "electron-vite build && electron-builder --mac",
     "build:linux": "electron-vite build && electron-builder --linux",
     "prisma:generate": "prisma generate",
+    "prepare": "husky install",
     "prisma:migrate": "prisma migrate deploy"
   },
   "dependencies": {
@@ -78,9 +80,13 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.6.1",
+    "@commitlint/config-conventional": "^19.6.0",
     "@electron-toolkit/eslint-config-prettier": "^2.0.0",
     "@electron-toolkit/eslint-config-ts": "^2.0.0",
     "@electron-toolkit/tsconfig": "^1.0.1",
+    "@semantic-release/changelog": "^6.0.0",
+    "@semantic-release/git": "^10.0.0",
     "@types/node": "^20.14.8",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
@@ -92,17 +98,31 @@
     "electron-vite": "^2.3.0",
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.34.3",
+    "husky": "^9.1.7",
     "postcss": "^8.4.41",
     "prettier": "^3.3.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.2.1",
+    "semantic-release": "^22.0.0",
     "tailwind-merge": "^2.4.0",
     "tailwindcss": "^3.4.8",
     "typescript": "^5.5.2",
     "vite": "^5.3.1"
   },
-  "repository": "https://github.com/SmartGenx/hdf-desktops-electron",
+  "resolutions": {
+    "cli-table3": "^0.6.2"
+  },
+
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SmartGenx/hdf-desktops-electron.git"
+  },
+
+
+
+
+
   "build": {
     "appId": "com.samithabet.autoupdate",
     "publish": {

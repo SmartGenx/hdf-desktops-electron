@@ -2,53 +2,44 @@ name: Release
 
 on:
   push:
-    tags:
-      - 'v*.*.*'  # Triggers on tags like v1.0.0
+    branches:
+      - main
+
+permissions:
+  contents: write
+  packages: write
+  issues: write
+  pull-requests: write
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
-
+    
     steps:
-      # 1. Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v3
-
-      # 2. Set up Node.js
-      - name: Set up Node.js
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+          
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16' # Specify your Node.js version
+          node-version: '20'
           cache: 'npm'
-
-      # 3. Install dependencies
+          
       - name: Install dependencies
-        run: npm install
-
-
-      # 6. Create GitHub Release
-      - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
+        run: npm ci
+          
+      - name: Initialize Husky
+        run: npx husky install
+        
+      # Add any Husky hooks if necessary
+      # - name: Add Pre-commit Hook
+      #   run: npx husky add .husky/pre-commit "npm test"
+        
+      - name: Run Semantic Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            Changes in this release:
-            - Feature A
-            - Bug Fix B
-          draft: false
-          prerelease: false
-
-      # 7. Upload Release Assets (Optional)
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/your-artifact.zip
-          asset_name: your-artifact.zip
-          asset_content_type: application/zip
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx semantic-release
