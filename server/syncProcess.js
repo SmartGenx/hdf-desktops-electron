@@ -34,7 +34,7 @@ const synchronizeAllTables = async () => {
 
       }
     } catch (error) {
-      console.error(`فشل المزامنة للجدول ${table}:`, error);
+     console.error(`Failed to sync the table ${table}:`, error);
     }
   }
 };
