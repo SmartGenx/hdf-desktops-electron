@@ -21,7 +21,7 @@ const backupServices = require('../server/services/backupServices') // Adjust th
 const { v4 } = require('uuid') // Make sure to import uuid
 const bcrypt = require('bcryptjs')
 const fs = require('fs').promises
-const axios = require('axios');
+const axios = require('axios')
 
 const path = require('path')
 const {
@@ -41,15 +41,12 @@ class DatabaseService {
     this.localPrisma = new PrismaClient({
       datasources: {
         db: { url: 'postgresql://postgres:12345@localhost:5432/hdf-production?schema=public' }
-        // db: { url: 'postgresql://postgres:123456789@3.108.217.185:5432/hdf?schema=public' }
 
-        // db: { url: 'postgresql://postgres:123456789@3.108.217.185:5432/hdf-web?schema=public' }
       }
     })
     this.cloudPrisma = new PrismaClient({
       datasources: {
-        db: { url: 'postgresql://postgres:123456789@15.207.99.236:5432/hdf?schema=public' }
-        // db: { url: 'postgresql://postgres:123456789@3.108.217.185:5432/hdf-production?schema=public' }
+        db: { url: 'postgresql://postgres:123456789@3.110.166.135:5432/hdf?schema=public' }
       },
       __internal: {
         engine: {
@@ -98,7 +95,6 @@ class DatabaseService {
   async switchDatabaseBasedOnConnectivity() {
     console.log('🚀 ~ DatabaseService ~ switchDatabaseBasedOnConnectivity ~ this.isOnline():')
     await this.initializeServices()
-
   }
 
   getAuthService() {
@@ -456,7 +452,9 @@ class DatabaseService {
 
   async updateLastSyncedAt(modelName) {
     try {
-      const response = await axios.get('https://timeapi.io/api/Time/current/zone?timeZone=Asia/Riyadh')
+      const response = await axios.get(
+        'https://timeapi.io/api/Time/current/zone?timeZone=Asia/Riyadh'
+      )
       const data = response.data
       console.log('🚀 ~ updateLastSyncedAt ~ currentTime:', data.dateTime)
       console.log('🚀 ~ updateLastSyncedAt ~ currentTime:', new Date())
