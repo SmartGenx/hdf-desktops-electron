@@ -114,7 +114,7 @@ function checkForUpdates() {
       message: `نسخة جديدة (${info.version}) متوفرة. النسخة الحالية: ${app.getVersion()}. هل ترغب في تنزيلها؟`,
       buttons: ['نعم', 'لا'],
     })
-    
+
       .then((result) => {
         if (result.response === 0) {
           // Start downloading the update
@@ -125,22 +125,22 @@ function checkForUpdates() {
             message: 'التحديث قيد التنزيل. يرجى الانتظار.',
             buttons: ['موافق'],
           });
-          
+
         }
       });
   });
 
   // Event: No updates available
-  autoUpdater.on('update-not-available', (info) => {
-    log.info('No updates available:', info);
-    dialog.showMessageBox({
-      type: 'info',
-      title: 'لا توجد تحديثات',
-      message: 'أنت تستخدم أحدث إصدار.',
-      buttons: ['موافق'],
-    });
-    
-  });
+  // autoUpdater.on('update-not-available', (info) => {
+  //   log.info('No updates available:', info);
+  //   dialog.showMessageBox({
+  //     type: 'info',
+  //     title: 'لا توجد تحديثات',
+  //     message: 'أنت تستخدم أحدث إصدار.',
+  //     buttons: ['موافق'],
+  //   });
+
+  // });
 
   // Event: Download progress
   autoUpdater.on('download-progress', (progress) => {
@@ -162,23 +162,23 @@ function checkForUpdates() {
         'تم تنزيل التحديث. ستتم إعادة تشغيل التطبيق الآن لتثبيت التحديث.',
       buttons: ['أعد التشغيل الآن'],
     })
-    
+
       .then(() => {
         autoUpdater.quitAndInstall(); // Restart and install the update
       });
   });
 
   // Event: Error
-  autoUpdater.on('error', (error) => {
-    log.error('Error during update:', error);
-    dialog.showMessageBox({
-      type: 'error',
-      title: 'خطأ في التحديث',
-      message: `حدث خطأ أثناء التحقق من التحديثات: ${error.message}`,
-      buttons: ['موافق'],
-    });
-    
-  });
+  // autoUpdater.on('error', (error) => {
+  //   log.error('Error during update:', error);
+  //   dialog.showMessageBox({
+  //     type: 'error',
+  //     title: 'خطأ في التحديث',
+  //     message: `حدث خطأ أثناء التحقق من التحديثات: ${error.message}`,
+  //     buttons: ['موافق'],
+  //   });
+
+  // });
 }
 
 app.on('window-all-closed', () => {
