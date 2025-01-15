@@ -12,11 +12,11 @@ const backupDatabase = async (req, res) => {
     const dbUser = 'postgres'
     const dbPassword = '12345'
     const dbPort = 5432
-    const token = req.body.token
+    // const token = req.body.token
     const backupPath = 'D:\\backup'
     const backupName = req.body.backupName
 
-    const payload = jwt.verify(token, JWT_SECRET)
+    // const payload = jwt.verify(token, JWT_SECRET)
 
     if (!dbName || !dbUser || !dbPassword || !backupPath || !backupName) {
       res.status(400).json({
@@ -68,8 +68,8 @@ const backupDatabase = async (req, res) => {
 
         try {
           const backupServices = databaseService.getbackupServices()
-          console.log(payload.name)
-          await backupServices.createbackup(downloadOutputPath, payload.name)
+          // console.log(payload.name)
+          await backupServices.createbackup(downloadOutputPath,"المدير")
           res
             .status(200)
             .json({ message: `Backup successfully created and moved to ${downloadOutputPath}` })
