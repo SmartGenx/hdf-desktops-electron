@@ -409,10 +409,11 @@ class DatabaseService {
               where: { globalId: update.globalId }
             })
             if (!existingRecord) {
+              const {id, ...dataForCreate} = update
               // السجل غير موجود محليًا، لذا يجب إنشاؤه
               await prisma[modelName].create({
                 data: {
-                  ...update,
+                  ...dataForCreate,
                   globalId: update.globalId
                 }
               })
