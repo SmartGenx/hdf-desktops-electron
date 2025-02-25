@@ -9,8 +9,8 @@ require('dotenv').config();
 const s3 = new S3({
   region: 'ap-south-1',
   credentials: {
-   accessKeyId: 'AKIAXHPAJTZ3RVODGSAL',
-  secretAccessKey: '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'
+   accessKeyId: 'ACCESSKEYID=AKIAXHPAJTZ3TS53PTPK',
+  secretAccessKey: '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'
   }
 
 });
