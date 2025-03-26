@@ -21,9 +21,9 @@ class AccreditedService {
       newDate.setMonth(currentDate.getMonth() + months)
       return newDate
     }
-
+  
     const currentDate = getDateMonthsFromNow(0)
-
+  
     try {
       const accreditations = await this.prisma.accredited.findMany({
         include: {
@@ -45,32 +45,37 @@ class AccreditedService {
           }
         }
       })
-
+  
       for (const accredited of accreditations) {
+        // إذا كانت الحالة بالفعل 'موقف'، نتجاوز التحقق من التواريخ ولا نغير حالته
+        if (accredited.state === 'موقف') {
+          continue
+        }
+  
         const prescriptions = await this.prisma.prescription.findFirst({
           where: { accreditedGlobalId: accredited.globalId }
-          // Take only the first record after ordering
         })
+  
         const dismissal = await this.prisma.dismissal.findFirst({
           where: { accreditedGlobalId: accredited.globalId },
           orderBy: {
             id: 'desc'
           }
         })
-
+  
         const dismissalDate = dismissal?.dateToDay
         const renewalDate = prescriptions?.renewalDate
         const renewalDateObj = new Date(renewalDate)
         const dismissalDateObj = new Date(dismissalDate)
-
+  
         const threeMonthsFromRenewalDate = new Date(renewalDateObj)
         threeMonthsFromRenewalDate.setMonth(threeMonthsFromRenewalDate.getMonth() + 3)
-
+  
         const threeMonthsFromDismissalDate = new Date(dismissalDateObj)
         threeMonthsFromDismissalDate.setMonth(threeMonthsFromDismissalDate.getMonth() + 3)
-
+  
         let newState
-
+  
         if (renewalDate < currentDate && threeMonthsFromRenewalDate < currentDate) {
           newState = 'موقف'
         } else if (threeMonthsFromDismissalDate < currentDate) {
@@ -80,7 +85,7 @@ class AccreditedService {
         } else if (renewalDate >= currentDate) {
           newState = 'مستمر'
         }
-
+  
         await this.prisma.accredited.update({
           where: { globalId: accredited.globalId },
           data: {
@@ -89,7 +94,7 @@ class AccreditedService {
           }
         })
       }
-
+  
       const page = dataFilter?.page
       const pageSize = dataFilter?.pageSize
       delete dataFilter?.page
@@ -109,7 +114,7 @@ class AccreditedService {
       } else {
         dataFilter = {}
       }
-
+  
       if (page && pageSize) {
         const skip = (+page - 1) * +pageSize
         const take = +pageSize
@@ -139,6 +144,7 @@ class AccreditedService {
       throw new DatabaseError('Error retrieving accreditations.', error)
     }
   }
+  
 
   async filterAccreditedByDateAndLocation(squareId, location, docter, state) {
     try {
