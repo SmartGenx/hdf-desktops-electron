@@ -40,7 +40,8 @@ class DatabaseService {
     // Initialize both Prisma clients for local and cloud databases
     this.localPrisma = new PrismaClient({
       datasources: {
-        db: { url: 'postgresql://postgres:123@localhost:5432/hdf?schema=public' }
+
+        db: { url: 'postgresql://postgres:123@localhost:5432/hdf-production?schema=public' }
 
       }
     })
