@@ -76,7 +76,6 @@ export default function EditDismissal() {
 
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  
 
   const { data: DismissInfos } = useQuery({
     queryKey: ['DismissInfo'],
@@ -469,12 +468,6 @@ export default function EditDismissal() {
                   'pointer-events-none opacity-50': delayedSubmitting
                 })}
               >
-                {process.env.NODE_ENV === 'development' && (
-                  <>
-                    <p>Ignore it, it just in dev mode</p>
-                    <div>{JSON.stringify(form.formState.errors)}</div>
-                  </>
-                )}
                 <div className="  flex flex-col gap-6 ">
                   <div className="grid grid-cols-3 gap-2">
                     <div className="col-span-1 flex gap-2">
@@ -497,6 +490,7 @@ export default function EditDismissal() {
                             className="w-[104px] h-[42px] bg-[#196CB0] hover:bg-[#2b4d68]"
                             onClick={handleCheck}
                             type="button"
+                            disabled={true}
                           >
                             مسح البطاقة
                           </Button>
