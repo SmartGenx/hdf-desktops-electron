@@ -35,13 +35,13 @@ export default function DismissalTable({ info, page, total, pageSize }: Props) {
       },
       {
         accessorKey: ' .',
-        header: 'رقم الاعتماد',
+        header: 'رقم RFID',
         cell: ({ row }) => row.original.Accredited?.numberOfRfid
       },
       {
         accessorKey: '',
-        header: 'اسم الدكتور',
-        cell: ({ row }) => row.original.Accredited?.doctor
+        header: 'اسم المريض',
+        cell: ({ row }) => row.original.Accredited?.applicant?.name
       },
       {
         accessorKey: '',
@@ -62,12 +62,18 @@ export default function DismissalTable({ info, page, total, pageSize }: Props) {
             year: 'numeric'
           }).format(date)
         }
+      }, 
+        {
+        accessorKey: '',
+        header: 'المبلغ الاجمالي',
+        cell: ({ row }) => row.original.totalAmount
       },
       {
         accessorKey: '',
-        header: 'رقم RFD ',
-        cell: ({ row }) => row.original.Accredited?.numberOfRfid
+        header: 'المبلغ المدفوع',
+        cell: ({ row }) => row.original.amountPaid
       },
+   
       {
         id: 'actions',
 
