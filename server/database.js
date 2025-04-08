@@ -40,7 +40,8 @@ class DatabaseService {
     // Initialize both Prisma clients for local and cloud databases
     this.localPrisma = new PrismaClient({
       datasources: {
-        db: { url: 'postgresql://postgres:12345@localhost:5432/hdf-production?schema=public' }
+
+        db: { url: 'postgresql://postgres:123@localhost:5432/hdf-production?schema=public' }
 
       }
     })
@@ -409,10 +410,11 @@ class DatabaseService {
               where: { globalId: update.globalId }
             })
             if (!existingRecord) {
+              const {id, ...dataForCreate} = update
               // السجل غير موجود محليًا، لذا يجب إنشاؤه
               await prisma[modelName].create({
                 data: {
-                  ...update,
+                  ...dataForCreate,
                   globalId: update.globalId
                 }
               })
