@@ -4,11 +4,13 @@ import { Search } from 'lucide-react'
 import { useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import AsyncSelect from 'react-select/async'
+
 interface Dismissals {
-  Accredited: Accredited
-}
-interface Accredited {
-  doctor: string
+  Accredited: {
+    applicant: {
+      name: string
+    }
+  }
 }
 
 const DismissalSearch = () => {
@@ -16,43 +18,47 @@ const DismissalSearch = () => {
   const location = useLocation()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-  // const queryClient = useQueryClient()
   const pathname = location.pathname
+
   const selectedVal = searchParams.get('query')
+
   const { data: dismissal } = useQuery({
     queryKey: ['dismissal'],
     queryFn: () =>
       getApi<Dismissals[]>('/dismissal', {
         params: {
-          'include[Accredited]': true
+          'include[Accredited][include]': 'applicant'
         }
       })
   })
+
   const loadOptions = async (value: string) => {
     if (!value) return []
-    const data = await getApi<Dismissals[]>('/dismissal', {
+    const response = await getApi<Dismissals[]>('/dismissal', {
       params: {
-        'include[Accredited]': true,
-        'Accredited[doctor][contains]': value
+        'include[Accredited][include]': 'applicant',
+        'Accredited[applicant][name][contains]': value
       }
     })
-    return data.data || []
+    return response.data || []
   }
+
   const customComponents = {
     DropdownIndicator: () => null,
     IndicatorSeparator: () => null
   }
+
   const onChange = (val: Dismissals | null) => {
     const params = new URLSearchParams(searchParams.toString())
-    if (val?.Accredited.doctor) {
-      params.set('query', val.Accredited.doctor)
+    if (val?.Accredited?.applicant?.name) {
+      params.set('query', val.Accredited.applicant.name)
     } else {
       params.delete('query')
     }
     params.set('page', '1')
-    // queryClient.invalidateQueries({ queryKey: ['products'] })
     navigate(`${pathname}?${params.toString()}`, { replace: true })
   }
+
   const customStyles = {
     control: (provided: any) => ({
       ...provided,
@@ -77,21 +83,26 @@ const DismissalSearch = () => {
       ...provided
     })
   }
+
   return (
-    <section className="flex w-[390px] items-center justify-center rounded-lg border border-[#7D7875] ">
+    <section className="flex w-[390px] items-center justify-center rounded-lg border border-[#7D7875]">
       <Search className="mr-2 text-gray-500" />
       <AsyncSelect<Dismissals>
         placeholder="ابحث عن.."
         loadingMessage={() => 'جارٍ البحث ...'}
         noOptionsMessage={() => 'لا توجد نتائج'}
         cacheOptions
-        instanceId="products-search"
-        value={selectedVal?.length ? { Accredited: { doctor: selectedVal } } : undefined}
+        instanceId="applicant-search"
+        value={
+          selectedVal?.length
+            ? { Accredited: { applicant: { name: selectedVal } } }
+            : undefined
+        }
         defaultOptions={dismissal?.data}
         loadOptions={loadOptions}
         onChange={onChange}
-        getOptionLabel={({ Accredited }) => Accredited.doctor}
-        getOptionValue={({ Accredited }) => Accredited.doctor}
+        getOptionLabel={({ Accredited }) => Accredited.applicant.name}
+        getOptionValue={({ Accredited }) => Accredited.applicant.name}
         components={customComponents}
         isClearable
         menuIsOpen={isMenuOpen}
@@ -104,4 +115,5 @@ const DismissalSearch = () => {
     </section>
   )
 }
+
 export default DismissalSearch
