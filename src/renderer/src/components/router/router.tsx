@@ -15,6 +15,7 @@ import UpdateApplicant from '../pages/Applicants/update'
 import ReportIndex from '../pages/reports'
 import UpdateAccredited from '../pages/accredited/update'
 import BackUpIndex from '../pages/backup'
+import EditDismissal from '../pages/dismissal/edit-dismissal'
 
 export const router = createHashRouter([
   {
@@ -78,6 +79,11 @@ export const router = createHashRouter([
       {
         path: '/formDismissal',
         element: <ProtectedRoute element={<FormDismissal />} />
+        // element: <Login />
+      },
+      {
+        path: '/updateDismissal/:id',
+        element: <ProtectedRoute element={<EditDismissal />} />
         // element: <Login />
       },
       {

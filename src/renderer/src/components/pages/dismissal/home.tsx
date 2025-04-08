@@ -36,8 +36,8 @@ const Dismissal = () => {
     queryFn: () =>
       getApi<Dismissales>('/dismissal', {
         params: {
-          'include[Accredited]': true,
-          'Accredited[doctor][contains]': query,
+          'include[Accredited][include]': 'applicant',
+          'Accredited[applicant][name][contains]': query,
           month: month,
           year: year,
           state: state,

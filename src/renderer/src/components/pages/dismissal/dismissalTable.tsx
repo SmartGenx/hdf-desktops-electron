@@ -2,8 +2,17 @@ import * as React from 'react'
 import { ColumnDef } from '@tanstack/react-table'
 import { HdfTable } from '../../tables/hdfTable'
 import { DismissalInfo } from '../../../types/index'
-
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '../../ui/dropdown-menu'
+import { Button } from '../../ui/button'
+import { MoreVertical } from 'lucide-react'
 import { Month } from '../../../types/enums'
+import { Link } from 'react-router-dom'
+
 type Props = {
   info: DismissalInfo[]
   page: string
@@ -26,13 +35,13 @@ export default function DismissalTable({ info, page, total, pageSize }: Props) {
       },
       {
         accessorKey: ' .',
-        header: 'رقم الاعتماد',
+        header: 'رقم RFID',
         cell: ({ row }) => row.original.Accredited?.numberOfRfid
       },
       {
         accessorKey: '',
-        header: 'اسم الدكتور',
-        cell: ({ row }) => row.original.Accredited?.doctor
+        header: 'اسم المريض',
+        cell: ({ row }) => row.original.Accredited?.applicant?.name
       },
       {
         accessorKey: '',
@@ -53,11 +62,35 @@ export default function DismissalTable({ info, page, total, pageSize }: Props) {
             year: 'numeric'
           }).format(date)
         }
+      }, 
+        {
+        accessorKey: '',
+        header: 'المبلغ الاجمالي',
+        cell: ({ row }) => row.original.totalAmount
       },
       {
         accessorKey: '',
-        header: 'رقم RFD ',
-        cell: ({ row }) => row.original.Accredited?.numberOfRfid
+        header: 'المبلغ المدفوع',
+        cell: ({ row }) => row.original.amountPaid
+      },
+   
+      {
+        id: 'actions',
+
+        cell: ({ row }) => (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="h-17 -mt-[70px] ml-7 min-w-[84.51px] p-0">
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                <Link to={`/updateDismissal/${row.original.globalId}`}>تعديل</Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )
       }
     ],
     [page]
@@ -69,7 +102,6 @@ export default function DismissalTable({ info, page, total, pageSize }: Props) {
       page={page.toString()}
       total={Number(total)}
       pageSize={Number(pageSize)}
-     
     />
   )
 }
