@@ -75,7 +75,6 @@ export default function EditDismissal() {
   const authToken = useAuthHeader()
 
   const [modalOpen, setModalOpen] = useState(false)
-  const [modalPtOpen, setModalPtOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const [numberOfRfid, setNumberOfRfid] = useState('')
   const [number, setNumber] = useState<AccreditedRes>()
@@ -315,18 +314,8 @@ export default function EditDismissal() {
     setModalOpen(false)
   }
 
-  const openPtModal = () => {
-    if (number?.info?.[0]?.attachment[0]?.attachmentFile) {
-      setModalPtOpen(true)
-    }
-  }
-
-  const closePtModal = () => {
-    setModalPtOpen(false)
-  }
-
+ 
   const attachedUrlPrec = number?.info?.[0]?.prescription?.[0]?.attachedUrl ?? 'لايوجد'
-  const attachedUrlAttachment = number?.info?.[0]?.attachment?.[0]?.attachmentFile ?? 'لايوجد'
   const isPDF = attachedUrlPrec.toLowerCase().endsWith('.pdf')
 
   const onSubmit = async (data: AccreditedFormValue) => {
@@ -580,51 +569,7 @@ export default function EditDismissal() {
                   </div>
                 </div>
               )}
-              <h1 className="mb-5 text-[#8B8D97]">عرض البيانات الشخصية</h1>
-              <a onClick={openPtModal} className="cursor-pointer">
-                <Pdf />
-              </a>
-              {modalPtOpen && (
-                <div
-                  className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50"
-                  onClick={closePtModal}
-                >
-                  <div
-                    className="relative w-[100%] h-[100%] overflow-hidden"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {isPDF ? (
-                      <>
-                        <iframe
-                          src={attachedUrlAttachment}
-                          className="w-full h-full"
-                          frameBorder="0"
-                        ></iframe>
-                        <button
-                          onClick={closePtModal}
-                          className="absolute top-4 right-4 p-2 rounded-full bg-white text-black hover:bg-gray-200"
-                        >
-                          &times;
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <img
-                          src={attachedUrlAttachment}
-                          className="w-[80%] h-[80%] mx-auto object-fill"
-                          alt=""
-                        />
-                        <button
-                          onClick={closePtModal}
-                          className="absolute top-4 right-4 p-2 rounded-full bg-white text-black hover:bg-gray-200"
-                        >
-                          &times;
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </div>
-              )}
+            
             </div>
             <div className="flex justify-end gap-4">
               <Button type="submit" className="w-[120px] bg-[#196CB0] hover:bg-[#2b4d68]">

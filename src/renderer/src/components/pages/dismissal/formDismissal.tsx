@@ -41,7 +41,6 @@ type AccreditedFormValue = z.infer<typeof formSchema>
 export default function FormDismissal() {
   // const signIn = useSignIn()
   const [modalOpen, setModalOpen] = useState(false)
-  const [modalPtOpen, setModalPtOpen] = useState(false)
   const inputRef = React.useRef<HTMLInputElement>(null)
   const { toast } = useToast()
   // const { setValue } = useForm()
@@ -316,17 +315,8 @@ export default function FormDismissal() {
   const attachedUrlPrec = number?.info?.[0]?.prescription?.[0]?.attachedUrl ?? 'لايوجد'
   const isPDF = attachedUrlPrec?.toLowerCase().endsWith('.pdf')
   //
-  const attachedUrlAttachment = number?.info?.[0]?.attachment?.[0]?.attachmentFile ?? 'لايوجد'
  
-  const openPtModal = () => {
-    if (number?.info?.[0]?.attachment[0]?.attachmentFile) {
-      setModalPtOpen(true)
-    }
-  }
 
-  const closePtModal = () => {
-    setModalPtOpen(false)
-  }
   const handleClose = () => {
     setCheckNum('')
     setNumberOfRfid('')
@@ -635,54 +625,7 @@ export default function FormDismissal() {
                     </div>
                   )}
 
-                  <h1 className="mb-5 text-[#8B8D97]">عرض البيانات الشخصية</h1>
-
-                  <a onClick={openPtModal} className="cursor-pointer">
-                    <Pdf />
-                  </a>
-                  {modalPtOpen && (
-                    <div
-                      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50"
-                      onClick={closePtModal}
-                    >
-                      <div
-                        className="relative w-[100%] h-[100%] overflow-hidden"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {isPDF ? (
-                          // If it's a PDF, render an iframe
-                          <>
-                            <iframe
-                              src={attachedUrlAttachment!}
-                              className="w-full h-full"
-                              frameBorder="0"
-                            ></iframe>
-                            <button
-                              onClick={closePtModal}
-                              className="absolute top-4 right-4 p-2 rounded-full bg-white text-black hover:bg-gray-200"
-                            >
-                              &times;
-                            </button>
-                          </>
-                        ) : (
-                          // If it's an image, render an img
-                          <>
-                            <img
-                              src={attachedUrlAttachment!}
-                              className="w-[80%] h-[80%] mx-auto object-fill"
-                              alt=""
-                            />
-                            <button
-                              onClick={closePtModal}
-                              className="absolute top-4 right-4 p-2 rounded-full bg-white text-black hover:bg-gray-200"
-                            >
-                              &times;
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  )}
+              
                 </div>
 
                 <div className="flex justify-end gap-4 ">
