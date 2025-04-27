@@ -55,7 +55,7 @@ model Accredited {
   doctor            String
   state             String
   numberOfRfid      Int
-  formNumber        Int
+  formNumber        String?
   deleted           Boolean        @default(false)
   applicantGlobalId String
   pharmacyGlobalId  String
