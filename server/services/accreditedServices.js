@@ -350,7 +350,7 @@ class AccreditedService {
         const accreited = await prisma.accredited.create({
           data: {
             numberOfRfid: +numberOfRfid,
-            formNumber: +formNumber,
+            formNumber: formNumber,
             ...rest,
             globalId: globalId
           }
@@ -421,7 +421,7 @@ class AccreditedService {
       where: { globalId: id },
       data: {
         numberOfRfid: numberOfRfid ? +numberOfRfid : accreditexsting.numberOfRfid,
-        formNumber: formNumber ? +formNumber : accreditexsting.formNumber,
+        formNumber: formNumber ? formNumber : accreditexsting.formNumber,
 
         ...rest
       }
