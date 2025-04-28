@@ -57,6 +57,18 @@ export default function useNavItems() {
       ]
     },
     {
+      title: 'الرسائل',
+      list: [
+        {
+          href: '/whatsApp',
+          icon: 'report',
+          label: 'الرسائل ',
+          disabled: false,
+          roles: ['Admin', 'Coordinator']
+        }
+      ]
+    },
+    {
       title: 'الأعدادات ',
       list: [
         // {

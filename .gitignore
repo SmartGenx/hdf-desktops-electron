@@ -9,3 +9,5 @@ build
 .env*.local
 .env
 out
+.wwebjs_cache
+.wwebjs_auth

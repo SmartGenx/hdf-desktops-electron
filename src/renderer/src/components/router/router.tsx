@@ -13,6 +13,7 @@ import FormDismissal from '../pages/dismissal/formDismissal'
 import ProtectedRoute from '../layouts/protected-route'
 import UpdateApplicant from '../pages/Applicants/update'
 import ReportIndex from '../pages/reports'
+import WhatsAppIndex  from '../pages/whatsApp'
 import UpdateAccredited from '../pages/accredited/update'
 import BackUpIndex from '../pages/backup'
 import EditDismissal from '../pages/dismissal/edit-dismissal'
@@ -94,6 +95,11 @@ export const router = createHashRouter([
       {
         path: '/Reports',
         element: <ProtectedRoute element={<ReportIndex />} />
+        // element: <Login />
+      },
+      {
+        path: '/whatsApp',
+        element: <ProtectedRoute element={<WhatsAppIndex />} />
         // element: <Login />
       },
       {
