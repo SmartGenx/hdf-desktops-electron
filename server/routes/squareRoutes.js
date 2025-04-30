@@ -1,6 +1,6 @@
 const Router = require("express");
 const squareRouter = Router();
-const SquareController = require("../controllers/SquareControllers"); // Ensure you have a SquareController
+const SquareController = require("../controllers/squareControllers"); // Ensure you have a SquareController
 
 // Create a new square
 squareRouter.post('/', SquareController.createSquare);

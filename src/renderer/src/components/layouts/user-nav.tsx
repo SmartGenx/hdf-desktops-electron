@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger
 } from '../ui/dropdown-menu'
 import { Avatar } from '../ui/avatar'
+import { useQueryClient } from '@tanstack/react-query'
 
 export type userData = {
   user: {
@@ -24,6 +25,12 @@ export default function UserNav() {
   const signOut = useSignOut()
   const authUser = useAuthUser()
   const user = authUser()
+  const queryClient = useQueryClient()
+
+  const handelClickLogout = () => {
+    signOut()
+    queryClient.clear()
+  }
 
   if (issAuthenticated()) {
     return (
@@ -56,7 +63,7 @@ export default function UserNav() {
           <DropdownMenuSeparator />
 
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => signOut()}>تسجيل الخروج</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handelClickLogout()}>تسجيل الخروج</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     )
