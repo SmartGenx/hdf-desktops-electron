@@ -35,6 +35,7 @@ accreditedRouter.get('/count', AccreditedController.countAllAccredited)
 
 // Get an accreditation by ID
 accreditedRouter.get('/:id', AccreditedController.getAccreditationById)
+accreditedRouter.get('/print/:id', AccreditedController.getPrintAccreditationById)
 
 // Delete an accreditation by ID
 accreditedRouter.delete('/:id', AccreditedController.deleteAccreditation)

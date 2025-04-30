@@ -116,7 +116,17 @@ class AccreditedController {
       next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
     }
   }
-
+  async getPrintAccreditationById(req, res, next) {
+    try {
+      const id = req.params.id;
+      const AccreditedService = databaseService.getAccreditedService();
+      const accreditation = await AccreditedService.getPrintAccreditationById(id);
+      res.status(200).json(accreditation);
+    } catch (error) {
+      console.error('Controller Error:', error); 
+      next(new DatabaseError('Failed to retrieve accreditation', error));
+    }
+  }
   // Update an existing accreditation
   async updateAccreditation(req, res, next) {
     const AccreditedService = databaseService.getAccreditedService()

@@ -6,6 +6,7 @@ const { v4: uuidv4 } = require('uuid')
 const convertEqualsToInt = require('../utilty/convertToInt')
 const convertTopLevelStringBooleans = require('../utilty/convertTopLevelStringBooleans')
 const { info } = require('console')
+const { console } = require('inspector')
 
 // Promisify fs methods to use async/await
 
@@ -697,6 +698,64 @@ class AccreditedService {
     // } catch (error) {
     //   throw new DatabaseError('Error fetching accreditation data.', error)
     // }
+  }
+  async getPrintAccreditationById(id) {
+    try {
+      const [allDiseases, allSquares, accreditation] = await Promise.all([
+        this.prisma.disease.findMany({ where: { deleted: false } }),
+        this.prisma.square.findMany({ where: { deleted: false } }),
+        this.prisma.accredited.findUnique({
+          where: { globalId: id },
+          include: {
+            applicant: {
+              include: {
+                directorate: { include: { Governorate: true } },
+                category: true,
+                diseasesApplicants: {
+                  include: { Disease: true },
+                  where: { deleted: false }
+                }
+              }
+            },
+            square: true,
+            pharmacy: { include: { Governorate: true } },
+            prescription: { orderBy: { prescriptionDate: 'desc' }, take: 1 }
+          }
+        })
+      ]);
+  
+      if (!accreditation) {
+        throw new NotFoundError(`Accreditation with id ${id} not found.`);
+      }
+  
+      const processedDiseases = allDiseases.map(disease => ({
+        globalId: disease.globalId,
+        name: disease.name,
+        cheacked: accreditation.applicant.diseasesApplicants
+          .some(da => da.Disease.globalId === disease.globalId)
+      }));
+  
+      const processedSquares = allSquares.map(square => ({
+        globalId: square.globalId,
+        name: square.name,
+        cheacked: accreditation.square?.globalId === square.globalId
+      }));
+  
+      return {
+        ...accreditation,
+        applicant: {
+          ...accreditation.applicant,
+          directorateName: accreditation.applicant.directorate.name,
+          governorateName: accreditation.applicant.directorate.Governorate.name,
+          categoryName: accreditation.applicant.category.name,
+          diseasesApplicants: processedDiseases
+        },
+        square: processedSquares
+      };
+  
+    } catch (error) {
+      throw new DatabaseError('Error retrieving accreditation.', error);
+    }
   }
 }
 
