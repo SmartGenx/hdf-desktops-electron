@@ -17,6 +17,7 @@ import WhatsAppIndex  from '../pages/whatsApp'
 import UpdateAccredited from '../pages/accredited/update'
 import BackUpIndex from '../pages/backup'
 import EditDismissal from '../pages/dismissal/edit-dismissal'
+import ContinuingTreatmentRequestFormPreview from '../pages/accredited/ContinuingTreatmentRequestFormPreview'
 
 export const router = createHashRouter([
   {
@@ -65,6 +66,11 @@ export const router = createHashRouter([
       {
         path: '/accredited',
         element: <ProtectedRoute element={<Accredited />} />
+        // element: <Login />
+      },
+      {
+        path: '/accredited/continuingTreatmentRequestFormPreview/:id',
+        element: <ProtectedRoute element={<ContinuingTreatmentRequestFormPreview />} />
         // element: <Login />
       },
       {

@@ -89,7 +89,7 @@ class DismissalController {
   async deleteDismissal(req, res, next) {
     try {
       const DismissalService = databaseService.getDismissalService();
-      const id = Number(req.params.id);
+      const id = req.params.id;
       const deletedDismissalMonth = await DismissalService.deleteDismissal(id);
 
       res.status(200).json({ message: `The dismissal for month '${deletedDismissalMonth}' has been successfully deleted` });

@@ -40,7 +40,10 @@ class DismissalService {
         const skip = (+page - 1) * +pageSize
         const take = +pageSize
         const dismissal = await this.prisma.dismissal.findMany({
-          where: dataFillter,
+          where: {
+            ...dataFillter,
+            deleted: false
+          },
           include,
           skip: +skip,
           take: +take,
@@ -264,19 +267,20 @@ class DismissalService {
     }
   }
   async deleteDismissal(id) {
+    
     try {
       const dismissal = await this.prisma.dismissal.findUnique({
-        where: { id }
+        where: { globalId: id }
       })
+            
       if (!dismissal) {
         throw new NotFoundError(`Dismissal with id ${id} not found.`)
       }
-      const dismissalMonth = dismissal.month
 
       return await this.prisma.dismissal.update({
-        where: { id },
+        where: { globalId: id },
         data: {
-          delete: true,
+          deleted: true,
           version: { increment: 1 } // Increment version for conflict resolution
         }
       })

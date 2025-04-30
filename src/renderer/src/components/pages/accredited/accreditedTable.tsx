@@ -92,12 +92,19 @@ export default function AccreditedTable({ info, page, total, pageSize }: Props) 
             <DropdownMenuContent align="end" className="h-17 -mt-[70px] ml-7 min-w-[84.51px] p-0">
               <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                 <ReactToPrint
-                  trigger={() => <button>طباعة</button>}
+                  trigger={() => <button>طباعة كرت</button>}
                   content={() => componentRef.current}
                 />
                 <div className="hidden">
                   <A4LayoutById ref={componentRef} id={row.original.globalId ?? ''} />
                 </div>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link
+                  to={`/accredited/continuingTreatmentRequestFormPreview/${row.original.globalId}`}
+                >
+                  طباعة إستمارة
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                 <Link to={`/UpdateAccredited/${row.original.globalId}`}>تعديل</Link>
