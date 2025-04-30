@@ -49,7 +49,7 @@ class DatabaseService {
     })
     this.cloudPrisma = new PrismaClient({
       datasources: {
-        db: { url: 'postgresql://postgres:123456789@15.207.116.53:5432/hdf?schema=public' }
+        db: { url: 'postgresql://postgres:123456789@15.207.99.228:5432/hdf?schema=public' }
       },
       __internal: {
         engine: {

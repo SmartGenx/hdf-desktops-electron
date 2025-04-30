@@ -123,7 +123,7 @@
 
 
   "build": {
-    "appId": "com.samithabet.autoupdate",
+    "appId": "com.SmartGenx.autoupdate",
     "publish": {
       "provider": "github",
       "owner": "SmartGenx",
