@@ -213,7 +213,8 @@ class AccreditedController {
       const AccreditedService = databaseService.getAccreditedService()
       const accredited = await AccreditedService.getAccreditationById(id)
       const dta = {
-        number: accredited.numberOfRfid
+        number: accredited.numberOfRfid,
+        formNumber: accredited.formNumber
       }
       res.status(200).send(dta)
 
