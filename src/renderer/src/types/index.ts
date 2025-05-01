@@ -29,6 +29,7 @@ export type ApplicantByDirectorateViewModelInfo = {
   state: string
   totalAmount: number
   supportRatio: string
+  formNumber: number
   approvedAmount: number
   Months :string
   year :string
@@ -57,6 +58,7 @@ export type AllAccreditedsForPdfInfo = {
   phoneNumber: string
   orescriptionDate: Date
   renewalDate: Date
+  formNumber: number
   days: number
   Months: number
   state: string

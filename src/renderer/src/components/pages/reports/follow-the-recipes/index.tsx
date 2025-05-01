@@ -70,6 +70,7 @@ export default function FollowTheRecipes() {
     if (AllAccreditedsForPdfPrint?.data) {
       const dataToExport = AllAccreditedsForPdfPrint?.data.map((item) => {
         return {
+          'رقم الاستمارة': item.formNumber,        
           الأسم: item.name,
           'تصنيف المرض': item.disease,
           المنطقة: item.directorate,
