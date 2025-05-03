@@ -8,7 +8,6 @@ import ReactToPrint from 'react-to-print'
 import { useRef } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getApi } from '@renderer/lib/http'
-import { Accrediteds } from '@renderer/types'
 import { useAuthHeader } from 'react-auth-kit'
 type DiseaseApplicant = {
   globalId: string
