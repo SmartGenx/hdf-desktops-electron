@@ -45,7 +45,7 @@ const Home = () => {
           squareGlobalId: squareGlobalId,
           state: state,
           page: page || 1,
-          pageSize: 4
+          pageSize: 10
         },
         headers: {
           Authorization: authToken()
