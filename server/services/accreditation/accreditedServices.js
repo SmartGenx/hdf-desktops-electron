@@ -562,9 +562,11 @@ class AccreditedService {
           phoneNumber: accredited.applicant.phoneNumber,
           state: accredited.state,
           formNumber: accredited.formNumber
+
         }
 
         const Namedirectorate = accredited.applicant.directorate.name
+        const formNumber= accredited.formNumber
 
         const diseaseNames = accredited.applicant.diseasesApplicants
           .map((da) => da.Disease.name)
@@ -597,6 +599,7 @@ class AccreditedService {
 
         return new AccreditedByPrescription(
           applicant,
+          formNumber,
           diseaseNames,
           Namedirectorate,
           prescription,
@@ -630,7 +633,8 @@ class AccreditedService {
         const applicant = {
           name: accredited.applicant.name,
           phoneNumber: accredited.applicant.phoneNumber,
-          state: accredited.state
+          state: accredited.state,
+          formNumber: accredited.formNumber
         }
 
         const Namedirectorate = accredited.applicant.directorate.name
@@ -661,9 +665,11 @@ class AccreditedService {
           prescription.latestPrescriptionDate,
           prescription.renewalDate
         )
+        const formNumber= accredited.formNumber
 
         return new AccreditedByPrescription(
           applicant,
+          formNumber,
           diseaseNames,
           Namedirectorate,
           prescription,

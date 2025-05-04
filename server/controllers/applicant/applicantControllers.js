@@ -20,62 +20,122 @@ class ApplicantController {
     //   next(new ApiError(error.message, error.status))
     // }
   }
-  async getAllApplicantsUseUpdate(dataFillter) {
+
+
+
+  //--
+
+
+  //dont delete
+  async getAllOrSearchApplicants(req, res, next) {
     try {
-      const page = dataFillter?.page
-      const pageSize = dataFillter?.pageSize
-      delete dataFillter?.page
-      delete dataFiltlter?.pageSize
-      let include = dataFillter?.include
-      let orderBy = dataFillter?.orderBy
-      delete dataFillter?.include
-      delete dataFillter?.orderBy
-      if (include) {
-        const convertTopLevel = convertTopLevelStringBooleans(include)
-        include = convertTopLevel
-      } else {
-        include = {}
+      const ApplicantService = databaseService.getApplicantService()
+      const searchTerm = req.query // Assuming the search term comes as a query parameter
+      const applicants = await ApplicantService.getAllApplicants(searchTerm)
+      res.status(200).json(applicants)
+    } catch (error) {
+      next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
+    }
+  }
+  async getAllApplicantsUseUpdate(req, res, next) {
+    try {
+      const ApplicantService = databaseService.getApplicantService()
+      const searchTerm = req.query // Assuming the search term comes as a query parameter
+      const applicants = await ApplicantService.getAllApplicantsUseUpdate(searchTerm)
+      res.status(200).json(applicants)
+    } catch (error) {
+      next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
+    }
+  }
+  // Fetch a single applicant by its ID
+  //--
+  async getApplicantById(req, res, next) {
+    try {
+      const id = req.params.id
+      const ApplicantService = databaseService.getApplicantService()
+      const applicant = await ApplicantService.getApplicantById(id)
+      if (!applicant) {
+        return next(new NotFoundError(`Applicant with id ${id} not found.`))
       }
-      if (dataFillter) {
-        dataFillter = convertEqualsToInt(dataFillter)
-      } else {
-        dataFillter = {}
+      res.status(200).json(applicant)
+    } catch (error) {
+      console.error(error)
+      next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
+    }
+  }
+
+  // Create a new applicant
+  async createApplicant(req, res, next) {
+    const ApplicantService = databaseService.getApplicantService()
+    try {
+      const ApplicantData = req.body
+      // Check if all required fields are present in the request body
+      if (!ApplicantData) {
+        throw new ValidationError('Missing required fields.')
+      }
+      const newApplicant = await ApplicantService.createApplicant(ApplicantData)
+      res.status(201).json(newApplicant)
+    } catch (error) {
+      next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
+    }
+  }
+
+  // Update an existing applicant
+  async updateApplicant(req, res, next) {
+    // try {
+      const ApplicantService = databaseService.getApplicantService()
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        return next(new ValidationError('Validation Failed', errors.array()))
       }
 
-      if (page && pageSize) {
-        const skip = (+page - 1) * +pageSize
-        const take = +pageSize
-        const applicant = await this.prisma.applicant.findMany({
-          where: {
-            ...dataFillter,
+      const id = req.params.id
+      const ApplicantData = req.body
+      const updatedApplicant = await ApplicantService.updateApplicant(id, ApplicantData)
 
-            deleted: false,
-          },
-          include,
-          skip: +skip,
-          take: +take,
-          orderBy
-        })
-        const total = await this.prisma.applicant.count({
-          where: { ...dataFillter, deleted: false }
-        })
-        return {
-          info: applicant,
-          total,
-          page,
-          pageSize
-        }
+      if (!updatedApplicant) {
+        return next(new NotFoundError(`Applicant with id ${id} not found.`))
       }
-      return await this.prisma.applicant.findMany({
-        where: {
-          ...dataFillter,
-          deleted: false,
-        },
-        include,
-        orderBy
+
+      res.status(200).json(updatedApplicant)
+    // } catch (error) {
+    //   next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
+    // }
+  }
+  async updateApplicantAccredited(req, res, next) {
+    try {
+      const ApplicantService = databaseService.getApplicantService()
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        return next(new ValidationError('Validation Failed', errors.array()))
+      }
+
+      const id = Number(req.params.id)
+      const updatedApplicant = await ApplicantService.updateApplicantAccredited(id)
+
+      if (!updatedApplicant) {
+        return next(new NotFoundError(`Applicant with id ${id} not found.`))
+      }
+
+      res.status(200).json(updatedApplicant)
+    } catch (error) {
+      next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
+    }
+  }
+
+  // Delete an applicant by ID
+  //-
+  async deleteApplicant(req, res, next) {
+    try {
+      const ApplicantService = databaseService.getApplicantService()
+      const id = req.params.id
+      const deletedApplicantName = await ApplicantService.deleteApplicant(id)
+
+      res.status(200).json({
+        message: `The applicant '${deletedApplicantName}' has been successfully deleted`
       })
     } catch (error) {
-      throw new DatabaseError('Error retrieving applicants.', error)
+      next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
     }
   }
   //--

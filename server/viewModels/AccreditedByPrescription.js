@@ -1,18 +1,16 @@
 class AccreditedByPrescription {
-  constructor(Applicant,DiseaseName,Namedirectorate,prescription, days,Months) {
+  constructor(Applicant, formNumber, DiseaseName, Namedirectorate, prescription, days, Months) {
     this.name = Applicant.name;
+    this.formNumber = formNumber;
     this.disease = DiseaseName;
     this.directorate = Namedirectorate;
-     this.phoneNumber = Applicant.phoneNumber;
-     this.orescriptionDate = prescription.latestPrescriptionDate;
-     this.renewalDate = prescription.renewalDate;
-     this.days = days;
-     this.Months = Months;
-     this.state=Applicant.state
-  
-
-
+    this.phoneNumber = Applicant.phoneNumber;
+    this.latestPrescriptionDate = prescription.latestPrescriptionDate;
+    this.renewalDate = prescription.renewalDate;
+    this.days = days;
+    this.months = Months;
+    this.state = Applicant.state;
   }
 }
-// , DiseaseName, state, Dismissal,Namedirectorate
+
 module.exports = AccreditedByPrescription;
