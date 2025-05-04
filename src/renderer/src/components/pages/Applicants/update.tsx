@@ -160,11 +160,11 @@ export default function UpdateApplicant() {
     queryKey: ['applicant', id],
     queryFn: () =>
       getApi<ApplicantsInfoResp[]>(`/applicant/${id}`, {
-        params: {
-          'include[directorate]': true,
-          'include[category]': true,
-          'include[diseasesApplicants]': true,
-        },
+        // params: {
+        //   'include[directorate]': true,
+        //   'include[category]': true,
+        //   'include[diseasesApplicants]': true,
+        // },
         headers: {
           Authorization: authToken()
         }
@@ -574,7 +574,7 @@ export default function UpdateApplicant() {
                   </div>
                 </div>
                 <Button type="submit" className="w-[120px] bg-[#196CB0]">
-                  تعديل
+                  حفظ
                 </Button>
               </form>
             </Form>
