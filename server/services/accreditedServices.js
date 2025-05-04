@@ -48,7 +48,6 @@ class AccreditedService {
       })
   
       for (const accredited of accreditations) {
-        // إذا كانت الحالة بالفعل 'موقف'، نتجاوز التحقق من التواريخ ولا نغير حالته
         if (accredited.state === 'موقف') {
           continue
         }
@@ -180,45 +179,42 @@ class AccreditedService {
 
   async getAllAccreditations(dataFillter) {
     try {
-      const page = dataFillter?.page
+      const page     = dataFillter?.page
       const pageSize = dataFillter?.pageSize
       delete dataFillter?.page
       delete dataFillter?.pageSize
+  
       let include = dataFillter?.include
       let orderBy = dataFillter?.orderBy
       delete dataFillter?.include
       delete dataFillter?.orderBy
-      if (include) {
-        const convertTopLevel = convertTopLevelStringBooleans(include)
-        include = convertTopLevel
-      } else {
-        include = {}
+  
+      include = include ? convertTopLevelStringBooleans(include) : {}
+  
+      dataFillter = dataFillter ? convertEqualsToInt(dataFillter) : {}
+  
+      orderBy = {
+        formNumber: 'asc',
+        ...(orderBy ?? {})
       }
-      if (dataFillter) {
-        dataFillter = convertEqualsToInt(dataFillter)
-      } else {
-        dataFillter = {}
-      }
+  
       if (page && pageSize) {
         const skip = (+page - 1) * +pageSize
         const take = +pageSize
+  
         const accredited = await this.prisma.accredited.findMany({
-          where: dataFillter,
+          where:   dataFillter,
           include,
-          skip: +skip,
-          take: +take,
+          skip,
+          take,
           orderBy
         })
-        const total = await this.prisma.accredited.count({
-          where: dataFillter
-        })
-        return {
-          info: accredited,
-          total,
-          page,
-          pageSize
-        }
+  
+        const total = await this.prisma.accredited.count({ where: dataFillter })
+  
+        return { info: accredited, total, page, pageSize }
       }
+  
       return await this.prisma.accredited.findMany({
         where: dataFillter,
         include,
@@ -228,6 +224,7 @@ class AccreditedService {
       throw new DatabaseError('Error searching accreditations.', error)
     }
   }
+  
 
   async getAccreditationById(id) {
     try {
@@ -351,7 +348,7 @@ class AccreditedService {
         const accreited = await prisma.accredited.create({
           data: {
             numberOfRfid: +numberOfRfid,
-            formNumber: formNumber,
+            formNumber: +formNumber,
             ...rest,
             globalId: globalId
           }
@@ -422,7 +419,7 @@ class AccreditedService {
       where: { globalId: id },
       data: {
         numberOfRfid: numberOfRfid ? +numberOfRfid : accreditexsting.numberOfRfid,
-        formNumber: formNumber ? formNumber : accreditexsting.formNumber,
+        formNumber: formNumber ? +formNumber : accreditexsting.formNumber,
 
         ...rest
       }
@@ -532,12 +529,13 @@ class AccreditedService {
     if (page && pageSize) {
       const skip = (page - 1) * pageSize
       const take = pageSize
-
+      const orderBy = {
+        formNumber: 'asc',            
+        ...(dataFilter?.orderBy ?? {})
+      }
       const Accredited = await this.prisma.accredited.findMany({
         where:
-
-          dataFilter,
-
+        { ...(dataFilter ?? {}) },
         include: {
           prescription: true,
           applicant: {
@@ -562,7 +560,8 @@ class AccreditedService {
         const applicant = {
           name: accredited.applicant.name,
           phoneNumber: accredited.applicant.phoneNumber,
-          state: accredited.state
+          state: accredited.state,
+          formNumber: accredited.formNumber
         }
 
         const Namedirectorate = accredited.applicant.directorate.name

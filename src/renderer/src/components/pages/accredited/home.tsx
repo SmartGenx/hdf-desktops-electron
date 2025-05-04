@@ -39,6 +39,7 @@ const Home = () => {
           'include[applicant]': true,
           'include[square]': true,
           'applicant[name][contains]': query,
+          'orderBy[formNumber]':'asc',
           doctor: doctor,
           treatmentSite: treatmentSite,
           squareGlobalId: squareGlobalId,

@@ -88,69 +88,89 @@ class ApplicantService {
 
   async getApplicantMonthlyGenderCounts() {
     try {
-      const accredited = await this.prisma.accredited.findMany({
-        where: {
-          deleted: false
-          // accredited: false,
-        },
+      // جلب جميع سجلات الصرف
+      const dismissals = await this.prisma.dismissal.findMany({
+        where: { deleted: false },
         include: {
-          applicant: {
-            select: {
-              gender: true,
-              submissionDate: true
+          Accredited: {
+            include: {
+              applicant: {
+                select: {
+                  gender: true,
+                  submissionDate: true
+                }
+              },
+              square: {
+                select: {
+                  name: true
+                }
+              }
             }
           }
         }
       })
-
+  
       let malesCounts = new Array(12).fill(0)
       let femalesCounts = new Array(12).fill(0)
-
-      accredited.forEach((accreditedItem) => {
-        const month = accreditedItem.applicant.submissionDate?.getMonth()
-        if (accreditedItem.applicant.gender === 'M') {
-          malesCounts[month]++
-        } else if (accreditedItem.applicant.gender === 'F') {
-          femalesCounts[month]++
-        }
-      })
-
-      let monthlyCounts = malesCounts.map((maleCount, index) => ({
-        month: index + 1, // Convert from 0-indexed to 1-indexed
-        males: maleCount,
-        females: femalesCounts[index]
-      }))
-      //
-      const getAccreditBySquare = await this.prisma.square.findMany({
-        where: {
-          deleted: false
-        },
-        select: {
-          name: true,
-          _count: {
-            select: { Accredited: true }
+      let squareMap = {}
+  
+      // تجميع البيانات
+      dismissals.forEach((dismissal) => {
+        const accredited = dismissal.Accredited
+        const applicant = accredited?.applicant
+        const squareName = accredited?.square?.name
+  
+        if (applicant?.submissionDate) {
+          const month = applicant.submissionDate.getMonth() // 0-based
+  
+          if (applicant.gender === 'M') {
+            malesCounts[month]++
+          } else if (applicant.gender === 'F') {
+            femalesCounts[month]++
+          }
+  
+          if (squareName) {
+            squareMap[squareName] = (squareMap[squareName] || 0) + 1
           }
         }
       })
-
-      const result = getAccreditBySquare.map((square) => ({
-        name: square.name,
-        count: square._count.Accredited
+  
+      const monthlyCounts = malesCounts.map((maleCount, index) => ({
+        month: index + 1, // 1-based
+        males: maleCount,
+        females: femalesCounts[index]
       }))
-      const accreditCount = await this.prisma.accredited.count({
-        where: { deleted: false }
-      })
+  
+      const result = Object.entries(squareMap).map(([name, count]) => ({
+        name,
+        count
+      }))
+  
+      const accreditCount = dismissals.length // العدد الفعلي للمستفيدين الذين تم الصرف لهم
+  
       return { monthlyCounts, result, accreditCount }
     } catch (error) {
-      throw new DatabaseError('Failed to fetch applicant monthly gender counts', error)
+      throw new DatabaseError('Failed to fetch actual applicant monthly gender counts', error)
     }
   }
+  
 
   async getApplicantById(id) {
     try {
+
+      const existingApplicant = await this.prisma.Applicant.findUnique({
+        where: { globalId: id }
+      })
+
+      if (!existingApplicant) {
+        throw new NotFoundError(`Applicant with id ${id} not found.`)
+      }
       const applicant = await this.prisma.applicant.findUnique({
         where: { globalId: id },
-        include: { category: true }
+        include: { category: true ,
+                  directorate:true,
+                  diseasesApplicants:true,
+        },
       })
 
       if (!applicant) {
