@@ -22,7 +22,6 @@ class WhatsAppService {
     this.client.removeAllListeners('auth_failure');
 
     this.client.on('qr', async (qr) => {
-      console.log('تم استقبال رمز QR، امسح الرمز باستخدام تطبيق واتساب على هاتفك:');
       try {
         const dataUrl = await QRCode.toDataURL(qr);
         this.qrCodeData = dataUrl;
