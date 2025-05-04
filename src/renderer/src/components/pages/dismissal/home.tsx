@@ -42,7 +42,7 @@ const Dismissal = () => {
           year: year,
           state: state,
           page: page || 1,
-          pageSize: 5
+          pageSize: 10
         },
         headers: {
           Authorization: authToken()
