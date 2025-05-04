@@ -37,7 +37,16 @@ class ApplicantController {
       next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
     }
   }
-
+  async getAllApplicantsUseUpdate(req, res, next) {
+    try {
+      const ApplicantService = databaseService.getApplicantService()
+      const searchTerm = req.query // Assuming the search term comes as a query parameter
+      const applicants = await ApplicantService.getAllApplicantsUseUpdate(searchTerm)
+      res.status(200).json(applicants)
+    } catch (error) {
+      next(new ApiError(500, 'InternalServer', 'Internal Server Error'))
+    }
+  }
   // Fetch a single applicant by its ID
   //--
   async getApplicantById(req, res, next) {

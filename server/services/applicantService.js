@@ -74,7 +74,64 @@ class ApplicantService {
       throw new DatabaseError('Error retrieving applicants.', error)
     }
   }
+  async getAllApplicantsUseUpdate(dataFillter) {
+    try {
+      const page = dataFillter?.page
+      const pageSize = dataFillter?.pageSize
+      delete dataFillter?.page
+      delete dataFillter?.pageSize
+      let include = dataFillter?.include
+      let orderBy = dataFillter?.orderBy
+      delete dataFillter?.include
+      delete dataFillter?.orderBy
+      if (include) {
+        const convertTopLevel = convertTopLevelStringBooleans(include)
+        include = convertTopLevel
+      } else {
+        include = {}
+      }
+      if (dataFillter) {
+        dataFillter = convertEqualsToInt(dataFillter)
+      } else {
+        dataFillter = {}
+      }
 
+      if (page && pageSize) {
+        const skip = (+page - 1) * +pageSize
+        const take = +pageSize
+        const applicant = await this.prisma.applicant.findMany({
+          where: {
+            ...dataFillter,
+
+            deleted: false,
+          },
+          include,
+          skip: +skip,
+          take: +take,
+          orderBy
+        })
+        const total = await this.prisma.applicant.count({
+          where: { ...dataFillter, deleted: false }
+        })
+        return {
+          info: applicant,
+          total,
+          page,
+          pageSize
+        }
+      }
+      return await this.prisma.applicant.findMany({
+        where: {
+          ...dataFillter,
+          deleted: false,
+        },
+        include,
+        orderBy
+      })
+    } catch (error) {
+      throw new DatabaseError('Error retrieving applicants.', error)
+    }
+  }
   async countAllApplicants() {
     try {
       const count = await this.prisma.applicant.count({

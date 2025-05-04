@@ -11,6 +11,8 @@ applicantRouter.put('/ApplicantAccredited/:id', ApplicantController.updateApplic
 
 // Get all applicants
 applicantRouter.get('/', ApplicantController.getAllOrSearchApplicants);
+applicantRouter.get('/update', ApplicantController.getAllApplicantsUseUpdate);
+
 applicantRouter.get('/ApplicantByDirectorateViewModel', ApplicantController.getAllAccreditedAfterDismissal);
 applicantRouter.get('/applicantsReportCategory', ApplicantController.ApplicantReportCategory);
 applicantRouter.get('/count', ApplicantController.countAllApplicants);
