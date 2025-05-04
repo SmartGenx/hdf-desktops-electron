@@ -2,21 +2,21 @@ const { PrismaClient } = require('@prisma/client')
 const util = require('util')
 const dns = require('dns')
 const dnsLookup = util.promisify(dns.lookup)
-const AuthService = require('../server/services/AuthService') // Adjust this path as necessary
-const GovernorateService = require('../server/services/governorateService') // Adjust this path as necessary
-const DirectorateService = require('../server/services/directorateService') // Adjust this path as necessary
-const CategoryService = require('../server/services/categoryService') // Adjust this path as necessary
-const ApplicantService = require('../server/services/applicantService') // Adjust this path as necessary
+const AuthService = require('./services/user/AuthService') // Adjust this path as necessary
+const GovernorateService = require('./services/systemSetting/governorateService') // Adjust this path as necessary
+const DirectorateService = require('./services/systemSetting/directorateService') // Adjust this path as necessary
+const CategoryService = require('../server/services/systemSetting/categoryService') // Adjust this path as necessary
+const ApplicantService = require('../server/services/applicant/applicantService') // Adjust this path as necessary
 const SquareServices = require('../server/services/squareServices') // Adjust this path as necessary
-const PharmacyService = require('../server/services/pharmacyService') // Adjust this path as necessary
-const DismissalServices = require('../server/services/dismissalServices') // Adjust this path as necessary
-const AccreditedServices = require('../server/services/accreditedServices') // Adjust this path as necessary
+const PharmacyService = require('./services/systemSetting/pharmacyService') // Adjust this path as necessary
+const DismissalServices = require('./services/dismissal/dismissalServices') // Adjust this path as necessary
+const AccreditedServices = require('./services/accreditation/accreditedServices') // Adjust this path as necessary
 const DiseasesApplicantsServices = require('../server/services/diseasesApplicantsServices') // Adjust this path as necessary
-const DiseaseServices = require('../server/services/diseaseServices') // Adjust this path as necessary
-const RoleServices = require('../server/services/roleServices') // Adjust this path as necessary
-const PrescriptionService = require('../server/services/prescriptionServices') // Adjust this path as necessary
-const AttachmentServiceService = require('../server/services/attachmentServices') // Adjust this path as necessary
-const statisticsServices = require('../server/services/statisticsServices') // Adjust this path as necessary
+const DiseaseServices = require('./services/systemSetting/diseaseServices') // Adjust this path as necessary
+const RoleServices = require('./services/user/roleServices') // Adjust this path as necessary
+const PrescriptionService = require('./services/accreditation/prescriptionServices') // Adjust this path as necessary
+const AttachmentServiceService = require('./services/attachment/attachmentServices') // Adjust this path as necessary
+const statisticsServices = require('./services/reports/statisticsServices') // Adjust this path as necessary
 const backupServices = require('../server/services/backupServices') // Adjust this path as necessary
 const { v4 } = require('uuid') // Make sure to import uuid
 const bcrypt = require('bcryptjs')
@@ -43,7 +43,7 @@ class DatabaseService {
 
         // db: { url: 'postgresql://postgres:123@localhost:5432/hdf-production?schema=public' }
         // db: { url: 'postgresql://postgres:123456789@15.207.116.53:5432/hdf-production?schema=public' }
-        db: { url: 'postgresql://postgres:123@localhost:5432/hdf?schema=public' }
+        db: { url: 'postgresql://postgres:0000@localhost:5432/hdf-production?schema=public' }
 
       }
     })

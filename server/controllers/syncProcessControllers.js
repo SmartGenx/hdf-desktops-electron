@@ -2,10 +2,10 @@ const { synchronizeAll } = require('../syncProcess');
 const { databaseService } = require('../database');
 
 const { validationResult } = require('express-validator');
-const ApiError = require('../errors/ApiError');
-const DatabaseError = require('../errors/DatabaseError');
-const ValidationError = require('../errors/ValidationError');
-const NotFoundError = require('../errors/NotFoundError');
+const ApiError = require('../../errors/ApiError')
+const DatabaseError = require('../../errors/DatabaseError')
+const ValidationError = require('../../errors/ValidationError')
+const NotFoundError = require('../../errors/NotFoundError')
 
 class syncProcessControllers {
   // Fetch all squares
