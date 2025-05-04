@@ -11,7 +11,7 @@ import { HdfTable } from '../../tables/hdfTable'
 import { AccreditedInfo } from '../../../types/index'
 import { Button } from '../../ui/button'
 import DeleteDialog from '@renderer/components/ui/delete-dailog'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import ReactToPrint from 'react-to-print'
 import A4LayoutById from './print-card-id'
 type Props = {
@@ -22,6 +22,8 @@ type Props = {
 }
 export default function AccreditedTable({ info, page, total, pageSize }: Props) {
   const componentRef = React.useRef<HTMLDivElement>(null)
+  const navigate = useNavigate();
+
   const columns = React.useMemo<ColumnDef<AccreditedInfo>[]>(
     () => [
       {
@@ -106,8 +108,11 @@ export default function AccreditedTable({ info, page, total, pageSize }: Props) 
                   طباعة إستمارة
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+              {/* <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                 <Link to={`/UpdateAccredited/${row.original.globalId}`}>تعديل</Link>
+              </DropdownMenuItem> */}
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                <Link to={`/UpdateApplicant/${row.original.applicant?.globalId}`}> تعديل المتقدم</Link>
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                 <DeleteDialog
@@ -130,6 +135,9 @@ export default function AccreditedTable({ info, page, total, pageSize }: Props) 
       page={page.toString()}
       total={Number(total)}
       pageSize={Number(pageSize)}
+      onRowClick={(_, { original }) => {
+        navigate(`/UpdateAccredited/${original.globalId}`)
+      }}
     />
   )
 }

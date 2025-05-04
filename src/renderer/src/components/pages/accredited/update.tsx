@@ -587,7 +587,7 @@ export default function UpdateAccredited() {
               </div>
               <div className="flex justify-end gap-4 ">
                 <Button type="submit" className="w-[120px] bg-[#196CB0] hover:bg-[#2b4d68]">
-                  تعديل
+                  حفظ
                 </Button>
                 <Button
                   variant="outline"

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { ColumnDef } from '@tanstack/react-table'
 import { MoreVertical } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,6 +19,8 @@ type Props = {
   total: number
 }
 export default function StateTable({ info, page, total, pageSize }: Props) {
+  const navigate = useNavigate();
+
   const columns = React.useMemo<ColumnDef<ApplicantsInfo>[]>(
     () => [
       {
@@ -76,9 +78,9 @@ export default function StateTable({ info, page, total, pageSize }: Props) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="h-17 -mt-[70px] ml-7 min-w-[84.51px] p-0">
-              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+              {/* <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                 <Link to={`/UpdateApplicant/${row.original.globalId}`}>تعديل</Link>
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
               <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                 <DeleteDialog
                   url={`/applicant/${row.original?.globalId}`}
@@ -100,6 +102,9 @@ export default function StateTable({ info, page, total, pageSize }: Props) {
       page={page.toString()}
       total={Number(total)}
       pageSize={Number(pageSize)}
+      onRowClick={(_, { original }) => {
+        navigate(`/UpdateApplicant/${original.globalId}`)
+      }}
     />
   )
 }

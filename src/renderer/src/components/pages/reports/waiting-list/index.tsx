@@ -35,7 +35,7 @@ export default function WaitingList() {
           'directorate[name][contains]': directorate,
           'diseasesApplicants[some][Disease][name]': dieases,
           page: page || 1,
-          pageSize: 4
+          pageSize: 10
         },
         headers: {
           Authorization: authToken()
