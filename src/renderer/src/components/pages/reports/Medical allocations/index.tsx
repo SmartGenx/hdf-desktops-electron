@@ -55,7 +55,7 @@ export default function MedicalAllocationsIndex() {
           month: month,
           year: year,
           page: page || 1,
-          pageSize: 4
+          pageSize: 10
         },
         headers: {
           Authorization: authToken()
