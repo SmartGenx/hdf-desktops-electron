@@ -91,7 +91,7 @@ export default function FollowTheRecipes() {
     const worksheet = XLSX.utils.json_to_sheet(dataPrint)
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1')
 
-    const fileName = 'تقرير متابعة الوصفات.xlsx'
+    const fileName = `${new Date().toISOString().split('T')[0]}_تقرير متابعة الوصفات.xlsx`
     XLSX.writeFile(workbook, fileName)
   }
 
