@@ -157,9 +157,20 @@ class ApplicantService {
 
   async getApplicantById(id) {
     try {
+
+      const existingApplicant = await this.prisma.Applicant.findUnique({
+        where: { globalId: id }
+      })
+
+      if (!existingApplicant) {
+        throw new NotFoundError(`Applicant with id ${id} not found.`)
+      }
       const applicant = await this.prisma.applicant.findUnique({
         where: { globalId: id },
-        include: { category: true }
+        include: { category: true ,
+                  directorate:true,
+                  diseasesApplicants:true,
+        },
       })
 
       if (!applicant) {
