@@ -1,6 +1,6 @@
-const DatabaseError = require('../../errors/DatabaseError')
-const ValidationError = require('../../errors/ValidationError')
-const NotFoundError = require('../../errors/NotFoundError')
+const DatabaseError = require('../../../errors/DatabaseError')
+const ValidationError = require('../../../errors/ValidationError')
+const NotFoundError = require('../../../errors/NotFoundError')
 const { v4: uuidv4 } = require('uuid');
 class DiseasesApplicantsService {
   constructor(prisma) {

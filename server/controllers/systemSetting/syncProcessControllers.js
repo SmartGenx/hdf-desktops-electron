@@ -1,5 +1,5 @@
-const { synchronizeAll } = require('../syncProcess');
-const { databaseService } = require('../database');
+const { synchronizeAll } = require('../../syncProcess');
+const { databaseService } = require('../../database');
 
 const { validationResult } = require('express-validator');
 const ApiError = require('../../errors/ApiError')
