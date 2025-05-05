@@ -134,9 +134,11 @@ export default function UpdateAccredited() {
         numberOfRfid: String(accredited?.data[0].numberOfRfid),
         applicantGlobalId: accredited?.data[0].applicantGlobalId,
         pharmacyGlobalId: accredited?.data[0].pharmacyGlobalId,
-        prescriptionDate: new Date(accredited?.data[0].prescription[0].prescriptionDate)
-          .toISOString()
-          .split('T')[0],
+        prescriptionDate: accredited?.data[0].prescription[0].prescriptionDate
+          ? new Date(accredited?.data[0].prescription[0].prescriptionDate)
+              .toISOString()
+              .split('T')[0]
+          : '',
         squareGlobalId: accredited?.data[0].squareGlobalId,
         type: accredited?.data[0].type,
         state: accredited?.data[0].state

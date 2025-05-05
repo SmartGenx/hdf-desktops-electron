@@ -337,9 +337,11 @@ const ContinuingTreatmentRequestFormPreview = () => {
                 <span className="text-right">تاريخ الوصفة الطبية:</span>
                 <div className="mr-2 w-32 border-b border-dashed border-gray-400">
                   <span className="mr-2">
-                    {new Date(prescription.data.prescription[0].prescriptionDate).toLocaleDateString(
-                      'en-GB'
-                    )}
+                    {prescription.data.prescription[0].prescriptionDate
+                      ? new Date(
+                          prescription.data.prescription[0].prescriptionDate
+                        ).toLocaleDateString('en-GB')
+                      : ''}
                   </span>
                 </div>
               </div>
@@ -347,9 +349,11 @@ const ContinuingTreatmentRequestFormPreview = () => {
                 <span className="text-right">تاريخ التجديد:</span>
                 <div className="mr-2 w-32 border-b border-dashed border-gray-400">
                   <span className="mr-2">
-                    {new Date(prescription.data.prescription[0].renewalDate).toLocaleDateString(
-                      'en-GB'
-                    )}
+                    {prescription.data.prescription[0].renewalDate
+                      ? new Date(prescription.data.prescription[0].renewalDate).toLocaleDateString(
+                          'en-GB'
+                        )
+                      : ''}
                   </span>
                 </div>
               </div>
