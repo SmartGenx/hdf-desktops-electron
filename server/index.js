@@ -44,8 +44,8 @@ const startServer = async () => {
       console.error('Sync process error:', error);
     });
 
-    // const profileDir = path.join(process.env.PROFILE_DIR || 'D:', 'Profiles');
-    const profileDir = path.join(process.env.PROFILE_DIR || '/home/pc-11', 'Profiles');
+    const profileDir = path.join(process.env.PROFILE_DIR || 'D:', 'Profiles');
+    // const profileDir = path.join(process.env.PROFILE_DIR || '/home/pc-11', 'Profiles');
 
     await ensureProfileDirExists(profileDir);
 

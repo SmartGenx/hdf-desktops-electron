@@ -43,7 +43,7 @@ class DatabaseService {
 
         // db: { url: 'postgresql://postgres:123@localhost:5432/hdf-production?schema=public' }
         // db: { url: 'postgresql://postgres:123456789@15.207.116.53:5432/hdf-production?schema=public' }
-        db: { url: 'postgresql://postgres:0000@localhost:5432/hdf-production?schema=public' }
+        db: { url: 'postgresql://postgres:123@localhost:5432/hdf?schema=public' }
 
       }
     })

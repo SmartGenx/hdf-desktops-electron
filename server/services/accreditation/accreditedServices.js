@@ -733,18 +733,26 @@ class AccreditedService {
         throw new NotFoundError(`Accreditation with id ${id} not found.`);
       }
   
-      const processedDiseases = allDiseases.map(disease => ({
-        globalId: disease.globalId,
-        name: disease.name,
+      const processedDiseases = allDiseases.map(d => ({
+        globalId: d.globalId,
+        name: d.name,
         cheacked: accreditation.applicant.diseasesApplicants
-          .some(da => da.Disease.globalId === disease.globalId)
+          .some(da => da.Disease.globalId === d.globalId)
+      }));
+      const processedSquares = allSquares.map(s => ({
+        globalId: s.globalId,
+        name: s.name,
+        cheacked: accreditation.square?.globalId === s.globalId
       }));
   
-      const processedSquares = allSquares.map(square => ({
-        globalId: square.globalId,
-        name: square.name,
-        cheacked: accreditation.square?.globalId === square.globalId
-      }));
+      const diseasesChecked = processedDiseases.filter(d => d.cheacked);
+      const squaresChecked  = processedSquares.filter(s => s.cheacked);
+  
+      const diseasesFirst3False = processedDiseases.filter(d => !d.cheacked).slice(0, 3);
+      const squaresFirst3False  = processedSquares.filter(s => !s.cheacked).slice(0, 3);
+  
+      const diseasesResult = [...diseasesChecked, ...diseasesFirst3False];
+      const squaresResult  = [...squaresChecked,  ...squaresFirst3False];
   
       return {
         ...accreditation,
@@ -753,15 +761,16 @@ class AccreditedService {
           directorateName: accreditation.applicant.directorate.name,
           governorateName: accreditation.applicant.directorate.Governorate.name,
           categoryName: accreditation.applicant.category.name,
-          diseasesApplicants: processedDiseases
+          diseasesApplicants: diseasesResult
         },
-        square: processedSquares
+        square: squaresResult
       };
   
     } catch (error) {
       throw new DatabaseError('Error retrieving accreditation.', error);
     }
   }
+  
 }
 
 module.exports = AccreditedService

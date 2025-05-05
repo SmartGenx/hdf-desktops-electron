@@ -144,71 +144,64 @@ class ApplicantService {
     }
   }
 
+
   async getApplicantMonthlyGenderCounts() {
     try {
-      // جلب جميع سجلات الصرف
-      const dismissals = await this.prisma.dismissal.findMany({
-        where: { deleted: false },
+      const accredited = await this.prisma.accredited.findMany({
+        where: {
+          deleted: false
+          // accredited: false,
+        },
         include: {
-          Accredited: {
-            include: {
-              applicant: {
-                select: {
-                  gender: true,
-                  submissionDate: true
-                }
-              },
-              square: {
-                select: {
-                  name: true
-                }
-              }
+          applicant: {
+            select: {
+              gender: true,
+              submissionDate: true
             }
           }
         }
       })
-  
+
       let malesCounts = new Array(12).fill(0)
       let femalesCounts = new Array(12).fill(0)
-      let squareMap = {}
-  
-      // تجميع البيانات
-      dismissals.forEach((dismissal) => {
-        const accredited = dismissal.Accredited
-        const applicant = accredited?.applicant
-        const squareName = accredited?.square?.name
-  
-        if (applicant?.submissionDate) {
-          const month = applicant.submissionDate.getMonth() // 0-based
-  
-          if (applicant.gender === 'M') {
-            malesCounts[month]++
-          } else if (applicant.gender === 'F') {
-            femalesCounts[month]++
-          }
-  
-          if (squareName) {
-            squareMap[squareName] = (squareMap[squareName] || 0) + 1
-          }
+
+      accredited.forEach((accreditedItem) => {
+        const month = accreditedItem.applicant.submissionDate?.getMonth()
+        if (accreditedItem.applicant.gender === 'M') {
+          malesCounts[month]++
+        } else if (accreditedItem.applicant.gender === 'F') {
+          femalesCounts[month]++
         }
       })
-  
-      const monthlyCounts = malesCounts.map((maleCount, index) => ({
-        month: index + 1, // 1-based
+
+      let monthlyCounts = malesCounts.map((maleCount, index) => ({
+        month: index + 1, // Convert from 0-indexed to 1-indexed
         males: maleCount,
         females: femalesCounts[index]
       }))
-  
-      const result = Object.entries(squareMap).map(([name, count]) => ({
-        name,
-        count
+      //
+      const getAccreditBySquare = await this.prisma.square.findMany({
+        where: {
+          deleted: false
+        },
+        select: {
+          name: true,
+          _count: {
+            select: { Accredited: true }
+          }
+        }
+      })
+
+      const result = getAccreditBySquare.map((square) => ({
+        name: square.name,
+        count: square._count.Accredited
       }))
-  
-      const accreditCount = dismissals.length // العدد الفعلي للمستفيدين الذين تم الصرف لهم
-  
+      const accreditCount = await this.prisma.accredited.count({
+        where: { deleted: false }
+      })
       return { monthlyCounts, result, accreditCount }
     } catch (error) {
-      throw new DatabaseError('Failed to fetch actual applicant monthly gender counts', error)
+      throw new DatabaseError('Failed to fetch applicant monthly gender counts', error)
     }
   }
   
