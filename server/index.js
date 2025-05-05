@@ -45,6 +45,7 @@ const startServer = async () => {
     });
 
     // const profileDir = path.join(process.env.PROFILE_DIR || '/home/pc1', 'Profiles');
+
     const profileDir = path.join(process.env.PROFILE_DIR || 'D:', 'Profiles');
 
     await ensureProfileDirExists(profileDir);

@@ -223,9 +223,9 @@ const ContinuingTreatmentRequestFormPreview = () => {
           <div className="border-b p-4">
             <h3 className="mb-4 text-right font-bold">البيانات الشخصية:</h3>
             <div className="grid grid-cols-3 gap-1">
-              <div className="flex items-center">
-                <span className="text-right">الاسم:</span>
-                <div className="mr-2 w-32 border-b border-dashed border-gray-400">
+              <div className="flex items-center col-span-2">
+                <span className="text-right ">الاسم:</span>
+                <div className="mr-2 min-w-80 border-b border-dashed border-gray-400">
                   {prescription.data.applicant.name}
                 </div>
               </div>
