@@ -1,6 +1,6 @@
 const Router = require("express");
 const diseasesApplicantsRouter = Router();
-const DiseasesApplicantsController = require("../../../controllers/diseasesApplicantsControllers"); // Ensure you have a DiseasesApplicantsController
+const DiseasesApplicantsController = require("../../../controllers/applicant/diseasesApplicants/diseasesApplicantsControllers"); // Ensure you have a DiseasesApplicantsController
 
 // Create a new diseases applicants entry
 diseasesApplicantsRouter.post('/', DiseasesApplicantsController.createDiseasesApplicants);

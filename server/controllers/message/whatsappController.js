@@ -1,6 +1,6 @@
 // src/controllers/whatsapp.controller.js
 
-const whatsappService = require('../../services/whatsappService');
+const whatsappService = require('../../services/message/whatsappService');
 
 class WhatsAppController {
  

@@ -1,5 +1,5 @@
 const Router = require('express');
-const syncProcessControllers = require('../controllers/syncProcessControllers');
+const syncProcessControllers = require('../../controllers/systemSetting/syncProcessControllers');
 
 
 const syncProcessRouter = Router();

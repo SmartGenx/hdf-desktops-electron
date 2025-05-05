@@ -15,7 +15,7 @@ const { roleRouter } = require('./user/roleRoutes')
 const { attachmentRouter } = require('./attachment/attachmentRoutes')
 const { statisticsRouter } = require('./reports/statisticsRoutes')
 const { backUpRouter } = require('./backUp/backUpRoutes')
-const {syncProcessRouter} = require('./syncProcessRoutes')
+const {syncProcessRouter} = require('../routes/systemSetting/syncProcessRoutes')
 const  whatsappRouter  = require('./message/whatsappRoutes');
 
 const rootRouter = express.Router()
