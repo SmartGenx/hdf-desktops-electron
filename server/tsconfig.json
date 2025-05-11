@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "rootDir": ".",           
+    "outDir": "./dist",       
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "sourceMap": true
+  },
+  "include": ["*.ts", "**/*.ts", "database.ts"],
+  "exclude": ["node_modules", "dist"]
+}

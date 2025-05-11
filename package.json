@@ -1,8 +1,6 @@
 {
   "name": "HDF",
-
   "version": "v1.0.3",
-
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
   "author": "SMART_GENX",
@@ -77,6 +75,7 @@
     "react-to-print": "^2.15.1",
     "tailwindcss-animate": "^1.0.7",
     "util": "^0.12.5",
+    "uuid": "^11.1.0",
     "vaul": "^0.9.1",
     "xlsx": "^0.18.5"
   },
@@ -114,14 +113,10 @@
   "resolutions": {
     "cli-table3": "^0.6.2"
   },
-
-
   "repository": {
     "type": "git",
     "url": "https://github.com/SmartGenx/hdf-desktops-electron.git"
   },
-
-
   "build": {
     "appId": "com.SmartGenx.autoupdate",
     "publish": {
