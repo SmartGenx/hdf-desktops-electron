@@ -2,7 +2,10 @@ import * as React from 'react'
 import { ColumnDef } from '@tanstack/react-table'
 import { AllAccreditedsForPdfInfo } from '../../../../types/index'
 import { ReportsTable } from '@renderer/components/tables/report-table'
-
+function formatDate(value: unknown) {
+  const d = new Date(String(value))
+  return isNaN(d.getTime()) ? '' : d.toISOString().split('T')[0]
+}
 type Props = {
   info: AllAccreditedsForPdfInfo[]
   page: string
@@ -44,20 +47,14 @@ export default function FollowReceiptTable({ info, page, total, pageSize }: Prop
         cell: ({ row }) => row.original.phoneNumber
       },
       {
-        accessorKey: '',
         header: 'تاريخ التشخيص',
-        cell: ({ row }) => {
-          const date = new Date(row.original.orescriptionDate).toISOString().split('T')[0]
-          return date
-        }
+        accessorKey: 'orescriptionDate',
+        cell: ({ getValue }) => formatDate(getValue())
       },
       {
-        accessorKey: '',
         header: 'تاريخ التجديد',
-        cell: ({ row }) => {
-          const date = new Date(row.original.renewalDate).toISOString().split('T')[0]
-          return date
-        }
+        accessorKey: 'renewalDate',
+        cell: ({ getValue }) => formatDate(getValue())
       },
       {
         accessorKey: '',

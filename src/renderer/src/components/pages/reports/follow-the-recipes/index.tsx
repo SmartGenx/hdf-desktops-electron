@@ -37,7 +37,7 @@ export default function FollowTheRecipes() {
           'applicant[diseasesApplicants][some][Disease][name][contains]': dieases,
           'state[contains]': state,
           page: page || 1,
-          pageSize: 4
+          pageSize: 10
         },
         headers: {
           Authorization: authToken()
@@ -70,6 +70,7 @@ export default function FollowTheRecipes() {
     if (AllAccreditedsForPdfPrint?.data) {
       const dataToExport = AllAccreditedsForPdfPrint?.data.map((item) => {
         return {
+          'رقم الاستمارة': item.formNumber,        
           الأسم: item.name,
           'تصنيف المرض': item.disease,
           المنطقة: item.directorate,
@@ -90,7 +91,7 @@ export default function FollowTheRecipes() {
     const worksheet = XLSX.utils.json_to_sheet(dataPrint)
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1')
 
-    const fileName = 'تقرير متابعة الوصفات.xlsx'
+    const fileName = `${new Date().toISOString().split('T')[0]}_تقرير متابعة الوصفات.xlsx`
     XLSX.writeFile(workbook, fileName)
   }
 

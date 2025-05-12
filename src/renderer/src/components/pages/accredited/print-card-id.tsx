@@ -34,6 +34,8 @@ const A4LayoutById = forwardRef<HTMLDivElement, { id: string }>((props, ref) => 
 
 export default A4LayoutById
 const Card = ({ value,formNumber }) => {
+  console.log(formNumber);
+  
   return (
     <div className="bg-white border min-h-44 border-gray-300 p-4 flex flex-col items-center justify-center">
       <div className="flex justify-between w-full font-black">

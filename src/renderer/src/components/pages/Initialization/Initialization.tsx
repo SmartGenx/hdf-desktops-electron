@@ -13,37 +13,37 @@ import { useNavigate } from 'react-router-dom'
 const subTabs = [
   {
     value: 'category',
-    title: 'إضافة فئة',
+    title: ' الفئات',
     content: <Category />,
     icon: <InfoIcon color="#434749" />
   },
   {
     value: 'governorate',
-    title: 'إضافة محافظة',
+    title: ' المحافظات',
     content: <Governorate />,
     icon: <InfoIcon color="#434749" />
   },
   {
     value: 'directorate',
-    title: 'إضافة مديرية',
+    title: ' المديريات',
     content: <Directorate />,
     icon: <InfoIcon color="#434749" />
   },
   {
     value: 'square',
-    title: 'إضافة مربع',
+    title: ' المربعات',
     content: <Square />,
     icon: <InfoIcon color="#434749" />
   },
   {
     value: 'pharmacy',
-    title: 'إضافة صيدلية',
+    title: ' الصيدليات',
     content: <Pharmacy />,
     icon: ''
   },
   {
     value: 'disease',
-    title: 'إضافة مرض',
+    title: ' الامراض',
     content: <Disease />,
     icon: ''
   }

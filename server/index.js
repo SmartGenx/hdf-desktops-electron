@@ -18,6 +18,7 @@ const corsOptions = {
 const app = express();
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use('/api', rootRouter)
 
 async function ensureProfileDirExists(profileDir) {
@@ -43,7 +44,10 @@ const startServer = async () => {
       console.error('Sync process error:', error);
     });
 
+    // const profileDir = path.join(process.env.PROFILE_DIR || '/home/pc1', 'Profiles');
+
     const profileDir = path.join(process.env.PROFILE_DIR || 'D:', 'Profiles');
+
     await ensureProfileDirExists(profileDir);
 
     const PORT = process.env.PORT || 5050;

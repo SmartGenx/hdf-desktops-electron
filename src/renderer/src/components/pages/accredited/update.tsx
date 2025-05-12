@@ -134,9 +134,11 @@ export default function UpdateAccredited() {
         numberOfRfid: String(accredited?.data[0].numberOfRfid),
         applicantGlobalId: accredited?.data[0].applicantGlobalId,
         pharmacyGlobalId: accredited?.data[0].pharmacyGlobalId,
-        prescriptionDate: new Date(accredited?.data[0].prescription[0].prescriptionDate)
-          .toISOString()
-          .split('T')[0],
+        prescriptionDate: accredited?.data[0].prescription[0].prescriptionDate
+          ? new Date(accredited?.data[0].prescription[0].prescriptionDate)
+              .toISOString()
+              .split('T')[0]
+          : '',
         squareGlobalId: accredited?.data[0].squareGlobalId,
         type: accredited?.data[0].type,
         state: accredited?.data[0].state
@@ -587,7 +589,7 @@ export default function UpdateAccredited() {
               </div>
               <div className="flex justify-end gap-4 ">
                 <Button type="submit" className="w-[120px] bg-[#196CB0] hover:bg-[#2b4d68]">
-                  تعديل
+                  حفظ
                 </Button>
                 <Button
                   variant="outline"

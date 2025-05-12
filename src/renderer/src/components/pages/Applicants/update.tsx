@@ -159,12 +159,13 @@ export default function UpdateApplicant() {
   const { isPending, data: applicants } = useQuery({
     queryKey: ['applicant', id],
     queryFn: () =>
-      getApi<ApplicantsInfoResp[]>(`/applicant`, {
+      getApi<ApplicantsInfoResp[]>(`/applicant/update`, {
         params: {
           'include[directorate]': true,
           'include[category]': true,
           'include[diseasesApplicants]': true,
-          globalId: id
+           'globalId': id
+
         },
         headers: {
           Authorization: authToken()
@@ -575,7 +576,7 @@ export default function UpdateApplicant() {
                   </div>
                 </div>
                 <Button type="submit" className="w-[120px] bg-[#196CB0]">
-                  تعديل
+                  حفظ
                 </Button>
               </form>
             </Form>

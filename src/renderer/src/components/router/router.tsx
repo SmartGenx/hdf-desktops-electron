@@ -13,9 +13,11 @@ import FormDismissal from '../pages/dismissal/formDismissal'
 import ProtectedRoute from '../layouts/protected-route'
 import UpdateApplicant from '../pages/Applicants/update'
 import ReportIndex from '../pages/reports'
+import WhatsAppIndex  from '../pages/whatsApp'
 import UpdateAccredited from '../pages/accredited/update'
 import BackUpIndex from '../pages/backup'
 import EditDismissal from '../pages/dismissal/edit-dismissal'
+import ContinuingTreatmentRequestFormPreview from '../pages/accredited/ContinuingTreatmentRequestFormPreview'
 
 export const router = createHashRouter([
   {
@@ -67,6 +69,11 @@ export const router = createHashRouter([
         // element: <Login />
       },
       {
+        path: '/accredited/continuingTreatmentRequestFormPreview/:id',
+        element: <ProtectedRoute element={<ContinuingTreatmentRequestFormPreview />} />
+        // element: <Login />
+      },
+      {
         path: '/logout',
         element: <ProtectedRoute element={<Login />} />
         // element: <Login />
@@ -94,6 +101,11 @@ export const router = createHashRouter([
       {
         path: '/Reports',
         element: <ProtectedRoute element={<ReportIndex />} />
+        // element: <Login />
+      },
+      {
+        path: '/whatsApp',
+        element: <ProtectedRoute element={<WhatsAppIndex />} />
         // element: <Login />
       },
       {

@@ -55,7 +55,7 @@ export default function MedicalAllocationsIndex() {
           month: month,
           year: year,
           page: page || 1,
-          pageSize: 4
+          pageSize: 10
         },
         headers: {
           Authorization: authToken()
@@ -96,12 +96,13 @@ export default function MedicalAllocationsIndex() {
     if (ApplicantByDirectorateViewModelDataCard?.data) {
       const dataToExport = ApplicantByDirectorateViewModelDataCard?.data.map((item) => {
         return {
-          الأسم: item.name,
+          'رقم الاستمارة': item.formNumber,        
+          'الأسم': item.name,
           '	الجنس': item.gender,
           'تصنيف المرض': item.disease,
-          المنطقة: item.directorate,
-          الجوال: item.phoneNumber,
-          الحاله: item.state,
+          'المنطقة': item.directorate,
+          'الجوال': item.phoneNumber,
+          'الحاله': item.state,
           'تكلفة العلاج': item.totalAmount,
           'نسبة الخصم': item.supportRatio,
           'مساهمة المؤسسة	': item.totalAmount - item.approvedAmount,

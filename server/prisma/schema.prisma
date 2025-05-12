@@ -6,7 +6,7 @@ datasource db {
   provider = "postgresql"
 
 
-  url      = "postgresql://postgres:123@localhost:5432/hdf-production?schema=public"
+  url      = "postgresql://postgres:0000@localhost:5432/hdf-production?schema=public"
   // url = env("DATABASE_URL")
 }
 
@@ -55,7 +55,7 @@ model Accredited {
   doctor            String
   state             String
   numberOfRfid      Int
-  formNumber        Int
+  formNumber        Int?
   deleted           Boolean        @default(false)
   applicantGlobalId String
   pharmacyGlobalId  String

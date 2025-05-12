@@ -39,12 +39,13 @@ const Home = () => {
           'include[applicant]': true,
           'include[square]': true,
           'applicant[name][contains]': query,
+          'orderBy[formNumber]':'asc',
           doctor: doctor,
           treatmentSite: treatmentSite,
           squareGlobalId: squareGlobalId,
           state: state,
           page: page || 1,
-          pageSize: 4
+          pageSize: 10
         },
         headers: {
           Authorization: authToken()
@@ -90,7 +91,6 @@ const Home = () => {
         <div className="flex gap-7">
           <AccreditedSearch />
           <FilterDrawer />
-       
           <ReactToPrint
             trigger={() => (
               <button className="bg-[#196CB0] flex items-center text-white rounded-lg hover:bg-[#2d5372] px-3 focus:ring-[#2d5372]">
