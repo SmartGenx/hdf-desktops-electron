@@ -6,8 +6,7 @@ import dotenv from 'dotenv';
 import util from 'util';
 import fs from 'fs';
 import { rootRouter } from "../server/routes/index"
-// import { databaseService } from './database'; // تأكد من صحة المسار
-
+import { databaseService } from './database'; 
 dotenv.config();
 
 const mkdir = util.promisify(fs.mkdir);
@@ -39,13 +38,13 @@ async function ensureProfileDirExists(profileDir: string): Promise<void> {
 
 const startServer = async (): Promise<void> => {
   try {
-    // await databaseService.switchDatabaseBasedOnConnectivity();
-    // await databaseService.user();
+    await databaseService.switchDatabaseBasedOnConnectivity();
+    await databaseService.user();
 
-    // const syncProcess = fork(path.join(__dirname, 'syncProcess.js'));
-    // syncProcess.on('error', (error: Error) => {
-    //   console.error('Sync process error:', error);
-    // });
+    const syncProcess = fork(path.join(__dirname, 'syncProcess.js'));
+    syncProcess.on('error', (error: Error) => {
+      console.error('Sync process error:', error);
+    });
 
     const profileDir = path.join(process.env.PROFILE_DIR || '/home/pc-13', 'Profiles');
     await ensureProfileDirExists(profileDir);
