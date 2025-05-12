@@ -1,7 +1,7 @@
-import { databaseService } from './database';
+import { databaseService, ModelName } from './database';
 
 const synchronizeAllTables = async (): Promise<void> => {
-  const tables: string[] = [
+  const tables: ModelName[] = [
     'role',
     'user',
     'category',
