@@ -1,13 +1,14 @@
-const { databaseService } = require('../../database'); // Adjust the import path as needed
-const { validationResult } = require('express-validator');
-const ApiError = require('../../errors/ApiError');
-const DatabaseError = require('../../errors/DatabaseError');
-const ValidationError = require('../../errors/ValidationError');
-const NotFoundError = require('../../errors/NotFoundError');
+import { Request, Response, NextFunction } from 'express';
+import { databaseService } from '../../database';
+import { validationResult } from 'express-validator';
+import {ApiError} from '../../errors/ApiError';
+import DatabaseError from '../../errors/DatabaseError';
+import {ValidationError} from '../../errors/ValidationError';
+import NotFoundError from '../../errors/NotFoundError';
 
 class DismissalController {
   // Fetch all dismissals
-  async getAllDismissals(req, res, next) {
+  async getAllDismissals(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const DismissalService = databaseService.getDismissalService();
       const filterdata = req.query;
@@ -19,26 +20,23 @@ class DismissalController {
     }
   }
 
-  async createDismissal(req, res, next) {
+  async createDismissal(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const DismissalService = databaseService.getDismissalService();
-      const DismissalData = req.body
+      const DismissalData = req.body;
       const dismissals = await DismissalService.createDismissal(DismissalData);
-
-
       res.status(201).json(dismissals);
     } catch (error) {
       console.error(error);
       next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
     }
   }
-  async checkDismissal(req, res, next) {
+
+  async checkDismissal(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const DismissalService = databaseService.getDismissalService();
-      const DismissalData = req.body
+      const DismissalData = req.body;
       const dismissals = await DismissalService.checkDismissal(DismissalData);
-
-
       res.status(201).json(dismissals);
     } catch (error) {
       console.error(error);
@@ -47,7 +45,7 @@ class DismissalController {
   }
 
   // Fetch a single dismissal by its ID
-  async getDismissalById(req, res, next) {
+  async getDismissalById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id = req.params.id;
       const DismissalService = databaseService.getDismissalService();
@@ -63,22 +61,19 @@ class DismissalController {
   }
 
   // Update an existing dismissal
-  async updateDismissal(req, res, next) {
+  async updateDismissal(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const DismissalService = databaseService.getDismissalService();
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return next(new ValidationError('Validation Failed', errors.array()));
       }
-
       const id = req.params.id;
-      const DismissalDatat = req.body;
-      const updatedDismissal = await DismissalService.updateDismissal(id, DismissalDatat);
-
+      const DismissalData = req.body;
+      const updatedDismissal = await DismissalService.updateDismissal(id, DismissalData);
       if (!updatedDismissal) {
         return next(new NotFoundError(`Dismissal with id ${id} not found.`));
       }
-
       res.status(200).json(updatedDismissal);
     } catch (error) {
       next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
@@ -86,17 +81,18 @@ class DismissalController {
   }
 
   // Delete a dismissal by ID
-  async deleteDismissal(req, res, next) {
+  async deleteDismissal(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const DismissalService = databaseService.getDismissalService();
       const id = req.params.id;
       const deletedDismissalMonth = await DismissalService.deleteDismissal(id);
-
-      res.status(200).json({ message: `The dismissal for month '${deletedDismissalMonth}' has been successfully deleted` });
+      res.status(200).json({
+        message: `The dismissal for month '${deletedDismissalMonth}' has been successfully deleted`
+      });
     } catch (error) {
       next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
     }
   }
 }
 
-module.exports = new DismissalController();
+export default new DismissalController();
