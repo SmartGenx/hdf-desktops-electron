@@ -71,9 +71,9 @@ app.whenReady().then(() => {
   let serverPath = ''
 
   if (is.dev) {
-    serverPath = join(__dirname, '../../server/index.js')
+    serverPath = join(__dirname, '../../server/index.ts')
   } else {
-    serverPath = join(__dirname, '../../../server/index.js')
+    serverPath = join(__dirname, '../../../server/index.ts')
   }
   // dialog.showMessageBox({
   //   type: 'info',
@@ -86,8 +86,9 @@ app.whenReady().then(() => {
   // } // const serverPath = resolve(__dirname, '../../server/index')
   console.log(`Starting server with path: ${serverPath}`)
 
-  const serverProcess = spawn('node', [serverPath], {
-    stdio: 'inherit', // Passes stdio to the parent process, useful for debugging
+  const serverProcess = spawn('ts-node', [serverPath], {
+    stdio: 'inherit', // Passes stdio to the parent process, useful for debugging    "start": "ts-node index.ts"
+    shell: true,
     windowsHide: true
   })
 

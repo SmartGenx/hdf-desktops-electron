@@ -24,7 +24,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/api', rootRouter);
 
-// دالة لضمان وجود مجلد الملفات الشخصية
 async function ensureProfileDirExists(profileDir: string): Promise<void> {
   try {
     await mkdir(profileDir);
