@@ -5,6 +5,23 @@ export type FilterObject = Record<string, any>;
  * @param filters - The filters object to process.
  * @returns The processed filters object with string numbers converted.
  */
+
+export function convertEqualsToInt(obj: Record<string, any>): Record<string, any> {
+  const result: Record<string, any> = {}
+  for (const key in obj) {
+    const value = obj[key]
+
+    if (
+      typeof value === 'string' &&
+      value.match(/^(\d+)$/) // تحقق إن كانت قيمة رقمية صحيحة
+    ) {
+      result[key] = parseInt(value, 10)
+    } else {
+      result[key] = value
+    }
+  }
+  return result
+}
 export function convertStringNumbers(filters: FilterObject): FilterObject {
   const result: FilterObject = {};
 

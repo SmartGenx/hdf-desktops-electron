@@ -5,8 +5,8 @@ interface Applicant {
 }
 
 interface Prescription {
-  latestPrescriptionDate: Date;
-  renewalDate: Date;
+  latestPrescriptionDate: Date | null;
+  renewalDate: Date | null;
 }
 
 export class AccreditedByPrescription {
@@ -15,8 +15,8 @@ export class AccreditedByPrescription {
   disease: string;
   directorate: string;
   phoneNumber: string;
-  latestPrescriptionDate: Date;
-  renewalDate: Date;
+  latestPrescriptionDate: Date | null;
+  renewalDate: Date | null;
   days: number;
   months: string;
   state: string;

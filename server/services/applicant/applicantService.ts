@@ -1,10 +1,46 @@
-import { PrismaClient, Applicant } from '@prisma/client';
+import { PrismaClient, Applicant, Prisma } from '@prisma/client';
 import DatabaseError from '../../errors/DatabaseError';
 import NotFoundError from '../../errors/NotFoundError';
 import { v4 as uuidv4 } from 'uuid';
 import { convertTopLevelStringBooleans } from '../../utilty/convertTopLevelStringBooleans';
 import { convertStringNumbers } from '../../utilty/convertToInt';
+import { convertEqualsToInt } from '../../utilty/convertToInt'
+import { ApplicantByDirectorateViewModel } from '../../viewModels/ApplicantByDirectorateViewModel';
 
+interface DataFilter {
+  page?: number
+  pageSize?: number
+  include?: Record<string, string | boolean>
+  orderBy?: Prisma.ApplicantOrderByWithRelationInput
+  [key: string]: any
+}
+interface MonthlyCount {
+  month: number
+  males: number
+  females: number
+}
+
+interface SquareCount {
+  name: string
+  count: number
+}
+export interface ApplicantGenderStats {
+  monthlyCounts: MonthlyCount[]
+  result: SquareCount[]
+  accreditCount: number
+}
+
+interface DismissalSummary {
+  totalAmount: number
+  approvedAmount: number
+}
+
+interface ApplicantInfo {
+  name: string
+  gender: string
+  phoneNumber: string
+  numberOfRfid: number
+}
 export default class ApplicantService {
   private prisma: PrismaClient;
 
@@ -40,6 +76,156 @@ export default class ApplicantService {
       });
     } catch (error) {
       throw new DatabaseError('Error retrieving applicants.', error);
+    }
+  }
+
+  async getAllApplicantsUseUpdate(dataFilter: DataFilter): Promise<
+  | {
+      info: Applicant[]
+      total: number
+      page: number
+      pageSize: number
+    }
+  | Applicant[]
+    > {
+  try {
+    const page = dataFilter.page
+    const pageSize = dataFilter.pageSize
+    delete dataFilter.page
+    delete dataFilter.pageSize
+
+    let include: Prisma.ApplicantInclude = {}
+    if (dataFilter.include) {
+      include = convertTopLevelStringBooleans(dataFilter.include)
+      delete dataFilter.include
+    }
+
+    const orderBy = dataFilter.orderBy ?? { createdAt: 'desc' }
+    delete dataFilter.orderBy
+
+    const where: Prisma.ApplicantWhereInput = {
+      ...convertEqualsToInt(dataFilter),
+      deleted: false,
+    }
+
+    if (page && pageSize) {
+      const skip = (page - 1) * pageSize
+      const take = pageSize
+
+      const [applicants, total] = await Promise.all([
+        this.prisma.applicant.findMany({
+          where,
+          include,
+          orderBy,
+          skip,
+          take,
+        }),
+        this.prisma.applicant.count({ where }),
+      ])
+
+      return {
+        info: applicants,
+        total,
+        page,
+        pageSize,
+      }
+    }
+
+    return await this.prisma.applicant.findMany({
+      where,
+      include,
+      orderBy,
+    })
+  } catch (error) {
+    throw new DatabaseError('Error retrieving applicants.', error)
+  }
+  }
+
+  async countAllApplicants(): Promise<number> {
+    try {
+      const count = await this.prisma.applicant.count({
+        where: {
+          accredited: false,
+          deleted: false,
+        },
+      })
+      return count
+    } catch (error) {
+      throw new DatabaseError('Error counting applicants.', error)
+    }
+  }
+
+  async getApplicantMonthlyGenderCounts(): Promise<ApplicantGenderStats> {
+    try {
+      const accredited = await this.prisma.accredited.findMany({
+        where: {
+          deleted: false,
+        },
+        include: {
+          applicant: {
+            select: {
+              gender: true,
+              submissionDate: true,
+            },
+          },
+        },
+      })
+
+      const malesCounts = new Array(12).fill(0)
+      const femalesCounts = new Array(12).fill(0)
+
+      accredited.forEach((item) => {
+        const submissionDate = item.applicant?.submissionDate
+        const gender = item.applicant?.gender
+
+        if (submissionDate) {
+          const month = submissionDate.getMonth() // 0 to 11
+          if (gender === 'M') {
+            malesCounts[month]++
+          } else if (gender === 'F') {
+            femalesCounts[month]++
+          }
+        }
+      })
+
+      const monthlyCounts: MonthlyCount[] = malesCounts.map((maleCount, index) => ({
+        month: index + 1,
+        males: maleCount,
+        females: femalesCounts[index],
+      }))
+
+      const getAccreditBySquare = await this.prisma.square.findMany({
+        where: {
+          deleted: false,
+        },
+        select: {
+          name: true,
+          _count: {
+            select: {
+              Accredited: true,
+            },
+          },
+        },
+      })
+
+      const result: SquareCount[] = getAccreditBySquare.map((square) => ({
+        name: square.name,
+        count: square._count.Accredited,
+      }))
+
+      const accreditCount = await this.prisma.accredited.count({
+        where: {
+          deleted: false,
+        },
+      })
+
+      return {
+        monthlyCounts,
+        result,
+        accreditCount,
+      }
+    } catch (error) {
+      throw new DatabaseError('Failed to fetch applicant monthly gender counts', error)
     }
   }
 
@@ -128,6 +314,37 @@ export default class ApplicantService {
     }
   }
 
+  async updateApplicantAccredited(id: string): Promise<Applicant> {
+    try {
+      const existingApplicant = await this.prisma.applicant.findUnique({
+        where: { globalId: id },
+      })
+
+      if (!existingApplicant) {
+        throw new NotFoundError(`Applicant with id ${id} not found.`)
+      }
+
+      // Update accredited status and increment version
+      await this.prisma.applicant.update({
+        where: { globalId: id },
+        data: {
+          accredited: true,
+          version: { increment: 1 },
+        },
+      })
+
+      // Delete the applicant (soft delete not used here)
+      return await this.prisma.applicant.delete({
+        where: { globalId: id },
+      })
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        throw error
+      }
+      throw new DatabaseError('Error updating and deleting applicant.', error)
+    }
+  }
+
   async deleteApplicant(id: string) {
     try {
       const applicant = await this.prisma.applicant.findUnique({ where: { globalId: id } });
@@ -139,6 +356,72 @@ export default class ApplicantService {
       });
     } catch (error) {
       throw new DatabaseError('Error deleting applicant.', error);
+    }
+  }
+
+  async getApplicantReportByDirectorate(directorateId: number): Promise<ApplicantByDirectorateViewModel[]> {
+    try {
+      const accreditedList = await this.prisma.accredited.findMany({
+        where: {
+          applicant: {
+            directorate: {
+              id: directorateId,
+            },
+          },
+        },
+        include: {
+          dismissal: true,
+          applicant: {
+            include: {
+              directorate: true,
+              category: true,
+              diseasesApplicants: {
+                include: {
+                  Disease: true,
+                },
+              },
+            },
+          },
+        },
+      })
+
+      const reports = accreditedList.map((accredited) => {
+        const applicant = accredited.applicant
+        const state = accredited.state
+        const namedDirectorate = applicant.directorate.name
+        const nameCategory = `${applicant.category.SupportRatio}%`
+
+        const diseaseNames = applicant.diseasesApplicants
+          .map((da) => da.Disease.name)
+          .join(', ')
+
+        const totalAmount = accredited.dismissal
+          .map((d) => d.totalAmount)
+          .reduce((acc, curr) => acc + curr, 0)
+
+        const approvedAmount = accredited.dismissal
+          .map((d) => d.approvedAmount)
+          .reduce((acc, curr) => acc + curr, 0)
+
+        const createdAt = accredited.createdAt // 👈 أو أي تاريخ تود استخدامه
+        const month = createdAt.toLocaleString('default', { month: 'long' }) // مثال: "January"
+        const year = createdAt.getFullYear()
+
+        return new ApplicantByDirectorateViewModel(
+          applicant,
+          diseaseNames,
+          namedDirectorate,
+          state,
+          { totalAmount, approvedAmount },
+          nameCategory,
+          month,
+          year
+        )
+      })
+
+      return reports
+    } catch (error) {
+      throw new DatabaseError('Error retrieving applicant report by directorate.', error)
     }
   }
 }
