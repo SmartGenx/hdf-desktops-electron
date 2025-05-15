@@ -15,8 +15,8 @@ import { roleRouter } from './user/roleRoutes';
 import { attachmentRouter } from './attachment/attachmentRoutes';
 import { statisticsRouter } from './reports/statisticsRoutes';
 import { backUpRouter } from './backUp/backUpRoutes';
-import { syncProcessRouter } from './systemSetting/syncProcessRoutes'; // ✅ عدلت المسار
-import { whatsappRouter } from './message/whatsappRoutes'; // ✅ تأكد من الاسم الصحيح
+import { syncProcessRouter } from './systemSetting/syncProcessRoutes'; 
+import whatsappRouter  from './message/whatsappRoutes'; 
 
 const rootRouter: Router = express.Router();
 
@@ -37,6 +37,6 @@ rootRouter.use('/role', roleRouter);
 rootRouter.use('/statistics', statisticsRouter);
 rootRouter.use('/backUp', backUpRouter);
 rootRouter.use('/syncProcess', syncProcessRouter);
-rootRouter.use('/wahtsApp', whatsappRouter); // ✅ تأكد من تهجئة 'whatsapp'
+rootRouter.use('/wahtsApp', whatsappRouter); 
 
 export { rootRouter };
