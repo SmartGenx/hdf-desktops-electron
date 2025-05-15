@@ -1,6 +1,7 @@
-const Router = require("express");
+import { Router } from "express";
+import SquareController from "../../controllers/systemSetting/squareControllers";
+
 const squareRouter = Router();
-const SquareController = require("../../controllers/systemSetting/squareControllers"); // Ensure you have a SquareController
 
 // Create a new square
 squareRouter.post('/', SquareController.createSquare);
@@ -17,4 +18,4 @@ squareRouter.get('/:id', SquareController.getSquareById);
 // Delete a square by ID
 squareRouter.delete('/:id', SquareController.deleteSquare);
 
-module.exports = { squareRouter }; // Export the router directly with the correct case
+export { squareRouter };

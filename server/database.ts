@@ -96,7 +96,7 @@ class DatabaseService {
           // prefer env, fallback to hard-coded localhost
           url:
             process.env.LOCAL_DATABASE_URL ??
-            'postgresql://postgres:0000@localhost:5432/hdf-production?schema=public'
+            'postgresql://postgres:123@localhost:5432/hdf-production?schema=public'
         }
       }
     })

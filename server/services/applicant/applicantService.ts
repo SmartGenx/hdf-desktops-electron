@@ -6,6 +6,7 @@ import { convertTopLevelStringBooleans } from '../../utilty/convertTopLevelStrin
 import { convertStringNumbers } from '../../utilty/convertToInt';
 import { convertEqualsToInt } from '../../utilty/convertToInt'
 import { ApplicantByDirectorateViewModel } from '../../viewModels/ApplicantByDirectorateViewModel';
+import { ApplicantByCategoryViewModel } from '../../viewModels/ApplicantByCategoryViewModel';
 
 interface DataFilter {
   page?: number
@@ -422,6 +423,241 @@ export default class ApplicantService {
       return reports
     } catch (error) {
       throw new DatabaseError('Error retrieving applicant report by directorate.', error)
+    }
+  }
+
+  async getAllAccreditedAfterDismissal(filterParams: any): Promise<any> {
+    const page = filterParams?.page;
+    const pageSize = filterParams?.pageSize;
+    // Remove pagination from filterParams
+    delete filterParams?.page;
+    delete filterParams?.pageSize;
+    if (page && pageSize) {
+      const skip = (+page - 1) * +pageSize;
+      const take = +pageSize;
+      try {
+        const dismissal = await this.prisma.dismissal.findMany({
+          where: filterParams,
+          include: {
+            Accredited: {
+              include: {
+                square: true,
+                applicant: {
+                  include: {
+                    directorate: true,
+                    category: true,
+                    diseasesApplicants: {
+                      include: {
+                        Disease: true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          skip: skip,
+          take: take
+        });
+        const total = await this.prisma.dismissal.count({
+          where: filterParams
+        });
+        const reports = dismissal.map((dismissalItem: any) => {
+          const applicant = {
+            name: dismissalItem.Accredited.applicant.name,
+            gender: dismissalItem.Accredited.applicant.gender,
+            phoneNumber: dismissalItem.Accredited.applicant.phoneNumber,
+            numberOfRfid: dismissalItem.Accredited.applicant.phoneNumber
+          };
+          const Month = dismissalItem.month;
+          const year = dismissalItem.year;
+          console.log('🚀 ~ ApplicantService ~ reports ~ Month:', Month);
+          const state = dismissalItem.Accredited.state;
+          const Namedirectorate = dismissalItem.Accredited.applicant.directorate.name;
+          const Namecategory = dismissalItem.Accredited.applicant.category.SupportRatio + '%';
+          const dismissals = {
+            totalAmount: dismissalItem.totalAmount,
+            approvedAmount: dismissalItem.amountPaid
+          };
+          return new ApplicantByDirectorateViewModel(
+            applicant,
+            dismissalItem.Accredited.applicant.diseasesApplicants
+              .map((da: any) => da.Disease.name)
+              .join(', '),
+            Namedirectorate,
+            state,
+            dismissals,
+            Namecategory,
+            Month,
+            year
+          );
+        });
+
+        return {
+          info: reports,
+          total: total,
+          page: page,
+          pageSize: pageSize
+        };
+      } catch (error) {
+        throw new DatabaseError('Error deleting accreditation.', error);
+      }
+    } else {
+      const dismissal = await this.prisma.dismissal.findMany({
+        where: filterParams,
+        include: {
+          Accredited: {
+            include: {
+              square: true,
+              applicant: {
+                include: {
+                  directorate: true,
+                  category: true,
+                  diseasesApplicants: {
+                    include: {
+                      Disease: true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+      const reports = dismissal.map((dismissalItem: any) => {
+        const applicant = {
+          name: dismissalItem.Accredited.applicant.name,
+          gender: dismissalItem.Accredited.applicant.gender,
+          phoneNumber: dismissalItem.Accredited.applicant.phoneNumber,
+          numberOfRfid: dismissalItem.Accredited.applicant.phoneNumber
+        };
+        const Month = dismissalItem.month;
+        const year = dismissalItem.year;
+        const state = dismissalItem.Accredited.state;
+        const Namedirectorate = dismissalItem.Accredited.applicant.directorate.name;
+        const Namecategory = dismissalItem.Accredited.applicant.category.SupportRatio + '%';
+        const diseaseNames = dismissalItem.Accredited.applicant.diseasesApplicants
+          .map((da: any) => da.Disease.name)
+          .join(', ');
+        const dismissals = {
+          totalAmount: dismissalItem.totalAmount,
+          approvedAmount: dismissalItem.amountPaid
+        };
+        return new ApplicantByDirectorateViewModel(
+          applicant,
+          diseaseNames,
+          Namedirectorate,
+          state,
+          dismissals,
+          Namecategory,
+          Month,
+          year
+        );
+      });
+      return reports;
+    }
+  }
+
+  async ApplicantByCategory(applicantfilter: any): Promise<any> {
+    try {
+      const page = applicantfilter?.page;
+      const pageSize = applicantfilter?.pageSize;
+      delete applicantfilter?.page;
+      delete applicantfilter?.pageSize;
+
+      if (page && pageSize) {
+        const skip = (+page - 1) * +pageSize;
+        const take = +pageSize;
+        const Applicant = await this.prisma.applicant.findMany({
+          where: {
+            ...applicantfilter,
+            accredited: false,
+            deleted: false
+          },
+          include: {
+            directorate: true,
+            category: true,
+            diseasesApplicants: {
+              include: {
+                Disease: true
+              }
+            }
+          },
+          skip: skip,
+          take: take
+        });
+        const total = await this.prisma.applicant.count({
+          where: {
+            ...applicantfilter,
+            accredited: false,
+            deleted: false
+          }
+        });
+        const reports = Applicant.map((Applican: any) => {
+          const applicant = {
+            name: Applican.name,
+            submissionDate: Applican.submissionDate.toISOString().split('T')[0],
+            phoneNumber: Applican.phoneNumber
+          };
+          const categoryName = Applican.category.name;
+          const Namedirectorate = Applican.directorate.name;
+          const diseaseNames = Applican.diseasesApplicants
+            .map((da: any) => da.Disease.name)
+            .join(', ');
+          return new ApplicantByCategoryViewModel(
+            applicant,
+            diseaseNames,
+            Namedirectorate,
+            categoryName
+          );
+        });
+
+        return {
+          info: reports,
+          total: total,
+          page: page,
+          pageSize: pageSize
+        };
+      } else {
+        const Applicant = await this.prisma.applicant.findMany({
+          where: {
+            ...applicantfilter,
+            accredited: false,
+            deleted: false
+          },
+          include: {
+            directorate: true,
+            category: true,
+            diseasesApplicants: {
+              include: {
+                Disease: true
+              }
+            }
+          }
+        });
+        const reports = Applicant.map((Applican: any) => {
+          const applicant = {
+            name: Applican.name,
+            submissionDate: Applican.submissionDate.toISOString().split('T')[0],
+            phoneNumber: Applican.phoneNumber
+          };
+          const categoryName = Applican.category.name;
+          const Namedirectorate = Applican.directorate.name;
+          const diseaseNames = Applican.diseasesApplicants
+            .map((da: any) => da.Disease.name)
+            .join(', ');
+          return new ApplicantByCategoryViewModel(
+            applicant,
+            diseaseNames,
+            Namedirectorate,
+            categoryName
+          );
+        });
+        return reports;
+      }
+    } catch (error) {
+      console.error('Error fetching applicant report:', error);
+      throw new DatabaseError('Error deleting accreditation.', error);
     }
   }
 }

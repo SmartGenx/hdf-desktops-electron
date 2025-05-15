@@ -1,6 +1,7 @@
-const Router = require("express");
+import { Router } from "express";
+import PharmacyController from "../../controllers/systemSetting/pharmacyControllers";
+
 const pharmacyRouter = Router();
-const PharmacyController = require("../../controllers/systemSetting/pharmacyControllers"); // Ensure you have a PharmacyController
 
 // Create a new pharmacy
 pharmacyRouter.post('/', PharmacyController.createPharmacy);
@@ -17,4 +18,4 @@ pharmacyRouter.get('/:id', PharmacyController.getPharmacyById);
 // Delete a pharmacy by ID
 pharmacyRouter.delete('/:id', PharmacyController.deletePharmacy);
 
-module.exports = { pharmacyRouter }; // Export the router directly with the correct case
+export { pharmacyRouter };

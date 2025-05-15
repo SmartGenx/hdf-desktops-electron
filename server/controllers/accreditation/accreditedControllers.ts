@@ -38,12 +38,13 @@ class AccreditedController {
     try {
       const { squareId, location, docter, state } = req.query;
       const squareIdv = parseInt(squareId as string, 10);
+      const stateNum = state !== undefined ? parseInt(state as string, 10) : undefined;
       const accreditedRecords = await
        this.accreditedService.filterAccreditedByDateAndLocation(
         squareIdv,
         location as string,
         docter as string,
-        state as string
+        stateNum
       );
       res.json(accreditedRecords);
     } catch (error) {
@@ -182,7 +183,7 @@ class AccreditedController {
 
   async AccreditedByPrescription(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const Accredited = await this.accreditedService.AccreditedByPrescriptionServer();
+      const Accredited = await this.accreditedService.AccreditedByPrescriptionServer({});
       res.status(200).json(Accredited);
     } catch (error) {
       next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
@@ -193,23 +194,34 @@ class AccreditedController {
     try {
       const id = req.params.id;
       const accredited = await this.accreditedService.getAccreditationById(id);
+      if (!accredited) {
+        return next(new NotFoundError(`Accreditation with id ${id} not found.`));
+      }
       const dta = {
         number: accredited.numberOfRfid,
         formNumber: accredited.formNumber
       };
       res.status(200).send(dta);
     } catch (error) {
-      next(new ApiError(500, 'InternalServer', error instanceof Error ? error.message : error));
+      next(new ApiError(500, 'InternalServer', error instanceof Error ? error.message : String(error)));
     }
   }
 
   async exportAllBarcodeCardToPDF(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const accrediteds = await this.accreditedService.getAllAccreditations();
-      const card = accrediteds.map(data => ({
-        number: data.numberOfRfid,
-        formNumber: data.formNumber
-      }));
+      const accrediteds = await this.accreditedService.getAllAccreditations({});
+      let card: { number: number; formNumber: number | null }[] = [];
+      if (Array.isArray(accrediteds)) {
+        card = accrediteds.map(data => ({
+          number: data.numberOfRfid,
+          formNumber: data.formNumber
+        }));
+      } else if (accrediteds && Array.isArray((accrediteds as any).info)) {
+        card = (accrediteds as any).info.map((data: any) => ({
+          number: data.numberOfRfid,
+          formNumber: data.formNumber
+        }));
+      }
       res.status(200).json(card);
     } catch (error) {
       next(new ApiError(500, 'InternalServer', 'Internal Server Error'));

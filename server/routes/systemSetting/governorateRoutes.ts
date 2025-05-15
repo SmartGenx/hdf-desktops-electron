@@ -1,5 +1,5 @@
-const { Router } = require("express");
-const GovernorateController = require("../../controllers/systemSetting/governorateControllers"); // Ensure you have a GovernorateController
+import { Router } from "express";
+import GovernorateController from "../../controllers/systemSetting/governorateControllers";
 
 const governorateRouter = Router();
 
@@ -18,4 +18,4 @@ governorateRouter.get('/:id', GovernorateController.getGovernorateById);
 // Delete a governorate by ID
 governorateRouter.delete('/:id', GovernorateController.deleteGovernorate);
 
-module.exports = { governorateRouter };
+export { governorateRouter };

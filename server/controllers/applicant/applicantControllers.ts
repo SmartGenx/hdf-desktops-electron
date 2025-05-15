@@ -103,7 +103,7 @@ class ApplicantController {
       if (!errors.isEmpty()) {
         return next(new ValidationError('Validation Failed', errors.array()));
       }
-      const id = Number(req.params.id);
+      const id = req.params.id;
       const updatedApplicant = await ApplicantService.updateApplicantAccredited(id);
       if (!updatedApplicant) {
         return next(new NotFoundError(`Applicant with id ${id} not found.`));

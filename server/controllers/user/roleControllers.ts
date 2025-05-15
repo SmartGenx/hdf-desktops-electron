@@ -62,8 +62,8 @@ class RoleController {
       }
 
       const id: number = Number(req.params.id);
-      const { name, synchronized, deleted } = req.body;
-      const updatedRole = await RoleService.updateRole(id, name, synchronized, deleted);
+      const { name, deleted } = req.body;
+      const updatedRole = await RoleService.updateRole(id, name, deleted);
       if (!updatedRole) {
         return next(new NotFoundError(`Role with id ${id} not found.`));
       }

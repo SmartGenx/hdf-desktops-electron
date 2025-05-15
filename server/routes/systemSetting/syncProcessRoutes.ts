@@ -1,6 +1,5 @@
-const Router = require('express');
-const syncProcessControllers = require('../../controllers/systemSetting/syncProcessControllers');
-
+import { Router } from 'express';
+import syncProcessControllers from '../../controllers/systemSetting/syncProcessControllers';
 
 const syncProcessRouter = Router();
 
@@ -9,5 +8,4 @@ const syncProcessRouter = Router();
 syncProcessRouter.post('/', syncProcessControllers.synchronizeAll);
 syncProcessRouter.get('/', syncProcessControllers.checkPendingSyncData);
 
-
-module.exports = { syncProcessRouter };
+export { syncProcessRouter };

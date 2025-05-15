@@ -12,7 +12,7 @@ export default class BackupService {
     this.prisma = prisma;
   }
 
-  async getBackup(dataFilter: any) {
+ public async getBackup(dataFilter: any) {
     try {
       const page = dataFilter?.page;
       const pageSize = dataFilter?.pageSize;
@@ -65,7 +65,7 @@ export default class BackupService {
     }
   }
 
-  async createBackup(path: string, userName: string) {
+ public async createBackup(path: string, userName: string) {
     try {
       const timestamp = Date.now();
       const uniqueId = uuidv4();
