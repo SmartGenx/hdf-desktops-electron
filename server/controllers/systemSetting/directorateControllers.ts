@@ -1,13 +1,14 @@
-const { databaseService } = require('../../database'); // Adjust the import path as needed
-const { validationResult } = require("express-validator");
-const ApiError = require("../../errors/ApiError");
-const DatabaseError = require("../../errors/DatabaseError");
-const ValidationError = require("../../errors/ValidationError");
-const NotFoundError = require("../../errors/NotFoundError");
+import { Request, Response, NextFunction } from 'express';
+import { databaseService } from '../../database';
+import { validationResult } from 'express-validator';
+import ApiError from '../../errors/ApiError';
+import DatabaseError from '../../errors/DatabaseError';
+import ValidationError from '../../errors/ValidationError';
+import NotFoundError from '../../errors/NotFoundError';
 
 class DirectorateController {
   // Fetch all directorates
-  async getAllDirectorates(req, res, next) {
+  async getAllDirectorates(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const DirectorateService = databaseService.getDirectorateService();
       const directorates = await DirectorateService.getAllDirectorates();
@@ -19,9 +20,9 @@ class DirectorateController {
   }
 
   // Fetch a single directorate by its ID
-  async getDirectorateById(req, res, next) {
+  async getDirectorateById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const id = req.params.id;
+      const id: string = req.params.id;
       const DirectorateService = databaseService.getDirectorateService();
       const directorate = await DirectorateService.getDirectorateById(id);
       if (!directorate) {
@@ -35,7 +36,7 @@ class DirectorateController {
   }
 
   // Create a new directorate
-  async createDirectorate(req, res, next) {
+  async createDirectorate(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const DirectorateService = databaseService.getDirectorateService();
       const errors = validationResult(req);
@@ -46,43 +47,37 @@ class DirectorateController {
       const newDirectorate = await DirectorateService.createDirectorate(data);
       res.status(201).json(newDirectorate);
     } catch (error) {
-      // next(new ApiError(500, "InternalServer", "Internal Server Error"));
+      // You can choose to use next() for error handling or respond directly
       res.status(500).json({ message: `${error}` });
     }
   }
 
   // Update an existing directorate
-  async updateDirectorate(req, res, next) {
+  async updateDirectorate(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const DirectorateService = databaseService.getDirectorateService();
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return next(new ValidationError("Validation Failed", errors.array()));
       }
-      const id = req.params.id;
+      const id: string = req.params.id;
       const data = req.body;
-      const updatedDirectorate = await DirectorateService.updateDirectorate(
-        id,
-        data
-      );
+      const updatedDirectorate = await DirectorateService.updateDirectorate(id, data);
       if (!updatedDirectorate) {
         return next(new NotFoundError(`Directorate with id ${id} not found.`));
       }
       res.status(200).json(updatedDirectorate);
     } catch (error) {
-      // next(new ApiError(500, "InternalServer", "Internal Server Error"));
       res.status(500).json({ message: `${error}` });
     }
   }
 
   // Delete a directorate by ID
-  async deleteDirectorate(req, res, next) {
+  async deleteDirectorate(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const DirectorateService = databaseService.getDirectorateService();
-      const id = req.params.id;
-      const deletedDirectorateName = await DirectorateService.deleteDirectorate(
-        id
-      );
+      const id: string = req.params.id;
+      const deletedDirectorateName = await DirectorateService.deleteDirectorate(id);
       res.status(200).json({
         message: `The directorate '${deletedDirectorateName}' has been successfully deleted`,
       });
@@ -92,4 +87,4 @@ class DirectorateController {
   }
 }
 
-module.exports = new DirectorateController();
+export default new DirectorateController();

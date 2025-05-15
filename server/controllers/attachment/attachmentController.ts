@@ -1,11 +1,13 @@
-const { databaseService } = require('../../database');
-const { validationResult } = require('express-validator');
-const ApiError = require('../../errors/ApiError');
-const DatabaseError = require('../../errors/DatabaseError');
-const ValidationError = require('../../errors/ValidationError');
-const NotFoundError = require('../../errors/NotFoundError');
+import { Request, Response, NextFunction } from 'express';
+import { databaseService } from '../../database';
+import { validationResult } from 'express-validator';
+import {ApiError} from '../../errors/ApiError';
+import DatabaseError from '../../errors/DatabaseError';
+import {ValidationError} from '../../errors/ValidationError';
+import NotFoundError from '../../errors/NotFoundError';
+
 class AttachmentController {
-  async getAllAttachments(req, res, next) {
+  async getAllAttachments(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const dataFillter = req.query;
       const AttachmentService = databaseService.getAttachmentService();
@@ -13,11 +15,12 @@ class AttachmentController {
       res.status(200).json(attachments);
     } catch (error) {
       console.error(error);
-      throw new DatabaseError('Error retrieving beneficiary types.', error);
+      // Throwing error outside of async functions is not ideal, so using next() instead.
+      next(new DatabaseError('Error retrieving beneficiary types.', error));
     }
   }
 
-  async getAttachment(req, res, next) {
+  async getAttachment(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id = req.params.id;
       const AttachmentService = databaseService.getAttachmentService();
@@ -32,7 +35,7 @@ class AttachmentController {
     }
   }
 
-  async getAttachmentByAccreditedId(req, res, next) {
+  async getAttachmentByAccreditedId(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id = req.params.id;
       const AttachmentService = databaseService.getAttachmentService();
@@ -47,7 +50,7 @@ class AttachmentController {
     }
   }
 
-  async createAttachment(req, res, next) {
+  async createAttachment(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const AttachmentService = databaseService.getAttachmentService();
       const errors = validationResult(req);
@@ -55,19 +58,16 @@ class AttachmentController {
         return next(new ValidationError('Validation Failed', errors.array()));
       }
 
-      const filePath = req.file.local ? req.file.local : req.file.s3.Location
-      //  const filePath = req.file.s3.Location
-
+      const filePath = req.file && (req.file as any).local ? (req.file as any).local : (req.file as any)?.s3?.Location;
       const AttachmentData = req.body;
       const newAttachment = await AttachmentService.createAttachment(AttachmentData, filePath);
-
       res.status(201).json(newAttachment);
     } catch (error) {
       next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
     }
   }
 
-  async updateAttachment(req, res, next) {
+  async updateAttachment(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const AttachmentService = databaseService.getAttachmentService();
       const errors = validationResult(req);
@@ -78,23 +78,20 @@ class AttachmentController {
       const id = req.params.id;
       const AttachmentData = req.body;
       const updatedAttachment = await AttachmentService.updateAttachment(id, AttachmentData);
-
       if (!updatedAttachment) {
         return next(new NotFoundError(`Attachment with id ${id} not found.`));
       }
-
       res.status(200).json(updatedAttachment);
     } catch (error) {
       next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
     }
   }
 
-  async deleteAttachment(req, res, next) {
+  async deleteAttachment(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const AttachmentService = databaseService.getAttachmentService();
       const id = req.params.id;
       await AttachmentService.deleteAttachment(id);
-
       res.status(200).json({ message: `The attachment with id ${id} has been successfully deleted` });
     } catch (error) {
       next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
@@ -102,4 +99,4 @@ class AttachmentController {
   }
 }
 
-module.exports = new AttachmentController();
+export default new AttachmentController();

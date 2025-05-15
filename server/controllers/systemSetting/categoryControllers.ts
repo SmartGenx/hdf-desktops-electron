@@ -1,13 +1,14 @@
-const { databaseService } = require('../../database'); // Adjust the import path as needed
-const { validationResult } = require('express-validator');
-const ApiError = require('../../errors/ApiError');
-const DatabaseError = require('../../errors/DatabaseError');
-const ValidationError = require('../../errors/ValidationError');
-const NotFoundError = require('../../errors/NotFoundError');
+import { Request, Response, NextFunction } from 'express';
+import { databaseService } from '../../database';
+import { validationResult } from 'express-validator';
+import {ApiError} from '../../errors/ApiError';
+import DatabaseError from '../../errors/DatabaseError';
+import {ValidationError} from '../../errors/ValidationError';
+import NotFoundError from '../../errors/NotFoundError';
 
 class CategoryController {
   // Fetch all categories
-  async getAllCategories(req, res, next) {
+  async getAllCategories(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const CategoryService = databaseService.getCategoryService();
       const categories = await CategoryService.getAllCategories();
@@ -19,9 +20,9 @@ class CategoryController {
   }
 
   // Fetch a single category by its ID
-  async getCategoryById(req, res, next) {
+  async getCategoryById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const id = req.params.id;
+      const id: string = req.params.id;
       const CategoryService = databaseService.getCategoryService();
       const category = await CategoryService.getCategoryById(id);
       if (!category) {
@@ -35,42 +36,35 @@ class CategoryController {
   }
 
   // Create a new category
-  async createCategory(req, res, next) {
+  async createCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const CategoryService = databaseService.getCategoryService();
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return next(new ValidationError('Validation Failed', errors.array()));
       }
-
       const { name, SupportRatio, description } = req.body;
       const newCategory = await CategoryService.createCategory(name, SupportRatio, description);
-
-
       res.status(201).json(newCategory);
     } catch (error) {
-      // next(new ApiError(500, 'InternalServer', `${error}`))
       res.status(500).json({ message: `${error}` });
     }
   }
 
   // Update an existing category
-  async updateCategory(req, res, next) {
+  async updateCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const CategoryService = databaseService.getCategoryService();
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return next(new ValidationError('Validation Failed', errors.array()));
       }
-
-      const id = req.params.id;
+      const id: string = req.params.id;
       const data = req.body;
       const updatedCategory = await CategoryService.updateCategory(id, data);
-
       if (!updatedCategory) {
         return next(new NotFoundError(`Category with id ${id} not found.`));
       }
-
       res.status(200).json(updatedCategory);
     } catch (error) {
       res.status(500).json({ message: `${error}` });
@@ -78,12 +72,11 @@ class CategoryController {
   }
 
   // Delete a category by ID
-  async deleteCategory(req, res, next) {
+  async deleteCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const CategoryService = databaseService.getCategoryService();
-      const id = req.params.id;
+      const id: string = req.params.id;
       const deletedCategoryName = await CategoryService.deleteCategory(id);
-
       res.status(200).json({ message: `The category '${deletedCategoryName}' has been successfully deleted` });
     } catch (error) {
       next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
@@ -91,4 +84,4 @@ class CategoryController {
   }
 }
 
-module.exports = new CategoryController();
+export default new CategoryController();

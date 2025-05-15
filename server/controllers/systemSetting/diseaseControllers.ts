@@ -1,13 +1,14 @@
-const { databaseService } = require('../../database'); // Adjust the import path as needed
-const { validationResult } = require('express-validator');
-const ApiError = require('../../errors/ApiError');
-const DatabaseError = require('../../errors/DatabaseError');
-const ValidationError = require('../../errors/ValidationError');
-const NotFoundError = require('../../errors/NotFoundError');
+import { Request, Response, NextFunction } from 'express';
+import { databaseService } from '../../database';
+import { validationResult } from 'express-validator';
+import {ApiError} from '../../errors/ApiError';
+import DatabaseError from '../../errors/DatabaseError';
+import {ValidationError} from '../../errors/ValidationError';
+import NotFoundError from '../../errors/NotFoundError';
 
 class DiseaseController {
   // Fetch all diseases
-  async getAllDiseases(req, res, next) {
+  async getAllDiseases(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const DiseaseService = databaseService.getDiseaseService();
       const diseases = await DiseaseService.getAllDiseases();
@@ -19,7 +20,7 @@ class DiseaseController {
   }
 
   // Fetch a single disease by its ID
-  async getDiseaseById(req, res, next) {
+  async getDiseaseById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id = req.params.id;
       const DiseaseService = databaseService.getDiseaseService();
@@ -35,57 +36,47 @@ class DiseaseController {
   }
 
   // Create a new disease
-  async createDisease(req, res, next) {
+  async createDisease(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const DiseaseService = databaseService.getDiseaseService();
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return next(new ValidationError('Validation Failed', errors.array()));
       }
-
       const { name, description } = req.body;
       const newDisease = await DiseaseService.createDisease(name, description);
-
       res.status(201).json(newDisease);
     } catch (error) {
-      // next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
       res.status(500).json({ message: `${error}` });
-
     }
   }
 
   // Update an existing disease
-  async updateDisease(req, res, next) {
+  async updateDisease(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const DiseaseService = databaseService.getDiseaseService();
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return next(new ValidationError('Validation Failed', errors.array()));
       }
-
       const id = req.params.id;
       const data = req.body;
       const updatedDisease = await DiseaseService.updateDisease(id, data);
-
       if (!updatedDisease) {
         return next(new NotFoundError(`Disease with id ${id} not found.`));
       }
-
       res.status(200).json(updatedDisease);
     } catch (error) {
-      // next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
       res.status(500).json({ message: `${error}` });
-
     }
   }
 
   // Delete a disease by ID
-  async deleteDisease(req, res, next) {
+  async deleteDisease(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const DiseaseService = databaseService.getDiseaseService();
       const id = req.params.id;
       const deletedDiseaseName = await DiseaseService.deleteDisease(id);
-
       res.status(200).json({ message: `The disease '${deletedDiseaseName}' has been successfully deleted` });
     } catch (error) {
       next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
@@ -93,4 +84,4 @@ class DiseaseController {
   }
 }
 
-module.exports = new DiseaseController();
+export default new DiseaseController();
