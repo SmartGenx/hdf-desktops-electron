@@ -3,6 +3,15 @@ import { databaseService } from '../../database';
 import {ApiError} from '../../errors/ApiError';
 import DatabaseError from '../../errors/DatabaseError';
 
+// Extend Express Request interface to include 'user'
+declare global {
+  namespace Express {
+    interface Request {
+      user?: any;
+    }
+  }
+}
+
 class AuthController {
   async signup(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -29,8 +38,7 @@ class AuthController {
         roleGlobalId,
         phone,
         address,
-        profileImage,
-        synchronized
+        profileImage
       );
       res.status(201).json(newUser);
     } catch (error: any) {

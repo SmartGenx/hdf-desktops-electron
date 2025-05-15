@@ -10,9 +10,9 @@ class BackUpControllers {
   // Fetch all categories
   async getbackup(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const backupServices = databaseService.getbackupServices();
+      const backupServices = databaseService.getBackupServices();
       const dataFillter = req.query;
-      const categories = await backupServices.getbackup(dataFillter);
+      const categories = await backupServices.getBackup(dataFillter);
       res.status(200).json(categories);
     } catch (error) {
       console.error(error);
@@ -22,9 +22,9 @@ class BackUpControllers {
 
   async getcreate(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const backupServices = databaseService.getbackupServices();
-      const dataFillter = req.body;
-      const categories = await backupServices.createbackup(dataFillter);
+      const backupServices = databaseService.getBackupServices();
+      const { path, userName } = req.body;
+      const categories = await backupServices.createBackup(path, userName);
       res.status(200).json(categories);
     } catch (error) {
       console.error(error);

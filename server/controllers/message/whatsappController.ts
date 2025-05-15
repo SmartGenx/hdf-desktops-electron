@@ -34,10 +34,11 @@ class WhatsAppController {
    * Returns the current QR code data URL (if any)
    */
   async getQRCode(req: Request, res: Response): Promise<Response> {
-    if (whatsappService.qrCodeData) {
+    const qrCodeData = whatsappService.getQRCode();
+    if (qrCodeData) {
       return res
         .status(200)
-        .json({ qrCode: whatsappService.qrCodeData });
+        .json({ qrCode: qrCodeData });
     } else {
       return res.status(404).json({
         message:
