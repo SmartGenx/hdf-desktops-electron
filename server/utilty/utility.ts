@@ -59,8 +59,8 @@ export const backupDatabase = async (req: Request, res: Response): Promise<void>
         }
 
         try {
-          const backupServices = databaseService.getbackupServices();
-          await backupServices.createbackup(downloadOutputPath, 'المدير');
+          const backupServices = databaseService.getBackupServices();
+          await backupServices.createBackup(downloadOutputPath, 'المدير');
 
           res.status(200).json({
             message: `Backup successfully created and moved to ${downloadOutputPath}`,

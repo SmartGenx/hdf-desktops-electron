@@ -41,12 +41,12 @@ const startServer = async (): Promise<void> => {
     await databaseService.switchDatabaseBasedOnConnectivity();
     await databaseService.user();
 
-    const syncProcess = fork(path.join(__dirname, 'syncProcess.js'));
+    const syncProcess = fork(path.join(__dirname, 'syncProcess.ts'));
     syncProcess.on('error', (error: Error) => {
       console.error('Sync process error:', error);
     });
 
-    const profileDir = path.join(process.env.PROFILE_DIR || '/home/pc-13', 'Profiles');
+    const profileDir = path.join(process.env.PROFILE_DIR || 'D:/', 'Profiles');
     await ensureProfileDirExists(profileDir);
 
     const PORT = parseInt(process.env.PORT || '5050', 10);
