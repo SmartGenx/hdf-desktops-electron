@@ -1,17 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { synchronizeAll } from '../../syncProcess';
 import { databaseService } from '../../database';
-import { validationResult } from 'express-validator';
 import {ApiError} from '../../errors/ApiError';
-import DatabaseError from '../../errors/DatabaseError';
-import {ValidationError} from '../../errors/ValidationError';
-import NotFoundError from '../../errors/NotFoundError';
+
 
 class SyncProcessControllers {
   // Synchronize all processes
   async synchronizeAll(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      // انتظار اكتمال المزامنة
       await synchronizeAll();
       res.status(200).json({ message: 'Synchronization completed successfully' });
     } catch (error) {

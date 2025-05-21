@@ -2,11 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import { databaseService } from '../../database';
 import { validationResult } from 'express-validator';
 import {ApiError} from '../../errors/ApiError';
-import DatabaseError from '../../errors/DatabaseError';
 import {ValidationError} from '../../errors/ValidationError';
 import NotFoundError from '../../errors/NotFoundError';
-import fs from 'fs';
-import path from 'path';
 
 class ApplicantController {
   // Fetch applicants by category

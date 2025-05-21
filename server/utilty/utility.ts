@@ -2,8 +2,6 @@ import { Request, Response } from 'express';
 import { exec } from 'child_process';
 import path from 'path';
 import fs from 'fs';
-import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from '../secrets';
 import { databaseService } from '../database';
 
 export const backupDatabase = async (req: Request, res: Response): Promise<void> => {
@@ -34,7 +32,7 @@ export const backupDatabase = async (req: Request, res: Response): Promise<void>
     const pgDumpPath = 'C:\\Program Files\\PostgreSQL\\15\\bin\\pg_dump';
     const command = `"${pgDumpPath}" -U ${dbUser} -d ${dbName} -p ${dbPort} -f "${outputPath}"`;
 
-    exec(command, async (error, stdout, stderr) => {
+    exec(command, async (error, stderr) => {
       delete process.env.PGPASSWORD;
 
       if (error) {

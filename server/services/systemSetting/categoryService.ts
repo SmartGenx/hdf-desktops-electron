@@ -4,11 +4,7 @@ import DatabaseError from "../../errors/DatabaseError";
 import {ValidationError} from "../../errors/ValidationError"
 import NotFoundError from "../../errors/NotFoundError";
 
-interface CategoryCreateInput {
-  name: string;
-  SupportRatio: number;
-  description: string;
-}
+
 
 interface CategoryUpdateInput {
   name: string;

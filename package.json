@@ -1,6 +1,6 @@
 {
   "name": "HDF",
-  "version": "v1.0.3",
+  "version": "v1.0.5",
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
   "author": "SMART_GENX",
@@ -123,8 +123,7 @@
     "publish": {
       "provider": "github",
       "owner": "SmartGenx",
-      "repo": "hdf-desktops-electron",
-      "private": true
+      "repo": "hdf-desktops-electron"
     },
     "win": {
       "icon": "resources/logo.ico"

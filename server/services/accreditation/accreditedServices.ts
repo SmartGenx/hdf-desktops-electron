@@ -1,12 +1,11 @@
 // AccreditedService.ts
-import { Accredited, Applicant, Prescription, Prisma, PrismaClient } from '@prisma/client';
-import DatabaseError from '../../errors/DatabaseError';
-import NotFoundError from '../../errors/NotFoundError';
-import {ValidationError} from '../../errors/ValidationError';
-import {convertStringNumbers} from '../../utilty/convertToInt';
-import {convertTopLevelStringBooleans} from '../../utilty/convertTopLevelStringBooleans';
-import { v4 as uuidv4 } from 'uuid';
-import { AccreditedByPrescription } from '../../viewModels/AccreditedByPrescription';
+import { Accredited, Applicant, Prescription, Prisma, PrismaClient } from '@prisma/client'
+import DatabaseError from '../../errors/DatabaseError'
+import NotFoundError from '../../errors/NotFoundError'
+import { convertStringNumbers } from '../../utilty/convertToInt'
+import { convertTopLevelStringBooleans } from '../../utilty/convertTopLevelStringBooleans'
+import { v4 as uuidv4 } from 'uuid'
+import { AccreditedByPrescription } from '../../viewModels/AccreditedByPrescription'
 
 interface CreateAccreditedInput {
   numberOfRfid: number | string
@@ -65,21 +64,20 @@ interface PrintAccreditationResult extends Accredited {
   square: SquareWithCheck[]
 }
 
-
 export default class AccreditedService {
-  private prisma: PrismaClient;
+  private prisma: PrismaClient
 
   constructor(prisma: PrismaClient) {
-    this.prisma = prisma;
+    this.prisma = prisma
   }
 
   async searchAccreditations(dataFilter: any) {
     const getDateMonthsFromNow = (months: number) => {
-      const currentDate = new Date();
-      currentDate.setMonth(currentDate.getMonth() + months);
-      return currentDate;
-    };
-    const currentDate = getDateMonthsFromNow(0);
+      const currentDate = new Date()
+      currentDate.setMonth(currentDate.getMonth() + months)
+      return currentDate
+    }
+    const currentDate = getDateMonthsFromNow(0)
 
     try {
       const accreditations = await this.prisma.accredited.findMany({
@@ -88,49 +86,57 @@ export default class AccreditedService {
             include: {
               diseasesApplicants: {
                 include: {
-                  Disease: true,
-                },
-              },
-            },
+                  Disease: true
+                }
+              }
+            }
           },
           square: true,
           dismissal: {
             orderBy: { id: 'desc' },
-            take: 1,
-          },
-        },
-      });
+            take: 1
+          }
+        }
+      })
 
       for (const accredited of accreditations) {
-        if (accredited.state === 'موقف') continue;
+        if (accredited.state === 'موقف') continue
 
         const prescriptions = await this.prisma.prescription.findFirst({
-          where: { accreditedGlobalId: accredited.globalId },
-        });
+          where: { accreditedGlobalId: accredited.globalId }
+        })
 
         const dismissal = await this.prisma.dismissal.findFirst({
           where: { accreditedGlobalId: accredited.globalId },
-          orderBy: { id: 'desc' },
-        });
+          orderBy: { id: 'desc' }
+        })
 
-        const dismissalDate = dismissal?.dateToDay ? new Date(dismissal.dateToDay) : null;
-        const renewalDate = prescriptions?.renewalDate ? new Date(prescriptions.renewalDate) : null;
+        const dismissalDate = dismissal?.dateToDay ? new Date(dismissal.dateToDay) : null
+        const renewalDate = prescriptions?.renewalDate ? new Date(prescriptions.renewalDate) : null
 
-        if (!renewalDate && !dismissalDate) continue;
+        if (!renewalDate && !dismissalDate) continue
 
-        const threeMonthsFromRenewal = renewalDate ? new Date(renewalDate.setMonth(renewalDate.getMonth() + 3)) : null;
-        const threeMonthsFromDismissal = dismissalDate ? new Date(dismissalDate.setMonth(dismissalDate.getMonth() + 3)) : null;
+        const threeMonthsFromRenewal = renewalDate
+          ? new Date(renewalDate.setMonth(renewalDate.getMonth() + 3))
+          : null
+        const threeMonthsFromDismissal = dismissalDate
+          ? new Date(dismissalDate.setMonth(dismissalDate.getMonth() + 3))
+          : null
 
-        let newState: string | undefined;
+        let newState: string | undefined
 
         if (renewalDate && threeMonthsFromRenewal && threeMonthsFromRenewal < currentDate) {
-          newState = 'موقف';
-        } else if (dismissalDate && threeMonthsFromDismissal && threeMonthsFromDismissal < currentDate) {
-          newState = 'موقف';
+          newState = 'موقف'
+        } else if (
+          dismissalDate &&
+          threeMonthsFromDismissal &&
+          threeMonthsFromDismissal < currentDate
+        ) {
+          newState = 'موقف'
         } else if (renewalDate && renewalDate < currentDate) {
-          newState = 'منتهي';
+          newState = 'منتهي'
         } else if (renewalDate && renewalDate >= currentDate) {
-          newState = 'مستمر';
+          newState = 'مستمر'
         }
 
         if (newState) {
@@ -138,43 +144,43 @@ export default class AccreditedService {
             where: { globalId: accredited.globalId },
             data: {
               state: newState,
-              version: { increment: 1 },
-            },
-          });
+              version: { increment: 1 }
+            }
+          })
         }
       }
 
-      const { page, pageSize, include: inc, orderBy: ord, ...restFilters } = dataFilter;
-      const include = inc ? convertTopLevelStringBooleans(inc) : {};
-      const orderBy = ord || {};
-      const filters = convertStringNumbers(restFilters);
+      const { page, pageSize, include: inc, orderBy: ord, ...restFilters } = dataFilter
+      const include = inc ? convertTopLevelStringBooleans(inc) : {}
+      const orderBy = ord || {}
+      const filters = convertStringNumbers(restFilters)
 
       if (page && pageSize) {
-        const skip = (+page - 1) * +pageSize;
-        const take = +pageSize;
+        const skip = (+page - 1) * +pageSize
+        const take = +pageSize
 
         const accredited = await this.prisma.accredited.findMany({
           where: { ...filters, deleted: false },
           include,
           skip,
           take,
-          orderBy,
-        });
+          orderBy
+        })
 
         const total = await this.prisma.accredited.count({
-          where: { ...filters, deleted: false },
-        });
+          where: { ...filters, deleted: false }
+        })
 
-        return { info: accredited, total, page, pageSize };
+        return { info: accredited, total, page, pageSize }
       }
 
       return await this.prisma.accredited.findMany({
         where: { ...filters, deleted: false },
         include,
-        orderBy,
-      });
+        orderBy
+      })
     } catch (error) {
-      throw new DatabaseError('Error retrieving accreditations.', error);
+      throw new DatabaseError('Error retrieving accreditations.', error)
     }
   }
 
@@ -201,7 +207,7 @@ export default class AccreditedService {
       }
 
       const accredited = await this.prisma.accredited.findMany({
-        where: whereClause,
+        where: whereClause
       })
 
       return accredited
@@ -210,15 +216,14 @@ export default class AccreditedService {
     }
   }
 
-  async getAllAccreditations(dataFilter: any): Promise<
-    | { info: Accredited[]; total: number; page: number; pageSize: number }
-    | Accredited[]
-  > {
+  async getAllAccreditations(
+    dataFilter: any
+  ): Promise<{ info: Accredited[]; total: number; page: number; pageSize: number } | Accredited[]> {
     try {
       const { page, pageSize, include, orderBy, ...rest } = dataFilter
 
       const where: Prisma.AccreditedWhereInput = {
-        ...rest,
+        ...rest
       }
 
       const includeObj: Prisma.AccreditedInclude = {}
@@ -231,7 +236,7 @@ export default class AccreditedService {
 
       const finalOrderBy: Prisma.AccreditedOrderByWithRelationInput = {
         formNumber: 'asc',
-        ...(orderBy || {}),
+        ...(orderBy || {})
       }
 
       if (page && pageSize) {
@@ -243,7 +248,7 @@ export default class AccreditedService {
           include: includeObj,
           orderBy: finalOrderBy,
           skip,
-          take,
+          take
         })
 
         const total = await this.prisma.accredited.count({ where })
@@ -254,7 +259,7 @@ export default class AccreditedService {
       return await this.prisma.accredited.findMany({
         where,
         include: includeObj,
-        orderBy: finalOrderBy,
+        orderBy: finalOrderBy
       })
     } catch (error) {
       throw new DatabaseError('Error searching accreditations.', error)
@@ -268,15 +273,15 @@ export default class AccreditedService {
         include: {
           applicant: {
             select: {
-              name: true,
-            },
+              name: true
+            }
           },
           prescription: {
             orderBy: { prescriptionDate: 'desc' },
-            take: 1,
+            take: 1
           },
-          attachment: true,
-        },
+          attachment: true
+        }
       })
 
       if (!accreditation) {
@@ -294,8 +299,8 @@ export default class AccreditedService {
       // Count all Accredited records where "deleted" is false
       const accreditedCount = await this.prisma.accredited.count({
         where: {
-          deleted: false,
-        },
+          deleted: false
+        }
       })
       return accreditedCount
     } catch (error) {
@@ -334,8 +339,8 @@ export default class AccreditedService {
             applicantGlobalId,
             pharmacyGlobalId,
             squareGlobalId,
-            ...rest,
-          },
+            ...rest
+          }
         })
 
         await prisma.attachment.create({
@@ -343,8 +348,8 @@ export default class AccreditedService {
             type,
             accreditedGlobalId: accredited.globalId,
             attachmentFile: fileAtch,
-            globalId: `${process.env.LOCAL_DB_ID}-${uuidv4()}-${new Date().toISOString()}`,
-          },
+            globalId: `${process.env.LOCAL_DB_ID}-${uuidv4()}-${new Date().toISOString()}`
+          }
         })
 
         const renewalDate = new Date()
@@ -356,13 +361,13 @@ export default class AccreditedService {
             renewalDate,
             attachedUrl: filePt,
             accreditedGlobalId: accredited.globalId,
-            globalId: `${process.env.LOCAL_DB_ID}-${uuidv4()}-${new Date().toISOString()}`,
-          },
+            globalId: `${process.env.LOCAL_DB_ID}-${uuidv4()}-${new Date().toISOString()}`
+          }
         })
 
         await prisma.applicant.update({
           where: { globalId: applicantGlobalId },
-          data: { accredited: true },
+          data: { accredited: true }
         })
 
         return accredited
@@ -384,17 +389,11 @@ export default class AccreditedService {
       const timestamp = Date.now()
       const uniqueId = uuidv4()
       const globalId = `${process.env.LOCAL_DB_ID}-${uniqueId}-${timestamp}`
-
-      const {
-        type,
-        numberOfRfid,
-        formNumber,
-        prescriptionDate,
-        ...rest
-      } = AccreditedData
+      console.log(globalId)
+      const { type, numberOfRfid, formNumber, prescriptionDate, ...rest } = AccreditedData
 
       const accreditExisting = await this.prisma.accredited.findFirst({
-        where: { globalId: id },
+        where: { globalId: id }
       })
 
       if (!accreditExisting) {
@@ -406,13 +405,13 @@ export default class AccreditedService {
         data: {
           numberOfRfid: numberOfRfid ? +numberOfRfid : accreditExisting.numberOfRfid,
           formNumber: formNumber ? +formNumber : accreditExisting.formNumber,
-          ...rest,
-        },
+          ...rest
+        }
       })
 
       if (fileAtch && type) {
         const attachment = await this.prisma.attachment.findFirst({
-          where: { accreditedGlobalId: accredited.globalId },
+          where: { accreditedGlobalId: accredited.globalId }
         })
 
         if (attachment) {
@@ -422,15 +421,15 @@ export default class AccreditedService {
               type,
               accreditedGlobalId: accredited.globalId,
               attachmentFile: fileAtch,
-              version: { increment: 1 },
-            },
+              version: { increment: 1 }
+            }
           })
         }
       }
 
       if (filePt && prescriptionDate) {
         const prescription = await this.prisma.prescription.findFirst({
-          where: { accreditedGlobalId: accredited.globalId },
+          where: { accreditedGlobalId: accredited.globalId }
         })
 
         if (prescription) {
@@ -444,8 +443,8 @@ export default class AccreditedService {
               renewalDate,
               attachedUrl: filePt,
               accreditedGlobalId: accredited.globalId,
-              version: { increment: 1 },
-            },
+              version: { increment: 1 }
+            }
           })
         }
       }
@@ -459,7 +458,7 @@ export default class AccreditedService {
   async updateAccreditationState(id: string, state: string): Promise<Accredited> {
     try {
       const existingAccreditation = await this.prisma.accredited.findUnique({
-        where: { globalId: id },
+        where: { globalId: id }
       })
 
       if (!existingAccreditation) {
@@ -469,8 +468,8 @@ export default class AccreditedService {
       return await this.prisma.accredited.update({
         where: { globalId: id },
         data: {
-          state,
-        },
+          state
+        }
       })
     } catch (error) {
       throw new DatabaseError('Error updating accreditation.', error)
@@ -485,10 +484,10 @@ export default class AccreditedService {
         include: {
           applicant: {
             select: {
-              name: true,
-            },
-          },
-        },
+              name: true
+            }
+          }
+        }
       })
 
       // If not found, throw a NotFoundError
@@ -503,8 +502,8 @@ export default class AccreditedService {
         where: { globalId: id },
         data: {
           deleted: true,
-          version: { increment: 1 },
-        },
+          version: { increment: 1 }
+        }
       })
 
       return applicantName
@@ -531,16 +530,16 @@ export default class AccreditedService {
               directorate: true,
               diseasesApplicants: {
                 include: {
-                  Disease: true,
-                },
-              },
-            },
-          },
+                  Disease: true
+                }
+              }
+            }
+          }
         },
         orderBy: {
           formNumber: 'asc',
-          ...(orderBy ?? {}),
-        },
+          ...(orderBy ?? {})
+        }
       }
 
       const fullType = (accreditedList: any) =>
@@ -559,11 +558,11 @@ export default class AccreditedService {
         const accreditedList = await this.prisma.accredited.findMany({
           ...baseQuery,
           skip,
-          take,
+          take
         })
 
         const total = await this.prisma.accredited.count({
-          where: baseQuery.where,
+          where: baseQuery.where
         })
 
         const reports = fullType(accreditedList).map(this.mapToReport)
@@ -572,7 +571,7 @@ export default class AccreditedService {
           info: reports,
           total,
           page,
-          pageSize,
+          pageSize
         }
       } else {
         const accreditedList = await this.prisma.accredited.findMany(baseQuery)
@@ -596,7 +595,7 @@ export default class AccreditedService {
       name: accredited.applicant.name,
       phoneNumber: accredited.applicant.phoneNumber,
       state: accredited.state,
-      formNumber: accredited.formNumber,
+      formNumber: accredited.formNumber
     }
 
     const namedDirectorate = accredited.applicant.directorate.name
@@ -615,9 +614,7 @@ export default class AccreditedService {
       ? new Date(latestPrescription.prescriptionDate)
       : null
 
-    const renewalDate = latestPrescription
-      ? new Date(latestPrescription.renewalDate)
-      : null
+    const renewalDate = latestPrescription ? new Date(latestPrescription.renewalDate) : null
 
     const days =
       latestPrescriptionDate && renewalDate
@@ -631,12 +628,12 @@ export default class AccreditedService {
 
     return new AccreditedByPrescription(
       applicant,
-      accredited.formNumber?.toString() ?? "",
+      accredited.formNumber?.toString() ?? '',
       diseaseNames,
       namedDirectorate,
       {
         latestPrescriptionDate,
-        renewalDate,
+        renewalDate
       },
       days,
       months.toString()
@@ -650,8 +647,7 @@ export default class AccreditedService {
 
   private calculateMonthsBetweenDates(date1: Date, date2: Date): number {
     if (date1 > date2) return 0
-    return (date2.getFullYear() - date1.getFullYear()) * 12 +
-           (date2.getMonth() - date1.getMonth())
+    return (date2.getFullYear() - date1.getFullYear()) * 12 + (date2.getMonth() - date1.getMonth())
   }
 
   async getPrintAccreditationById(id: string): Promise<PrintAccreditationResult> {
@@ -668,18 +664,18 @@ export default class AccreditedService {
                 category: true,
                 diseasesApplicants: {
                   include: { Disease: true },
-                  where: { deleted: false },
-                },
-              },
+                  where: { deleted: false }
+                }
+              }
             },
             square: true,
             pharmacy: { include: { Governorate: true } },
             prescription: {
               orderBy: { prescriptionDate: 'desc' },
-              take: 1,
-            },
-          },
-        }),
+              take: 1
+            }
+          }
+        })
       ])
 
       if (!accreditation) {
@@ -691,24 +687,20 @@ export default class AccreditedService {
         name: d.name,
         cheacked: accreditation.applicant.diseasesApplicants.some(
           (da) => da.Disease.globalId === d.globalId
-        ),
+        )
       }))
 
       const processedSquares: SquareWithCheck[] = allSquares.map((s) => ({
         globalId: s.globalId,
         name: s.name,
-        cheacked: accreditation.square?.globalId === s.globalId,
+        cheacked: accreditation.square?.globalId === s.globalId
       }))
 
       const diseasesChecked = processedDiseases.filter((d) => d.cheacked)
       const squaresChecked = processedSquares.filter((s) => s.cheacked)
 
-      const diseasesFirst3False = processedDiseases
-        .filter((d) => !d.cheacked)
-        .slice(0, 3)
-      const squaresFirst3False = processedSquares
-        .filter((s) => !s.cheacked)
-        .slice(0, 3)
+      const diseasesFirst3False = processedDiseases.filter((d) => !d.cheacked).slice(0, 3)
+      const squaresFirst3False = processedSquares.filter((s) => !s.cheacked).slice(0, 3)
 
       const diseasesResult = [...diseasesChecked, ...diseasesFirst3False]
       const squaresResult = [...squaresChecked, ...squaresFirst3False]
@@ -718,15 +710,14 @@ export default class AccreditedService {
         applicant: {
           ...accreditation.applicant,
           directorateName: accreditation.applicant.directorate.name,
-          governorateName:
-            accreditation.applicant.directorate.Governorate.name,
+          governorateName: accreditation.applicant.directorate.Governorate.name,
           categoryName: accreditation.applicant.category.name,
-          diseasesApplicants: diseasesResult,
+          diseasesApplicants: diseasesResult
         },
-        square: squaresResult,
+        square: squaresResult
       }
     } catch (error) {
       throw new DatabaseError('Error retrieving accreditation.', error)
     }
-  }  
+  }
 }

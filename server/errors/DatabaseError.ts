@@ -5,7 +5,6 @@ export class DatabaseError extends ApiError {
     super(500, 'DatabaseError', message, originalError);
   }
 
-  // يمكنك تخصيص toResponseJSON هنا إن أردت
 }
 
 export default DatabaseError;

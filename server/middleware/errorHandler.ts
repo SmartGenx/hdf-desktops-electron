@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
+import {  Response } from 'express';
 import multer from 'multer';
 
-const errorHandler = (err: any, req: Request, res: Response, next: NextFunction): void => {
+const errorHandler = (err: any, res: Response): void => {
     if (err instanceof multer.MulterError) {
         res.status(400).json({
             status: 'error',

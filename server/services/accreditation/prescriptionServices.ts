@@ -1,7 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import DatabaseError from '../../errors/DatabaseError';
 import NotFoundError from '../../errors/NotFoundError';
-import {ValidationError} from '../../errors/ValidationError';
 import { v4 as uuidv4 } from 'uuid';
 import { convertStringNumbers } from '../../utilty/convertToInt';
 import { convertTopLevelStringBooleans } from '../../utilty/convertTopLevelStringBooleans';

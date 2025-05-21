@@ -11,7 +11,7 @@ import {
 import { Button } from '../../ui/button'
 import { MoreVertical } from 'lucide-react'
 import { Month } from '../../../types/enums'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import DeleteDialog from '@renderer/components/ui/delete-dailog'
 import { useAuthUser } from 'react-auth-kit'
 

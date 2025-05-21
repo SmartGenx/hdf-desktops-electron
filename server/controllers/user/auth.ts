@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { databaseService } from '../../database';
 import {ApiError} from '../../errors/ApiError';
-import DatabaseError from '../../errors/DatabaseError';
 
 // Extend Express Request interface to include 'user'
 declare global {
@@ -22,7 +21,6 @@ class AuthController {
         roleGlobalId,
         phone,
         address,
-        synchronized
       } = req.body;
 
       const authService = databaseService.getAuthService();

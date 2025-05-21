@@ -31,17 +31,8 @@ export interface ApplicantGenderStats {
   accreditCount: number
 }
 
-interface DismissalSummary {
-  totalAmount: number
-  approvedAmount: number
-}
 
-interface ApplicantInfo {
-  name: string
-  gender: string
-  phoneNumber: string
-  numberOfRfid: number
-}
+
 export default class ApplicantService {
   private prisma: PrismaClient;
 
@@ -247,36 +238,39 @@ export default class ApplicantService {
     }
   }
 
-  async createApplicant(ApplicantData: any) {
-    try {
-      const timestamp = Date.now();
-      const uniqueId = uuidv4();
-      const globalId = `${process.env.LOCAL_DB_ID}-${uniqueId}-${timestamp}`;
-      const { diseaseGlobalId, ...rest } = ApplicantData;
+async createApplicant(ApplicantData: any) {
+  try {
+    const timestamp = Date.now();
+    const uniqueId = uuidv4();
+    const globalId = `${process.env.LOCAL_DB_ID}-${uniqueId}-${timestamp}`;
+    const { diseaseGlobalId, ...rest } = ApplicantData;
 
-      const applicant = await this.prisma.applicant.create({
+    const applicant = await this.prisma.applicant.create({
+      data: {
+        ...rest,
+        globalId
+      }
+    });
+
+    if (applicant) {
+      const diseaseRecordId = `${process.env.LOCAL_DB_ID}-${uuidv4()}-${Date.now()}`;
+      const link = await this.prisma.diseasesApplicants.create({
         data: {
-          ...rest,
-          globalId
+          diseaseGlobalId,
+          applicantGlobalId: applicant.globalId,
+          globalId: diseaseRecordId,
+          deleted: false
         }
       });
-
-      if (applicant) {
-        const diseaseRecordId = `${process.env.LOCAL_DB_ID}-${uuidv4()}-${Date.now()}`;
-        const link = await this.prisma.diseasesApplicants.create({
-          data: {
-            diseaseGlobalId,
-            applicantGlobalId: applicant.globalId,
-            globalId: diseaseRecordId,
-            deleted: false
-          }
-        });
-        return link ? applicant : null;
-      }
-    } catch (error) {
-      throw new DatabaseError('Error creating applicant.', error);
+      return link ? applicant : null;
     }
+
+    return null;
+  } catch (error) {
+    throw new DatabaseError('Error creating applicant.', error);
   }
+}
+
 
   async updateApplicant(id: string, ApplicantData: any) {
     try {

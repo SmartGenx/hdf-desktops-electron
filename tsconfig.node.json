@@ -4,19 +4,17 @@
     "electron.vite.config.*",
     "src/main/**/*",
     "src/preload/**/*",
-    "src/shared/**/*", "server",
+    "src/shared/**/*", "server"
   ],
   "compilerOptions": {
     "composite": true,
     "types": ["electron-vite/node"],
     "baseUrl": ".",
     "paths": {
-      "@main/*": [
-        "src/main/*"
-      ],
-      "@shared/*": [
-        "src/shared/*"
-      ],
-    }
-  },
+      "@main/*": ["src/main/*"],
+      "@shared/*": ["src/shared/*"]
+    },
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  }
 }

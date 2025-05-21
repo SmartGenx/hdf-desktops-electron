@@ -32,7 +32,11 @@ export interface MulterRequest extends Request {
 }
 
 // تعديل أنواع الملفات المسموح بها لتشمل PDF، Word، وجميع أنواع الصور
-const fileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallback): void => {
+const fileFilter = (
+    req: Request,
+    file: Express.Multer.File,
+    cb: FileFilterCallback
+): void => {
     const allowedTypes = [
         'application/pdf', // PDF
         'image/jpeg',      // JPEG
@@ -56,7 +60,7 @@ const upload = multer({
     fileFilter: fileFilter
 })
 
-const copyFileToProfileDir = () => async (req: MulterRequest, res: Response, next: NextFunction): Promise<void> => {
+const copyFileToProfileDir = () => async (req: MulterRequest,  next: NextFunction): Promise<void> => {
     if (!req.file && !req.files) {
         return next(new Error('No file uploaded'))
     }
