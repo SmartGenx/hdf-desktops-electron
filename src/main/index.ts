@@ -1,189 +1,165 @@
-import { app, shell, BrowserWindow, ipcMain, Menu,dialog  } from 'electron'
-import { join } from 'path'
-import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import {
+  app,
+  shell,
+  BrowserWindow,
+  ipcMain,
+  Menu,
+  dialog,
+  Notification
+} from 'electron';
+import { join } from 'path';
+import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
-import { spawn } from 'child_process'
-let mainWindow: BrowserWindow
+import { spawn } from 'child_process';
+
+let mainWindow: BrowserWindow;
+
 function createWindow(): void {
-  const iconPath = join(__dirname, '../../../resources/logo.ico')
-   mainWindow = new BrowserWindow({
+  const iconPath = join(__dirname, '../../../resources/logo.ico');
+
+  mainWindow = new BrowserWindow({
     width: 1700,
     height: 1000,
     show: false,
     autoHideMenuBar: true,
-    // fullscreen: true, // Set full-screen mode
-
     ...(process.platform === 'linux' ? { iconPath } : {}),
     title: 'مؤسسة التنمية الصحية',
     icon: iconPath,
-
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
-      webSecurity: false // Disable web security to allow local file access
+      webSecurity: false     
     }
-  })
+  });
 
-  mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
-  })
+  mainWindow.on('ready-to-show', () => mainWindow.show());
 
-  mainWindow.webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url)
-    return { action: 'deny' }
-  })
+  mainWindow.webContents.setWindowOpenHandler(details => {
+    shell.openExternal(details.url);
+    return { action: 'deny' };
+  });
 
-  mainWindow.webContents.on('context-menu', (_event, _params) => {
+  mainWindow.webContents.on('context-menu', () => {
     const contextMenu = Menu.buildFromTemplate([
       { role: 'cut', label: 'قطع' },
       { role: 'copy', label: 'نسخ' },
       { role: 'paste', label: 'لصق' },
       { type: 'separator' },
       { role: 'selectAll', label: 'تحديد الكل' }
-    ])
-    contextMenu.popup()
-  })
+    ]);
+    contextMenu.popup();
+  });
 
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+  if (is.dev && process.env.ELECTRON_RENDERER_URL) {
+    mainWindow.loadURL(process.env.ELECTRON_RENDERER_URL);
   } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'), { hash: '/' })
+    mainWindow.loadFile(join(__dirname, '../renderer/index.html'), {
+      hash: '/'
+    });
   }
 }
 
-app.whenReady().then(() => {
-  electronApp.setAppUserModelId('com.electron')
+function startLocalServer(): void {
+  const serverPath = is.dev
+    ? join(__dirname, '../../server/index.ts')
+    : join(__dirname, '../../../server/index.ts');
 
-  app.on('browser-window-created', (_, window) => {
-    optimizer.watchWindowShortcuts(window)
-  })
-
-  ipcMain.on('ping', () => console.log('pong'))
-
-  createWindow()
-
-
-  app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  })
-
-  let serverPath = ''
-
-  if (is.dev) {
-    serverPath = join(__dirname, '../../server/index.ts')
-  } else {
-    serverPath = join(__dirname, '../../../server/index.ts')
-  }
-  // dialog.showMessageBox({
-  //   type: 'info',
-  //   title: 'Server Path',
-  //   message: `Starting server with path: ${serverPath}`,
-  //   buttons: ['OK']
-  // })
-  // }
-
-  // } // const serverPath = resolve(__dirname, '../../server/index')
-  console.log(`Starting server with path: ${serverPath}`)
+  console.log(`Starting server with path: ${serverPath}`);
 
   const serverProcess = spawn('ts-node', [serverPath], {
-    stdio: 'inherit', // Passes stdio to the parent process, useful for debugging    "start": "ts-node index.ts"
+    stdio: 'inherit',
     shell: true,
     windowsHide: true
-  })
-
-  serverProcess.on('error', (error) => {
-    console.error(`Error starting server: ${error.message}`)
-  })
-
-  serverProcess.on('close', (code) => {
-    console.log(`Server process exited with code ${code}`)
-  })
-  checkForUpdates();
-
-})
-function checkForUpdates() {
-  autoUpdater.checkForUpdates();
-
-  // Event: Update available
-  autoUpdater.on('update-available', (info) => {
-    log.info('Update available:', info);
-    dialog
-    .showMessageBox({
-      type: 'info',
-      title: 'تحديث متوفر',
-      message: `نسخة جديدة (${info.version}) متوفرة. النسخة الحالية: ${app.getVersion()}. هل ترغب في تنزيلها؟`,
-      buttons: ['نعم', 'لا'],
-    })
-
-      .then((result) => {
-        if (result.response === 0) {
-          // Start downloading the update
-          autoUpdater.downloadUpdate();
-          dialog.showMessageBox({
-            type: 'info',
-            title: 'جارٍ تنزيل التحديث',
-            message: 'التحديث قيد التنزيل. يرجى الانتظار.',
-            buttons: ['موافق'],
-          });
-
-        }
-      });
   });
 
-  // Event: No updates available
-  // autoUpdater.on('update-not-available', (info) => {
-  //   log.info('No updates available:', info);
-  //   dialog.showMessageBox({
-  //     type: 'info',
-  //     title: 'لا توجد تحديثات',
-  //     message: 'أنت تستخدم أحدث إصدار.',
-  //     buttons: ['موافق'],
-  //   });
+  serverProcess.on('error', err =>
+    console.error(`Error starting server: ${err.message}`)
+  );
+  serverProcess.on('close', code =>
+    console.log(`Server process exited with code ${code}`)
+  );
+}
 
-  // });
+function initAutoUpdate(): void {
+  autoUpdater.logger = log;
+  log.transports.file.level = 'info';
 
-  // Event: Download progress
-  autoUpdater.on('download-progress', (progress) => {
-    log.info(
-      `Download progress: ${progress.percent.toFixed(2)}% (${progress.transferred}/${progress.total} bytes)`
-    );
-    if (mainWindow) {
-      mainWindow.setProgressBar(progress.percent / 100);
+  autoUpdater.autoDownload = false;    
+  autoUpdater.checkForUpdates();
+
+  autoUpdater.on('update-available', async info => {
+    log.info('Update available:', info);
+
+    const { response } = await dialog.showMessageBox(mainWindow, {
+      type: 'info',
+      title: 'تحديث متوفر',
+      message: `نسخة جديدة (${info.version}) متوفرة.\nالنسخة الحالية: ${app.getVersion()}.\nهل ترغب في تنزيلها؟`,
+      buttons: ['نعم', 'لا'],
+      defaultId: 0,
+      cancelId: 1
+    });
+
+    if (response === 0) {
+      mainWindow.setProgressBar(0);   
+      autoUpdater.downloadUpdate();
     }
   });
 
-  // Event: Update downloaded
-  autoUpdater.on('update-downloaded', (info) => {
+  autoUpdater.on('download-progress', p => {
+    log.info(`Download progress: ${p.percent.toFixed(2)} %`);
+    mainWindow.setProgressBar(p.percent / 100);
+  });
+
+  autoUpdater.on('update-downloaded', async info => {
     log.info('Update downloaded:', info);
-    dialog.showMessageBox({
+    mainWindow.setProgressBar(-1); // إخفاء الشريط
+
+    new Notification({
+      title: 'التحديث جاهز',
+      body: `تم تنزيل الإصدار ${info.version}.`
+    }).show();
+
+    const { response } = await dialog.showMessageBox(mainWindow, {
       type: 'info',
       title: 'التحديث جاهز',
       message:
-        'تم تنزيل التحديث. ستتم إعادة تشغيل التطبيق الآن لتثبيت التحديث.',
-      buttons: ['أعد التشغيل الآن'],
-    })
+        'تم تنزيل التحديث بنجاح.\nسيُعاد تشغيل التطبيق الآن لتثبيت التحديث.',
+      buttons: ['أعد التشغيل الآن', 'لاحقاً'],
+      defaultId: 0,
+      cancelId: 1
+    });
 
-      .then(() => {
-        autoUpdater.quitAndInstall(); // Restart and install the update
-      });
+    if (response === 0) {
+      autoUpdater.quitAndInstall();
+    }
   });
 
-  // Event: Error
-  // autoUpdater.on('error', (error) => {
-  //   log.error('Error during update:', error);
-  //   dialog.showMessageBox({
-  //     type: 'error',
-  //     title: 'خطأ في التحديث',
-  //     message: `حدث خطأ أثناء التحقق من التحديثات: ${error.message}`,
-  //     buttons: ['موافق'],
-  //   });
-
-  // });
+  autoUpdater.on('error', err => {
+    mainWindow.setProgressBar(-1);
+    log.error('Updater error:', err);
+    dialog.showErrorBox(
+      'خطأ في التحديث',
+      `حدث خطأ أثناء التحقق من التحديثات:\n${err == null ? '' : err.message}`
+    );
+  });
 }
 
+app.whenReady().then(() => {
+  electronApp.setAppUserModelId('com.electron');
+  app.on('browser-window-created', (_, win) => optimizer.watchWindowShortcuts(win));
+
+  ipcMain.on('ping', () => console.log('pong'));
+
+  createWindow();
+  startLocalServer();
+  initAutoUpdate();
+
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  });
+});
+
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
-})
+  if (process.platform !== 'darwin') app.quit();
+});

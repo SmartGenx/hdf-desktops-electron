@@ -119,12 +119,13 @@
     "url": "https://github.com/SmartGenx/hdf-desktops-electron.git"
   },
   "build": {
-    "appId": "com.SmartGenx.autoupdate",
-    "publish": {
-      "provider": "github",
-      "owner": "SmartGenx",
-      "repo": "hdf-desktops-electron"
-    },
+     "appId": "com.SmartGenx.autoupdate",
+     "artifactName": "HDF-Setup-${version}.${ext}",
+     "publish": {
+       "provider": "github",
+       "owner": "SmartGenx",
+       "repo": "hdf-desktops-electron"
+     },
     "win": {
       "icon": "resources/logo.ico"
     },
