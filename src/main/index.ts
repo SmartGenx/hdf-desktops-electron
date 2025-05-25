@@ -5,7 +5,8 @@ import {
   ipcMain,
   Menu,
   dialog,
-  Notification
+  Notification,
+  net
 } from 'electron';
 import { join } from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
@@ -82,28 +83,44 @@ function startLocalServer(): void {
 }
 
 function initAutoUpdate(): void {
+  // Skip auto-update in development mode
+  if (is.dev) {
+    log.info('Auto-updater disabled in development mode');
+    return;
+  }
+
   autoUpdater.logger = log;
   log.transports.file.level = 'info';
 
-  autoUpdater.autoDownload = false;    
-  autoUpdater.checkForUpdates();
+  // Enable silent background downloads like VS Code
+  autoUpdater.autoDownload = true;
+  autoUpdater.autoInstallOnAppQuit = true;
+  
+  // Check for updates every 4 hours
+  setInterval(() => {
+    autoUpdater.checkForUpdates().catch(err => {
+      log.error('Periodic update check failed:', err);
+    });
+  }, 4 * 60 * 60 * 1000);
+  
+  // Delay initial check to avoid startup errors
+  setTimeout(() => {
+    autoUpdater.checkForUpdates().catch(err => {
+      log.error('Initial update check failed:', err);
+    });
+  }, 30000); // Check after 30 seconds
 
   autoUpdater.on('update-available', async info => {
     log.info('Update available:', info);
-
-    const { response } = await dialog.showMessageBox(mainWindow, {
-      type: 'info',
+    
+    // Show subtle notification instead of blocking dialog
+    new Notification({
       title: 'تحديث متوفر',
-      message: `نسخة جديدة (${info.version}) متوفرة.\nالنسخة الحالية: ${app.getVersion()}.\nهل ترغب في تنزيلها؟`,
-      buttons: ['نعم', 'لا'],
-      defaultId: 0,
-      cancelId: 1
-    });
+      body: `يتم تنزيل الإصدار ${info.version} في الخلفية...`,
+      silent: true
+    }).show();
 
-    if (response === 0) {
-      mainWindow.setProgressBar(0);   
-      autoUpdater.downloadUpdate();
-    }
+    mainWindow.setProgressBar(0);
   });
 
   autoUpdater.on('download-progress', p => {
@@ -115,33 +132,36 @@ function initAutoUpdate(): void {
     log.info('Update downloaded:', info);
     mainWindow.setProgressBar(-1); // إخفاء الشريط
 
+    // Show notification that update will install on next restart
     new Notification({
       title: 'التحديث جاهز',
-      body: `تم تنزيل الإصدار ${info.version}.`
+      body: `الإصدار ${info.version} سيتم تثبيته عند إعادة تشغيل التطبيق.`,
+      silent: false
     }).show();
 
-    const { response } = await dialog.showMessageBox(mainWindow, {
-      type: 'info',
-      title: 'التحديث جاهز',
-      message:
-        'تم تنزيل التحديث بنجاح.\nسيُعاد تشغيل التطبيق الآن لتثبيت التحديث.',
-      buttons: ['أعد التشغيل الآن', 'لاحقاً'],
-      defaultId: 0,
-      cancelId: 1
-    });
-
-    if (response === 0) {
-      autoUpdater.quitAndInstall();
-    }
+    // Update will install automatically when app is closed
+    // No need to force restart like VS Code behavior
   });
 
   autoUpdater.on('error', err => {
     mainWindow.setProgressBar(-1);
     log.error('Updater error:', err);
-    dialog.showErrorBox(
-      'خطأ في التحديث',
-      `حدث خطأ أثناء التحقق من التحديثات:\n${err == null ? '' : err.message}`
-    );
+    
+    // Only show error dialog for critical errors, not network issues
+    const errorMessage = err?.message || '';
+    const isNetworkError = errorMessage.includes('404') || 
+                          errorMessage.includes('ENOTFOUND') || 
+                          errorMessage.includes('ECONNREFUSED') ||
+                          errorMessage.includes('net::') ||
+                          errorMessage.includes('getaddrinfo');
+    
+    if (!isNetworkError && !is.dev) {
+      // Only show dialog for non-network errors in production
+      dialog.showErrorBox(
+        'خطأ في التحديث',
+        `حدث خطأ أثناء التحقق من التحديثات:\n${errorMessage}`
+      );
+    }
   });
 }
 
@@ -153,7 +173,11 @@ app.whenReady().then(() => {
 
   createWindow();
   startLocalServer();
-  initAutoUpdate();
+  
+  // Initialize auto-updater after window is ready
+  if (!process.env.DISABLE_AUTO_UPDATE) {
+    initAutoUpdate();
+  }
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

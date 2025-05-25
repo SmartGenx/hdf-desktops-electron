@@ -17,13 +17,17 @@
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
     "start": "electron-vite preview",
     "dev": "electron-vite dev",
+    "prebuild": "prisma generate --schema=server/prisma/schema.prisma",
     "build": "npm run typecheck && electron-vite build",
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
-    "build:win": "npm run build && electron-builder --win",
+    "build:local": "npm run build && electron-builder --win --config.win.target=portable --config.nsis.oneClick=false --publish=never",
+    "build:dev": "npm run build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --win --publish=never",
+    "build:workaround": "npm run build && cross-env ELECTRON_BUILDER_CACHE=false CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --win --publish=never",
+    "build:win": "npm run build && electron-builder --win --publish=never",
     "build:mac": "electron-vite build && electron-builder --mac",
     "build:linux": "electron-vite build && electron-builder --linux",
-    "prisma:generate": "prisma generate",
+    "prisma:generate": "prisma generate --schema=server/prisma/schema.prisma",
     "prepare": "husky install",
     "prisma:migrate": "prisma migrate deploy"
   },
@@ -124,10 +128,24 @@
      "publish": {
        "provider": "github",
        "owner": "SmartGenx",
-       "repo": "hdf-desktops-electron"
+       "repo": "hdf-desktops-electron",
+       "releaseType": "release"
      },
     "win": {
-      "icon": "resources/logo.ico"
+      "icon": "resources/logo.ico",
+      "verifyUpdateCodeSignature": false,
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
     },
     "files": [
       "dist/**/*",
