@@ -6,7 +6,7 @@ import NotFoundError from '../../errors/NotFoundError';
 
 interface DirectorateInput {
   name: string;
-  governorateId: string; 
+  governorateGlobalId: string; 
 }
 
 export default class DirectorateService {
@@ -49,12 +49,12 @@ export default class DirectorateService {
       if (existing) {
         throw new ValidationError(`هذي المديرية ${data.name} موجودة بالفعل`);
       }
-
-      return await this.prisma.directorate.create({
+      console.log(globalId);
+           return await this.prisma.directorate.create({
         data: {
           name: data.name,
           globalId,
-          governorateGlobalId: data.governorateId // ✅ استخدام المفتاح الأجنبي الصحيح
+          governorateGlobalId: data.governorateGlobalId,
         }
       });
     } catch (error: any) {
@@ -63,6 +63,7 @@ export default class DirectorateService {
       } else if (error instanceof ValidationError) {
         throw error;
       } else {
+        console.log(error);
         throw new DatabaseError('Error creating new directorate.', error);
       }
     }
@@ -84,7 +85,7 @@ export default class DirectorateService {
         where: { globalId: id },
         data: {
           name: data.name,
-          governorateGlobalId: data.governorateId, // ✅ تحديث العلاقة
+          governorateGlobalId: data.governorateGlobalId, // ✅ تحديث العلاقة
           version: { increment: 1 }
         }
       });

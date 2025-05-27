@@ -1,4 +1,4 @@
-import { Router } from "express";
+    import { Router } from "express";
 import GovernorateController from "../../controllers/systemSetting/governorateControllers";
 
 const governorateRouter = Router();

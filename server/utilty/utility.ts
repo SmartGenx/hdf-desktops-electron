@@ -8,7 +8,7 @@ export const backupDatabase = async (req: Request, res: Response): Promise<void>
   try {
     const dbName = 'hdf-production';
     const dbUser = 'postgres';
-    const dbPassword = '12345';
+    const dbPassword = '123';
     const dbPort = 5432;
     const backupPath = 'D:\\backup';
     const backupName: string = req.body.backupName;
@@ -29,7 +29,7 @@ export const backupDatabase = async (req: Request, res: Response): Promise<void>
 
     process.env.PGPASSWORD = dbPassword;
 
-    const pgDumpPath = 'C:\\Program Files\\PostgreSQL\\15\\bin\\pg_dump';
+    const pgDumpPath = 'C:\\Program Files\\PostgreSQL\\16\\bin\\pg_dump';
     const command = `"${pgDumpPath}" -U ${dbUser} -d ${dbName} -p ${dbPort} -f "${outputPath}"`;
 
     exec(command, async (error, stderr) => {

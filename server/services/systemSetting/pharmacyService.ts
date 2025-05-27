@@ -6,7 +6,7 @@ import NotFoundError from '../../errors/NotFoundError';
 
 interface PharmacyInput {
   name: string;
-  governorateId: string; // 🔁 هذا هو الـ globalId وليس رقم
+  governorateGlobalId: string; // 🔁 هذا هو الـ globalId وليس رقم
   address?: string;
   phone?: string;
 }
@@ -57,7 +57,7 @@ export default class PharmacyService {
           name: data.name,
           globalId,
           location: data.address || '',
-          governorateGlobalId: data.governorateId,
+          governorateGlobalId: data.governorateGlobalId,
           startDispenseDate: 0, 
           endispenseDate: 0    
         }
@@ -90,7 +90,7 @@ export default class PharmacyService {
         data: {
           name: data.name,
           location: data.address || '',
-          governorateGlobalId: data.governorateId,
+          governorateGlobalId: data.governorateGlobalId,
           version: { increment: 1 }
         }
       });
