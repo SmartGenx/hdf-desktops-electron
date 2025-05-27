@@ -8,8 +8,8 @@ import { v4 as uuidv4 } from 'uuid'
 import { AccreditedByPrescription } from '../../viewModels/AccreditedByPrescription'
 
 interface CreateAccreditedInput {
-  numberOfRfid: number | string
-  formNumber: number | string
+  numberOfRfid: number 
+  formNumber: number 
   type: string
   prescriptionDate: Date
   applicantGlobalId: string
@@ -23,8 +23,8 @@ interface CreateAccreditedInput {
 
 interface UpdateAccreditedInput {
   type?: string
-  numberOfRfid?: number | string
-  formNumber?: number | string
+  numberOfRfid?: number 
+  formNumber?: number 
   prescriptionDate?: Date
   treatmentSite?: string
   doctor?: string
@@ -319,7 +319,8 @@ export default class AccreditedService {
         const timestamp = Date.now()
         const uniqueId = uuidv4()
         const globalId = `${process.env.LOCAL_DB_ID}-${uniqueId}-${timestamp}`
-
+        console.log("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH")
+        console.log(AccreditedData)
         const {
           numberOfRfid,
           formNumber,
@@ -330,7 +331,6 @@ export default class AccreditedService {
           squareGlobalId,
           ...rest
         } = AccreditedData
-
         const accredited = await prisma.accredited.create({
           data: {
             numberOfRfid: +numberOfRfid,

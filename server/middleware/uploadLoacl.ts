@@ -60,7 +60,7 @@ const upload = multer({
     fileFilter: fileFilter
 })
 
-const copyFileToProfileDir = () => async (req: MulterRequest,  next: NextFunction): Promise<void> => {
+const copyFileToProfileDir = async (req: MulterRequest, res: Response, next: NextFunction): Promise<void> => {
     if (!req.file && !req.files) {
         return next(new Error('No file uploaded'))
     }

@@ -104,6 +104,8 @@ class AccreditedController {
       const fileAtch = (req as any).atch;
       const filePt = (req as any).pt;
       const AccreditedData = req.body;
+      console.log("CCCCCCCCCCCCCCCCCCCCCCCCCCC")
+      console.log(AccreditedData)
       const newAccreditation = await this.accreditedService.createAccreditation(
         AccreditedData,
         fileAtch,
@@ -111,6 +113,7 @@ class AccreditedController {
       );
       res.status(201).json(newAccreditation);
     } catch (error) {
+      console.log(error);
       next(new ApiError(500, 'InternalServer', 'Internal Server Error'));
     }
   }
