@@ -6,7 +6,7 @@ import NotFoundError from '../../errors/NotFoundError';
 
 interface PharmacyInput {
   name: string;
-  governorateGlobalId: string; // 🔁 هذا هو الـ globalId وليس رقم
+  governorateGlobalId: string;
   address?: string;
   phone?: string;
 }
@@ -49,7 +49,7 @@ export default class PharmacyService {
 
       const existing = await this.prisma.pharmacy.findFirst({ where: { name: data.name } });
       if (existing) {
-        throw new ValidationError(`هذي الصيدلة ${data.name} موجودة بالفعل`);
+        throw new ValidationError(`هذة الصيدلية ${data.name} موجودة بالفعل`);
       }
 
       return await this.prisma.pharmacy.create({
@@ -64,7 +64,7 @@ export default class PharmacyService {
       });
     } catch (error: any) {
       if (error.code === 'P2002') {
-        throw new ValidationError(`A pharmacy with the name '${data.name}' already exists.`);
+        throw new ValidationError(`هذة الصيدلية ${data.name} موجودة بالفعل`);
       } else if (error instanceof ValidationError) {
         throw error;
       } else {
@@ -82,7 +82,7 @@ export default class PharmacyService {
 
       const existingName = await this.prisma.pharmacy.findFirst({ where: { name: data.name } });
       if (existingName && existingName.globalId !== id) {
-        throw new ValidationError(`هذي الصيدلة ${data.name} موجودة بالفعل`);
+        throw new ValidationError(`هذة الصيدلية ${data.name} موجودة بالفعل`);
       }
 
       return await this.prisma.pharmacy.update({

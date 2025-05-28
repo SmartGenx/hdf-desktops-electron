@@ -44,7 +44,7 @@ export default class DiseaseService {
 
       const existing = await this.prisma.disease.findFirst({ where: { name } });
       if (existing) {
-        throw new ValidationError(`هذي المرض  ${name}  موجودة بالفعل`);
+        throw new ValidationError(`هذا المرض  ${name}  موجود بالفعل`);
       }
 
       return await this.prisma.disease.create({
@@ -57,7 +57,7 @@ export default class DiseaseService {
       });
     } catch (error: any) {
       if (error.code === 'P2002') {
-        throw new ValidationError(`A disease with the name '${name}' already exists.`);
+        throw new ValidationError(`هذا المرض  ${name}  موجود بالفعل`);
       } else if (error instanceof ValidationError) {
         throw error;
       } else {
@@ -75,7 +75,7 @@ export default class DiseaseService {
 
       const sameName = await this.prisma.disease.findFirst({ where: { name: data.name } });
       if (sameName && sameName.globalId !== id) {
-        throw new ValidationError(`هذي المرض  ${data.name}  موجودة بالفعل`);
+        throw new ValidationError(`هذا المرض  ${name}  موجود بالفعل`);
       }
 
       return await this.prisma.disease.update({

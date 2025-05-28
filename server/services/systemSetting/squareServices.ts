@@ -43,7 +43,7 @@ export default class SquareService {
 
       const existing = await this.prisma.square.findFirst({ where: { name } });
       if (existing) {
-        throw new ValidationError(`هذي المربع ${name} موجودة بالفعل`);
+        throw new ValidationError(`هذا المربع ${name} موجود بالفعل`);
       }
 
       return await this.prisma.square.create({
@@ -51,7 +51,7 @@ export default class SquareService {
       });
     } catch (error: any) {
       if (error.code === 'P2002') {
-        throw new ValidationError(`A square with the name '${name}' already exists.`);
+        throw new ValidationError(`هذا المربع ${name} موجود بالفعل`);
       } else if (error instanceof ValidationError) {
         throw error;
       } else {
@@ -69,7 +69,7 @@ export default class SquareService {
 
       const existingName = await this.prisma.square.findFirst({ where: { name: data.name } });
       if (existingName && existingName.globalId !== id) {
-        throw new ValidationError(`هذي المربع ${data.name} موجودة بالفعل`);
+        throw new ValidationError(`هذا المربع ${name} موجود بالفعل`);
       }
 
       return await this.prisma.square.update({

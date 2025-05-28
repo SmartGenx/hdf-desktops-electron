@@ -59,7 +59,7 @@ export default class DirectorateService {
       });
     } catch (error: any) {
       if (error.code === 'P2002') {
-        throw new ValidationError(`A directorate with the name '${data.name}' already exists.`);
+        throw new ValidationError(`هذي المديرية ${data.name} موجودة بالفعل`);
       } else if (error instanceof ValidationError) {
         throw error;
       } else {

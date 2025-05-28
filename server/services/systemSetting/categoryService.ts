@@ -67,7 +67,7 @@ export class CategoryService {
       });
     } catch (error: any) {
       if (error.code === 'P2002') {
-        throw new ValidationError(`A category with the name '${name}' already exists.`);
+        throw new ValidationError(`هذي الفئة  ${name}  موجودة بالفعل `);
       } else if (error instanceof ValidationError) {
         throw error;
       } else {
