@@ -1,6 +1,6 @@
 {
   "name": "HDF",
-  "version": "v1.0.0",
+  "version": "v1.0.5",
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
   "author": "SMART_GENX",
@@ -17,7 +17,8 @@
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
     "start": "electron-vite preview",
     "dev": "electron-vite dev",
-    "prebuild": "prisma generate --schema=server/prisma/schema.prisma",
+    "prebuild": "npx prisma generate --schema=server/prisma/schema.prisma && npm run build:server",
+    "build:server": "cd server && npx prisma generate && npm run build && cd ..",
     "build": "npm run typecheck && electron-vite build",
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
@@ -37,6 +38,8 @@
     "@electron-toolkit/utils": "^3.0.0",
     "@heroicons/react": "^2.1.5",
     "@hookform/resolvers": "^3.9.0",
+    "@prisma/client": "^5.22.0",
+    "@prisma/engines": "^5.22.0",
     "@radix-ui/react-alert-dialog": "^1.1.1",
     "@radix-ui/react-avatar": "^1.1.0",
     "@radix-ui/react-checkbox": "^1.1.1",
@@ -97,6 +100,7 @@
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.20",
     "clsx": "^2.1.1",
+    "cross-env": "^7.0.3",
     "electron": "^31.0.2",
     "electron-builder": "^24.13.3",
     "electron-vite": "^2.3.0",
@@ -105,6 +109,7 @@
     "husky": "^9.1.7",
     "postcss": "^8.4.41",
     "prettier": "^3.3.2",
+    "prisma": "^5.22.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.2.1",
@@ -123,21 +128,23 @@
     "url": "https://github.com/SmartGenx/hdf-desktops-electron.git"
   },
   "build": {
-     "appId": "com.SmartGenx.autoupdate",
-     "artifactName": "HDF-Setup-${version}.${ext}",
-     "publish": {
-       "provider": "github",
-       "owner": "SmartGenx",
-       "repo": "hdf-desktops-electron",
-       "releaseType": "release"
-     },
+    "appId": "com.SmartGenx.autoupdate",
+    "artifactName": "HDF-Setup-${version}.${ext}",
+    "publish": {
+      "provider": "github",
+      "owner": "SmartGenx",
+      "repo": "hdf-desktops-electron",
+      "releaseType": "release"
+    },
     "win": {
       "icon": "resources/logo.ico",
       "verifyUpdateCodeSignature": false,
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ]
     },
@@ -164,14 +171,42 @@
     ],
     "extraResources": [
       {
-        "from": "server",
-        "to": "server",
+        "from": "server/dist",
+        "to": "server/dist",
         "filter": [
           "**/*"
         ]
       },
       {
-        "from": "prisma",
+        "from": "node_modules/.prisma",
+        "to": "server/node_modules/.prisma",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "node_modules/@prisma",
+        "to": "server/node_modules/@prisma",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "server/node_modules",
+        "to": "server/node_modules",
+        "filter": [
+          "**/*",
+          "!**/test/**/*",
+          "!**/docs/**/*",
+          "!**/examples/**/*"
+        ]
+      },
+      {
+        "from": ".env",
+        "to": ".env"
+      },
+      {
+        "from": "server/prisma",
         "to": "prisma",
         "filter": [
           "**/*"
@@ -186,7 +221,11 @@
       }
     ],
     "asarUnpack": [
-      "server/**"
+      "server/**",
+      "prisma/**",
+      ".prisma/**",
+      "**/node_modules/.prisma/**",
+      "**/node_modules/@prisma/**"
     ]
   }
 }
