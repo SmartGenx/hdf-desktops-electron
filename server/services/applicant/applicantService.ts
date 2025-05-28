@@ -67,7 +67,7 @@ export default class ApplicantService {
         orderBy
       });
     } catch (error) {
-      throw new DatabaseError('Error retrieving applicants.', error);
+      throw new DatabaseError('حدث خطأ أثناء استرجاع بيانات المتقدمين.', error);
     }
   }
 
@@ -129,7 +129,7 @@ export default class ApplicantService {
       orderBy,
     })
   } catch (error) {
-    throw new DatabaseError('Error retrieving applicants.', error)
+    throw new DatabaseError('حدث خطأ أثناء استرجاع بيانات المتقدمين.', error)
   }
   }
 
@@ -143,7 +143,7 @@ export default class ApplicantService {
       })
       return count
     } catch (error) {
-      throw new DatabaseError('Error counting applicants.', error)
+      throw new DatabaseError('حدث خطأ أثناء عدّ المتقدمين.', error)
     }
   }
 
@@ -217,7 +217,7 @@ export default class ApplicantService {
         accreditCount,
       }
     } catch (error) {
-      throw new DatabaseError('Failed to fetch applicant monthly gender counts', error)
+      throw new DatabaseError('فشل في جلب عدد المتقدمين حسب الجنس  شهريًا.', error)
     }
   }
 
@@ -234,7 +234,7 @@ export default class ApplicantService {
       if (!applicant) throw new NotFoundError(`Applicant with id ${id} not found.`);
       return applicant;
     } catch (error) {
-      throw new DatabaseError('Error retrieving applicant.', error);
+      throw new DatabaseError('حدث خطأ أثناء استرجاع بيانات المتقدمين.', error);
     }
   }
 
@@ -292,7 +292,7 @@ async createApplicant(ApplicantData: any) {
         }
       });
 
-      if (!existingDisease) throw new NotFoundError('Disease record not found for this applicant.');
+      if (!existingDisease) throw new NotFoundError('لم يتم العثور على سجل المرض لهذا المتقدم.');
 
       await this.prisma.diseasesApplicants.update({
         where: { globalId: existingDisease.globalId },
@@ -305,7 +305,7 @@ async createApplicant(ApplicantData: any) {
 
       return updated;
     } catch (error) {
-      throw new DatabaseError('Error updating applicant.', error);
+      throw new DatabaseError('حدث خطأ أثناء تحديث بيانات المتقدم.', error);
     }
   }
 
@@ -336,7 +336,7 @@ async createApplicant(ApplicantData: any) {
       if (error instanceof NotFoundError) {
         throw error
       }
-      throw new DatabaseError('Error updating and deleting applicant.', error)
+      throw new DatabaseError('حدث خطأ أثناء تحديث أو حذف بيانات المتقدم.', error)
     }
   }
 
@@ -350,7 +350,7 @@ async createApplicant(ApplicantData: any) {
         data: { deleted: true, version: { increment: 1 } }
       });
     } catch (error) {
-      throw new DatabaseError('Error deleting applicant.', error);
+      throw new DatabaseError('حدث خطأ أثناء حذف بيانات المتقدم.', error);
     }
   }
 
@@ -416,7 +416,7 @@ async createApplicant(ApplicantData: any) {
 
       return reports
     } catch (error) {
-      throw new DatabaseError('Error retrieving applicant report by directorate.', error)
+      throw new DatabaseError('حدث خطأ أثناء استرجاع تقرير المتقدمين حسب المديرية.', error)
     }
   }
 
