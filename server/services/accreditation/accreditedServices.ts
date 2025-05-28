@@ -180,7 +180,7 @@ export default class AccreditedService {
         orderBy
       })
     } catch (error) {
-      throw new DatabaseError('Error retrieving accreditations.', error)
+      throw new DatabaseError('خطا في جلب المعتمدين', error)
     }
   }
 
@@ -212,7 +212,7 @@ export default class AccreditedService {
 
       return accredited
     } catch (error) {
-      throw new DatabaseError('Error retrieving filtered accredited records.', error)
+      throw new DatabaseError('حدث خطأ أثناء استرجاع سجلات المعتمدين المُفلترة.', error)
     }
   }
 
@@ -262,7 +262,7 @@ export default class AccreditedService {
         orderBy: finalOrderBy
       })
     } catch (error) {
-      throw new DatabaseError('Error searching accreditations.', error)
+      throw new DatabaseError('حدث خطأ أثناء البحث في سجلات الاعتماد.', error)
     }
   }
 
@@ -290,7 +290,7 @@ export default class AccreditedService {
 
       return accreditation
     } catch (error) {
-      throw new DatabaseError('Error retrieving accreditation.', error)
+      throw new DatabaseError('خطا في جلب المعتمدين', error)
     }
   }
 
@@ -304,8 +304,7 @@ export default class AccreditedService {
       })
       return accreditedCount
     } catch (error) {
-      console.error('Error counting accredited records:', error)
-      throw new Error('Failed to count accredited records')
+      throw new Error('فشل في عدّ سجلات الاعتماد.')
     }
   }
 
@@ -319,8 +318,6 @@ export default class AccreditedService {
         const timestamp = Date.now()
         const uniqueId = uuidv4()
         const globalId = `${process.env.LOCAL_DB_ID}-${uniqueId}-${timestamp}`
-        console.log("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH")
-        console.log(AccreditedData)
         const {
           numberOfRfid,
           formNumber,
@@ -372,7 +369,7 @@ export default class AccreditedService {
 
         return accredited
       } catch (error) {
-        throw new DatabaseError('Error updating accreditation.', error)
+        throw new DatabaseError('حدث خطأ أثناء تحديث سجل الاعتماد.', error)
       }
     })
 
@@ -451,7 +448,7 @@ export default class AccreditedService {
 
       return accredited
     } catch (error) {
-      throw new DatabaseError('Error updating accreditation.', error)
+      throw new DatabaseError('حدث خطأ أثناء تحديث سجل الاعتماد.', error)
     }
   }
 
@@ -472,7 +469,7 @@ export default class AccreditedService {
         }
       })
     } catch (error) {
-      throw new DatabaseError('Error updating accreditation.', error)
+      throw new DatabaseError('حدث خطأ أثناء تحديث سجل الاعتماد.', error)
     }
   }
 
@@ -508,7 +505,7 @@ export default class AccreditedService {
 
       return applicantName
     } catch (error) {
-      throw new DatabaseError('Error deleting accreditation.', error)
+      throw new DatabaseError('حدث خطأ أثناء حذف سجل الاعتماد.', error)
     }
   }
 async AccreditedByPrescriptionServer(
@@ -606,8 +603,7 @@ async AccreditedByPrescriptionServer(
         return fullType(accreditedList).map(mapToReport)
       }
     } catch (error) {
-      console.error('Error in AccreditedByPrescriptionServer:', error)
-      throw new DatabaseError('Error fetching accreditation data.', error)
+      throw new DatabaseError('حدث خطأ أثناء جلب بيانات الاعتماد.', error)
     }
   }
 

@@ -47,7 +47,7 @@ export default class PrescriptionService {
         orderBy
       });
     } catch (error) {
-      throw new DatabaseError('Error retrieving prescriptions.', error);
+      throw new DatabaseError('حدث خطأ أثناء استرجاع الوصفات الطبية.', error);
     }
   }
 
@@ -64,7 +64,7 @@ export default class PrescriptionService {
       return prescription;
     } catch (error) {
       if (error instanceof NotFoundError) throw error;
-      throw new DatabaseError('Error retrieving prescription.', error);
+      throw new DatabaseError('حدث خطأ أثناء استرجاع الوصفات الطبية.', error);
     }
   }
 
@@ -88,7 +88,7 @@ export default class PrescriptionService {
         }
       });
     } catch (error) {
-      throw new DatabaseError('Error creating new prescription.', error);
+      throw new DatabaseError('حدث خطأ أثناء إنشاء وصفة طبية جديدة.', error);
     }
   }
 
@@ -110,7 +110,7 @@ export default class PrescriptionService {
         }
       });
     } catch (error) {
-      throw new DatabaseError('Error updating prescription.', error);
+      throw new DatabaseError('حدث خطأ أثناء تحديث الوصفة الطبية.', error);
     }
   }
 
@@ -132,7 +132,7 @@ export default class PrescriptionService {
         }
       });
     } catch (error) {
-      throw new DatabaseError('Error deleting prescription.', error);
+      throw new DatabaseError('حدث خطأ أثناء حذف الوصفة الطبية.', error);
     }
   }
 }
