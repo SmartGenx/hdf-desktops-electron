@@ -90,29 +90,58 @@ class DatabaseService {
 
   constructor() {
     // ---------------- Local & cloud clients ----------------
-    this.localPrisma = new PrismaClient({
-      datasources: {
-        db: {
-          // prefer env, fallback to hard-coded localhost
-          url:
-            process.env.LOCAL_DATABASE_URL ??
-            'postgresql://postgres:123@localhost:5432/hdf-production?schema=public'
-        }
+    try {
+      // Always use PostgreSQL for local database
+      const localDbUrl = process.env.DATABASE_URL || 'postgresql://postgres:12345@localhost:5432/hdf-production?schema=public';
+      
+      console.log('Initializing local PostgreSQL database with URL:', localDbUrl);
+      
+      this.localPrisma = new PrismaClient({
+        datasources: {
+          db: {
+            url: localDbUrl
+          }
+        },
+        errorFormat: 'pretty',
+        log: ['error', 'warn']
+      });
+      
+      console.log('Local PostgreSQL client initialized successfully');
+      
+      // Initialize cloud client if URL is provided
+      if (process.env.CLOUD_DATABASE_URL) {
+        console.log('Initializing cloud database connection');
+        this.cloudPrisma = new PrismaClient({
+          datasources: {
+            db: {
+              url: process.env.CLOUD_DATABASE_URL
+            }
+          },
+          errorFormat: 'pretty',
+          log: ['error', 'warn']
+        });
+        console.log('Cloud Prisma client initialized successfully');
+      } else {
+        console.log('No CLOUD_DATABASE_URL provided, using hardcoded fallback for cloud client');
+        this.cloudPrisma = new PrismaClient({
+          datasources: {
+            db: {
+              url: 'postgresql://postgres:123456789@15.207.99.228:5432/hdf?schema=public'
+            }
+          },
+          errorFormat: 'pretty',
+          log: ['error', 'warn']
+        });
       }
-    })
-
-    this.cloudPrisma = new PrismaClient({
-      datasources: {
-        db: {
-          url:
-            process.env.CLOUD_DATABASE_URL ??
-            'postgresql://postgres:123456789@15.207.99.228:5432/hdf?schema=public'
-        }
-      }
-    })
-
-    // Immediately build service layer
-    this.initializeServices().catch(console.error)
+      
+      // Immediately build service layer
+      this.initializeServices().catch(err => {
+        console.error('Failed to initialize services:', err);
+      });
+    } catch (error) {
+      console.error('Failed to initialize database clients:', error);
+      throw new Error('Database connection failed. Please ensure PostgreSQL is running and correctly configured.');
+    }
   }
 
   /** True if an outbound lookup to google.com resolves */
@@ -383,20 +412,33 @@ class DatabaseService {
     }
   }
 
-  /** Update the sync checkpoint for a model */
+  /** Update the sync checkpoint for a model with fallback to local time */
   async updateLastSyncedAt(modelName: ModelName): Promise<void> {
     try {
-      const { data } = await axios.get<{ dateTime: string }>(
-        'https://timeapi.io/api/Time/current/zone?timeZone=Asia/Riyadh'
-      )
+      let syncTime: Date;
+      
+      // Try to get time from timeapi.io
+      try {
+        const { data } = await axios.get<{ dateTime: string }>(
+          'https://timeapi.io/api/Time/current/zone?timeZone=Asia/Riyadh',
+          { timeout: 3000 } // Add timeout to prevent hanging
+        );
+        syncTime = new Date(data.dateTime);
+        console.log(`Got time from timeapi.io: ${syncTime.toISOString()}`);
+      } catch (timeApiError) {
+        // Fallback to local time if timeapi.io is unavailable
+        console.warn('Failed to get time from timeapi.io, using local time:', timeApiError);
+        syncTime = new Date();
+      }
+      
       await this.localPrisma.syncStatus.upsert({
         where: { modelName },
-        update: { lastSyncedAt: new Date(data.dateTime) },
-        create: { modelName, lastSyncedAt: new Date(data.dateTime) }
-      })
-      console.log(`Updated lastSyncedAt for ${modelName}`)
+        update: { lastSyncedAt: syncTime },
+        create: { modelName, lastSyncedAt: syncTime }
+      });
+      console.log(`Updated lastSyncedAt for ${modelName} to ${syncTime.toISOString()}`);
     } catch (err) {
-      console.error(`Failed to update lastSyncedAt for ${modelName}:`, err)
+      console.error(`Failed to update lastSyncedAt for ${modelName}:`, err);
     }
   }
 
@@ -479,8 +521,21 @@ async user() {
 }
 
 async switchDatabaseBasedOnConnectivity() {
-  console.log('🚀 ~ switchDatabaseBasedOnConnectivity');
-  await this.initializeServices();
+  console.log('Starting database connectivity check...');
+  
+  try {
+    // Test PostgreSQL connection
+    await this.localPrisma.$connect();
+    console.log('PostgreSQL connection successful');
+    
+    // Initialize services
+    await this.initializeServices();
+    console.log('Database connectivity check completed successfully');
+    return true;
+  } catch (error) {
+    console.error('PostgreSQL connection failed:', error);
+    throw new Error('Failed to connect to PostgreSQL database. Please ensure the database is running and properly configured.');
+  }
 }
   /** Return true if any model has new rows pending sync (local⇆cloud). */
   async hasPendingSyncData(): Promise<boolean> {

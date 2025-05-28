@@ -4,10 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-
-
-  url      = "postgresql://postgres:123@localhost:5432/hdf-production?schema=public"
-  // url = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
 model User {

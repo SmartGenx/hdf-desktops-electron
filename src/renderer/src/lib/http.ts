@@ -2,8 +2,18 @@ import axios, { AxiosRequestConfig } from 'axios'
 // import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
 // import { redirect } from 'react-router-dom';
 
+// Determine the API base URL based on the environment
+const getApiBaseUrl = () => {
+  // In production, the server runs on the same port
+  if (import.meta.env.PROD) {
+    return 'http://localhost:5050/api'
+  }
+  // In development, use the environment variable or default
+  return import.meta.env.VITE_API_URL || 'http://localhost:5050/api'
+}
+
 export const axiosInstance = axios.create({
-  baseURL: 'http://localhost:5050/api'
+  baseURL: getApiBaseUrl()
 })
 
 type Config = AxiosRequestConfig<unknown> | undefined

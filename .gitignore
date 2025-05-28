@@ -1,36 +1,50 @@
 # Dependencies
-node_modules
+node_modules/
+**/node_modules/
 .pnp
 .pnp.js
 
 # Build outputs
-dist
-out
-build
-build/*
-release
+dist/
+dist-*
+out/
+build/
+release/
 *.tgz
+server/dist/
+server/build/
+*.unpacked
 
-# Environment
+# Environment and Config
 .env
 .env*.local
 .env.development
 .env.production
+.env.test
+config/local.json
+secrets.json
 
 # Logs
-logs
+logs/
+*.log
 *.log*
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+lerna-debug.log*
+electron-debug.log*
+main.log
+renderer.log
 
 # Editor and OS files
 .DS_Store
-.idea
+.idea/
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
 *.suo
 *.ntvs*
 *.njsproj
@@ -39,27 +53,178 @@ pnpm-debug.log*
 .vercel
 Thumbs.db
 Desktop.ini
+.directory
 
 # Electron-specific
 dev-app-update.yml
 .electron-builder.config.json
 **/electron-builder-*.yml
 false/
+electron-builder.yml
+app-update.yml
 
 # Testing
-coverage
-.nyc_output
+coverage/
+.nyc_output/
+*.lcov
+test-results/
+jest-results/
+*.test.js.snap
 
-# Prisma
+# Database files
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
 **/prisma/*.db
+**/prisma/*.db-journal
 **/prisma/dev.db
-**/.prisma
+**/prisma/migrations/dev/
+**/.prisma/
+database.db
+local.db
 
 # Cache and temporary files
-.wwebjs_cache
-.wwebjs_auth
-.temp
-.cache
-.parcel-cache
-.turbo
-.next
+.cache/
+.temp/
+.tmp/
+*.tmp
+.parcel-cache/
+.turbo/
+.next/
+.nuxt/
+.docusaurus/
+*.pid
+*.seed
+*.pid.lock
+
+# WhatsApp Web.js
+.wwebjs_cache/
+.wwebjs_auth/
+session/
+WWebJS/
+puppeteer_cache/
+
+# User data and profiles (sensitive)
+Profiles/
+user-data/
+userData/
+appData/
+
+# Lock files (uncomment if you don't want to track these)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# Production secrets and certificates
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+*.pfx
+private/
+certificates/
+
+# Backup files
+*.backup
+*.bak
+backup/
+backups/
+
+# Archives
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+
+# OS generated files
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Debug files
+*.dmp
+debug/
+dumps/
+
+# Temporary build files
+*.tsbuildinfo
+.eslintcache
+.stylelintcache
+
+# Generated documentation
+docs/generated/
+api-docs/
+
+# Local development files
+local-dev/
+scratch/
+todo.txt
+notes.txt
+
+# Auto-generated files from the build process
+build-server.js.log
+
+# Electron Forge
+out/
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+
+# npm
+npm-debug.log*
+lerna-debug.log*
+.npm
+
+# Additional Electron patterns
+*.provisionprofile
+*.mobileprovision
+*.orig
+
+# Windows Installer files
+*.msm
+*.msp
+
+# System Files
+.AppleDouble
+.LSOverride
+Icon
+
+# Linux trash folder
+.Trash-*
+
+# Additional IDE files
+.history/
+*.sublime-workspace
+*.sublime-project
+
+# Python (if any scripts use it)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ruby (if any scripts use it)
+*.gem
+.bundle/
+
+# Logs from tools
+tsconfig.tsbuildinfo
+.eslintcache
+.stylelintcache
+.prettiercache
