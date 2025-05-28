@@ -189,7 +189,7 @@ export default function UpdateAccredited() {
     onSuccess: () => {
       toast({
         title: 'تمت العملية',
-        description: 'تمت الاضافة بنجاح',
+        description: 'تمت التعديل بنجاح',
         variant: 'success'
       })
       queryClient.invalidateQueries({ queryKey: ['accredited'] })
