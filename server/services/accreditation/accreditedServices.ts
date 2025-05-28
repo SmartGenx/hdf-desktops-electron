@@ -511,8 +511,7 @@ export default class AccreditedService {
       throw new DatabaseError('Error deleting accreditation.', error)
     }
   }
-
-  async AccreditedByPrescriptionServer(
+async AccreditedByPrescriptionServer(
     dataFilter: DataFilter
   ): Promise<
     | { info: AccreditedByPrescription[]; total: number; page: number; pageSize: number }
@@ -542,15 +541,43 @@ export default class AccreditedService {
         }
       }
 
-      const fullType = (accreditedList: any) =>
-        accreditedList as (Accredited & {
-          applicant: Applicant & {
-            directorate: { name: string }
-            diseasesApplicants: { Disease: { name: string } }[]
-          }
-          prescription: Prescription[]
-        })[]
+      const mapToReport = (accredited: any): AccreditedByPrescription => {
+        const applicant = accredited.applicant
+        const prescription = accredited.prescription?.[0] ?? {
+          latestPrescriptionDate: null,
+          renewalDate: null
+        }
 
+        const disease = applicant.diseasesApplicants?.[0]?.Disease?.name ?? ''
+        const directorate = applicant.directorate?.name ?? ''
+
+        const latestDate = prescription.latestPrescriptionDate
+        const now = new Date()
+        const days = latestDate
+          ? Math.ceil((now.getTime() - new Date(latestDate).getTime()) / (1000 * 60 * 60 * 24))
+          : 0
+
+        const months = latestDate
+          ? ((now.getFullYear() - new Date(latestDate).getFullYear()) * 12 +
+              now.getMonth() -
+              new Date(latestDate).getMonth()).toString()
+          : '0'
+
+        return new AccreditedByPrescription(
+          applicant,
+          accredited.formNumber,
+          disease,
+          directorate,
+          prescription,
+          days,
+          months
+        )
+      }
+
+      const fullType = (accreditedList: any) =>
+        accreditedList as (Prisma.AccreditedGetPayload<typeof baseQuery>)[]
+
+      // Pagination mode
       if (page && pageSize) {
         const skip = (+page - 1) * +pageSize
         const take = +pageSize
@@ -565,19 +592,21 @@ export default class AccreditedService {
           where: baseQuery.where
         })
 
-        const reports = fullType(accreditedList).map(this.mapToReport)
+        const reports = fullType(accreditedList).map(mapToReport)
 
         return {
           info: reports,
           total,
-          page,
-          pageSize
+          page: +page,
+          pageSize: +pageSize
         }
       } else {
+        // Return all data
         const accreditedList = await this.prisma.accredited.findMany(baseQuery)
-        return fullType(accreditedList).map(this.mapToReport)
+        return fullType(accreditedList).map(mapToReport)
       }
     } catch (error) {
+      console.error('Error in AccreditedByPrescriptionServer:', error)
       throw new DatabaseError('Error fetching accreditation data.', error)
     }
   }
