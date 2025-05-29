@@ -92,7 +92,7 @@ class DatabaseService {
     // ---------------- Local & cloud clients ----------------
     try {
       // Always use PostgreSQL for local database
-      const localDbUrl = process.env.DATABASE_URL || 'postgresql://postgres:12345@localhost:5432/hdf-production?schema=public';
+      const localDbUrl = process.env.DATABASE_URL || 'postgresql://postgres:123@localhost:5432/hdf-production?schema=public';
       
       console.log('Initializing local PostgreSQL database with URL:', localDbUrl);
       

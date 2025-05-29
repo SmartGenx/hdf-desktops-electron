@@ -140,7 +140,7 @@ function startLocalServer(): void {
     
     const devEnv = {
       ...process.env,
-      DATABASE_URL: process.env.DATABASE_URL || 'postgresql://postgres:12345@localhost:5432/hdf-production?schema=public',
+      DATABASE_URL: process.env.DATABASE_URL || 'postgresql://postgres:123@localhost:5432/hdf-production?schema=public',
       CLOUD_DATABASE_URL: process.env.CLOUD_DATABASE_URL || 'postgresql://postgres:123456789@15.207.99.228:5432/hdf?schema=public',
       JWT_SECRET: process.env.JWT_SECRET || 'bvhdbvsbvjksbksvvns',
       LOCAL_DB_ID: process.env.LOCAL_DB_ID || 'LOCAL_DB_ID',
@@ -260,8 +260,8 @@ function startLocalServer(): void {
       NODE_ENV: 'production',
       RESOURCES_PATH: process.resourcesPath,
       PRISMA_SCHEMA_PATH: join(process.resourcesPath, 'prisma', 'schema.prisma'),
-      DATABASE_URL: process.env.DATABASE_URL || 'postgresql://postgres:12345@localhost:5432/hdf-production?schema=public',
-      CLOUD_DATABASE_URL: process.env.CLOUD_DATABASE_URL || 'postgresql://postgres:123456789@smartgenx.cvo4o480qqmw.ap-south-1.rds.amazonaws.com:5432/hdf_platform?schema=public',
+      DATABASE_URL: process.env.DATABASE_URL || 'postgresql://postgres:123@localhost:5432/hdf-production?schema=public',
+      CLOUD_DATABASE_URL: process.env.CLOUD_DATABASE_URL || 'postgresql://postgres:123456789@15.207.99.228:5432/hdf?schema=public',
       JWT_SECRET: process.env.JWT_SECRET || 'bvhdbvsbvjksbksvvns',
       LOCAL_DB_ID: process.env.LOCAL_DB_ID || 'LOCAL_DB_ID',
       PORT: '5050',
@@ -439,26 +439,52 @@ ipcMain.handle('check-server-health', async () => {
   return await checkServerHealth();
 });
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   electronApp.setAppUserModelId('com.electron');
   app.on('browser-window-created', (_, win) => optimizer.watchWindowShortcuts(win));
-
   ipcMain.on('ping', () => console.log('pong'));
 
-  createWindow();
-  
-  setTimeout(() => {
-    startLocalServer();
-  }, 1000);
-  
+  // 🟢 1. ابدأ تشغيل السيرفر فوراً
+  startLocalServer();
+
+  // 🟡 2. تحقق من صحة السيرفر قبل إنشاء النافذة
+  const maxRetries = 10;
+  const interval = 1000;
+  let isHealthy = false;
+
+  for (let i = 0; i < maxRetries; i++) {
+    isHealthy = await checkServerHealth();
+    if (isHealthy) {
+      break;
+    }
+    log.info(`🔁 Waiting for server to be ready... (${i + 1}/${maxRetries})`);
+    await new Promise(resolve => setTimeout(resolve, interval));
+  }
+
+  if (isHealthy) {
+    log.info('✅ Server is healthy, launching window...');
+    createWindow();
+  } else {
+    log.error('❌ Failed to connect to the local server after multiple attempts.');
+    dialog.showErrorBox(
+      'خطأ في الخادم',
+      'فشل الاتصال بالخادم المحلي بعد عدة محاولات. يرجى التحقق من إعدادات السيرفر أو الاتصال بمدير النظام.'
+    );
+    app.quit();
+    return;
+  }
+
+  // 🛠️ 3. التحديثات التلقائية (إن وُجدت)
   if (!process.env.DISABLE_AUTO_UPDATE) {
     initAutoUpdate();
   }
 
+  // 🔄 4. إعادة فتح النافذة عند التفعيل (macOS)
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 });
+
 
 app.on('window-all-closed', () => {
   if (serverProcess) {
