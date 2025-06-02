@@ -25,7 +25,7 @@
     "build:local": "npm run build && electron-builder --win --config.win.target=portable --config.nsis.oneClick=false --publish=never",
     "build:dev": "npm run build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --win --publish=never",
     "build:workaround": "npm run build && cross-env ELECTRON_BUILDER_CACHE=false CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --win --publish=never",
-    "build:win": "npm run build && electron-builder --win --publish=never",
+"build:win": "node build-server.js && npm run build && electron-builder --win --publish=never",
     "build:mac": "electron-vite build && electron-builder --mac",
     "build:linux": "electron-vite build && electron-builder --linux",
     "prisma:generate": "prisma generate --schema=server/prisma/schema.prisma",
@@ -183,7 +183,7 @@
         "filter": [
           "**/*"
         ]
-      },
+      },  
       {
         "from": "node_modules/@prisma",
         "to": "server/node_modules/@prisma",
@@ -195,10 +195,7 @@
         "from": "server/node_modules",
         "to": "server/node_modules",
         "filter": [
-          "**/*",
-          "!**/test/**/*",
-          "!**/docs/**/*",
-          "!**/examples/**/*"
+          "**/*"
         ]
       },
       {
@@ -221,11 +218,9 @@
       }
     ],
     "asarUnpack": [
-      "server/**",
-      "prisma/**",
-      ".prisma/**",
-      "**/node_modules/.prisma/**",
-      "**/node_modules/@prisma/**"
+      "server/dist/**/*",
+      "server/node_modules/.prisma/**",
+      "server/node_modules/@prisma/**"
     ]
   }
 }

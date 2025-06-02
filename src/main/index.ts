@@ -190,7 +190,7 @@ function startLocalServer(): void {
     const possibleServerPaths = [
       join(process.resourcesPath, 'server', 'dist', 'index.js'),
       join(process.resourcesPath, 'server', 'index.js'),
-      join(__dirname, '../../../server/dist/index.js')
+      join(__dirname, '../../server/dist/index.js')
     ];
 
     let serverPath = '';
