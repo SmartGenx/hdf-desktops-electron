@@ -115,14 +115,19 @@ export default function MedicalAllocationsIndex() {
   }, [ApplicantByDirectorateViewModelDataCard])
   //
   const ExportCvs = () => {
-    const workbook = XLSX.utils.book_new()
-    const worksheet = XLSX.utils.json_to_sheet(dataPrint)
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1')
-
-    const fileName = 'تقرير المخصصات العلاجية.xlsx'
-    XLSX.writeFile(workbook, fileName)
-  }
-
+    const chunkSize = 200;
+    const workbook = XLSX.utils.book_new();
+    
+    for (let i = 0; i < dataPrint.length; i += chunkSize) {
+      const chunk = dataPrint.slice(i, i + chunkSize);
+      const worksheet = XLSX.utils.json_to_sheet(chunk);
+      XLSX.utils.book_append_sheet(workbook, worksheet, `Sheet${i / chunkSize + 1}`);
+    }
+  
+    const fileName = 'تقرير المخصصات العلاجية.xlsx';
+    XLSX.writeFile(workbook, fileName);
+  };
+  
   const totalAmountSum = ApplicantByDirectorateViewModelDataCard?.data.reduce(
     (acc, current) => acc + (current.totalAmount || 0),
     0
