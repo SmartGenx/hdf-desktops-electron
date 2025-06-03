@@ -13,8 +13,8 @@ import { useQuery } from '@tanstack/react-query'
 import { LoaderIcon } from 'lucide-react'
 export type statistCardInfo = {
   diseaseCount: number
-  GovernorateCount: number
-  directoratecount: number
+  governorateCount: number
+  directorateCount: number
   squareCount: number
 }
 
@@ -98,7 +98,7 @@ const Home = () => {
             <div className="col-span-1 ">
               <StatistCardWithImage
                 title={'مديرية'}
-                value={statist?.data?.directoratecount ?? 0}
+                value={statist?.data?.directorateCount ?? 0}
                 image={LocationPin}
               />
             </div>
@@ -112,7 +112,7 @@ const Home = () => {
             <div className="col-span-1 ">
               <StatistCardWithImage
                 title={'محافظة'}
-                value={statist?.data?.GovernorateCount ?? 0}
+                value={statist?.data?.governorateCount ?? 0}
                 image={yemen}
               />
             </div>
@@ -140,7 +140,7 @@ const Home = () => {
             <div className="col-span-1 ">
               <StatistCardWithImage
                 title={'المديريات'}
-                value={statist?.data?.directoratecount ?? 0}
+                value={statist?.data?.directorateCount ?? 0}
                 image={LocationPin}
               />
             </div>
@@ -154,7 +154,7 @@ const Home = () => {
             <div className="col-span-1 ">
               <StatistCardWithImage
                 title={'المحافظات'}
-                value={statist?.data?.GovernorateCount ?? 0}
+                value={statist?.data?.governorateCount ?? 0}
                 image={yemen}
               />
             </div>
