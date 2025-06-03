@@ -117,7 +117,7 @@ export default function MedicalAllocationsIndex() {
   }, [ApplicantByDirectorateViewModelDataCard])
   //
   const ExportCvs = () => {    
-    const chunkSize = 200;
+    const chunkSize = 500;
     const workbook = XLSX.utils.book_new();
     
     for (let i = 0; i < dataPrint.length; i += chunkSize) {
