@@ -13,7 +13,7 @@ import MedicalTable from './medicalTable'
 import ReactToPrint from 'react-to-print'
 import { LoaderIcon, Printer } from 'lucide-react'
 import ComponentToPrint from './ComponentToPrint'
-import { useEffect, useRef, useState } from 'react'
+import { startTransition, useEffect, useRef, useState } from 'react'
 import * as XLSX from 'xlsx'
 import MedicalSearch from './medical-search'
 
@@ -63,7 +63,6 @@ export default function MedicalAllocationsIndex() {
       })
   })
 
-  console.log('ApplicantByDirectorateViewModelData', ApplicantByDirectorateViewModelData?.data)
   const {
     isPending: isPeningCardCard,
     isError: isErrorCard,
@@ -94,34 +93,42 @@ export default function MedicalAllocationsIndex() {
 
   useEffect(() => {
     if (ApplicantByDirectorateViewModelDataCard?.data) {
-      const dataToExport = ApplicantByDirectorateViewModelDataCard?.data.map((item) => {
-        return {
-          'رقم الاستمارة': item.formNumber,        
-          'الأسم': item.name,
-          '	الجنس': item.gender,
-          'تصنيف المرض': item.disease,
-          'المنطقة': item.directorate,
-          'الجوال': item.phoneNumber,
-          'الحاله': item.state,
-          'تكلفة العلاج': item.totalAmount,
-          'نسبة الخصم': item.supportRatio,
-          'مساهمة المؤسسة	': item.totalAmount - item.approvedAmount,
-          '	مساهمة المريض': item.approvedAmount
-        }
+      startTransition(()=> {
+        const dataToExport = ApplicantByDirectorateViewModelDataCard.data?.map((item) => {
+          return {
+            'رقم الاستمارة': item.formNumber,        
+            'الأسم': item.name,
+            '	الجنس': item.gender,
+            'تصنيف المرض': item.disease,
+            'المنطقة': item.directorate,
+            'الجوال': item.phoneNumber,
+            'الحاله': item.state,
+            'تكلفة العلاج': item.totalAmount,
+            'نسبة الخصم': item.supportRatio,
+            'مساهمة المؤسسة	': item.totalAmount - item.approvedAmount,
+            '	مساهمة المريض': item.approvedAmount
+          }
+        })
+  
+        setDataPrint(dataToExport)
       })
 
-      setDataPrint(dataToExport)
     }
   }, [ApplicantByDirectorateViewModelDataCard])
   //
-  const ExportCvs = () => {
-    const workbook = XLSX.utils.book_new()
-    const worksheet = XLSX.utils.json_to_sheet(dataPrint)
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1')
-
-    const fileName = 'تقرير المخصصات العلاجية.xlsx'
-    XLSX.writeFile(workbook, fileName)
-  }
+  const ExportCvs = () => {    
+    const chunkSize = 500;
+    const workbook = XLSX.utils.book_new();
+    
+    for (let i = 0; i < dataPrint.length; i += chunkSize) {
+      const chunk = dataPrint.slice(i, i + chunkSize);
+      const worksheet = XLSX.utils.json_to_sheet(chunk);
+      XLSX.utils.book_append_sheet(workbook, worksheet, `الصفحة ${i / chunkSize + 1}`);
+    }
+  
+    const fileName = 'تقرير المخصصات العلاجية.xlsx';
+    XLSX.writeFile(workbook, fileName);
+  };
 
   const totalAmountSum = ApplicantByDirectorateViewModelDataCard?.data.reduce(
     (acc, current) => acc + (current.totalAmount || 0),
