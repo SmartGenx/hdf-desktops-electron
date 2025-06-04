@@ -60,7 +60,7 @@ model Accredited {
   createdAt         DateTime       @default(now())
   applicant         Applicant      @relation(fields: [applicantGlobalId], references: [globalId])
   square            Square?        @relation(fields: [squareGlobalId], references: [globalId])
-  pharmacy          Pharmacy       @relation(fields: [pharmacyGlobalId], references: [globalId])
+  pharmacy          Pharmacy       @relation(fields: [pharmacyGlobalId], references: [globalId],onDelete: Restrict)
   attachment        Attachment[]
   dismissal         Dismissal[]
   prescription      Prescription[]
@@ -88,8 +88,8 @@ model Applicant {
   version             Int                  @default(1) // Version field for conflict resolution
   lastModified        DateTime             @updatedAt // Timestamp field for conflict resolution
   Accredited          Accredited[]
-  category            Category             @relation(fields: [categoryGlobalId], references: [globalId])
-  directorate         Directorate          @relation(fields: [directorateGlobalId], references: [globalId])
+  category            Category             @relation(fields: [categoryGlobalId], references: [globalId],onDelete: Restrict)
+  directorate         Directorate          @relation(fields: [directorateGlobalId], references: [globalId],onDelete: Restrict)
   diseasesApplicants  DiseasesApplicants[]
   createdAt           DateTime             @default(now())
 
@@ -148,7 +148,7 @@ model Directorate {
   deleted             Boolean     @default(false)
   version             Int         @default(1) // Version field for conflict resolution
   Applicant           Applicant[]
-  Governorate         Governorate @relation(fields: [governorateGlobalId], references: [globalId])
+  Governorate         Governorate @relation(fields: [governorateGlobalId], references: [globalId],onDelete: Restrict)
   lastModified        DateTime    @updatedAt // Timestamp field for conflict resolution
   createdAt           DateTime    @default(now())
 
@@ -228,7 +228,7 @@ model Pharmacy {
   endispenseDate      Int
   deleted             Boolean      @default(false)
   governorateGlobalId String
-  Governorate         Governorate  @relation(fields: [governorateGlobalId], references: [globalId])
+  Governorate         Governorate  @relation(fields: [governorateGlobalId], references: [globalId],onDelete: Restrict)
   version             Int          @default(1) // Version field for conflict resolution
   Accredited          Accredited[]
   lastModified        DateTime     @updatedAt // Timestamp field for conflict resolution
