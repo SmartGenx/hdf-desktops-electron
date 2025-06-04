@@ -371,47 +371,72 @@
     async fetchUpdatesFromServer(modelName: ModelName): Promise<boolean> {
       const online = await this.isOnline()
       if (!online) {
-        console.log(`Skipping fetch for ${modelName}: offline.`)
+        console.log(`⏭ Skipping fetch for ${modelName}: offline.`)
         return false
       }
-
+    
       try {
-        const syncStatus = await this.localPrisma.syncStatus.findUnique({ where: { modelName } })
+        const syncStatus = await this.localPrisma.syncStatus.findUnique({
+          where: { modelName }
+        })
         const lastSyncedAt = syncStatus?.lastSyncedAt ?? new Date(0)
-
-        const updates = (this.cloudPrisma as any)[modelName].findMany({
+    
+        const cloudModel = (this.cloudPrisma as any)[modelName]
+        const localModel = (this.localPrisma as any)[modelName]
+    
+        const rows = await cloudModel.findMany({
           where: {
-            OR: [{ createdAt: { gt: lastSyncedAt } }, { lastModified: { gt: lastSyncedAt } }]
-          }
-        }) as Promise<Array<Record<string, any>>>
-
-        const rows = await updates
-        if (!rows.length) {
-          console.log(`No updates for ${modelName}`)
-          return false
-        }
-
-        let applied = false
-        await this.localPrisma.$transaction(async (tx:Prisma.TransactionClient) => {
-          for (const row of rows) {
-            const existing = await (tx as any)[modelName].findUnique({ where: { globalId: row.globalId } })
-            const { id, ...data } = row
-            if (!existing) {
-              await (tx as any)[modelName].create({ data: { ...data, globalId: row.globalId } })
-              applied = true
-            } else if (existing.lastModified < row.lastModified) {
-              await (tx as any)[modelName].update({ where: { globalId: row.globalId }, data })
-              applied = true
-            }
+            OR: [
+              { createdAt: { gt: lastSyncedAt } },
+              { lastModified: { gt: lastSyncedAt } }
+            ]
           }
         })
-
+    
+        if (!rows.length) {
+          console.log(`📭 No updates for ${modelName}`)
+          return false
+        }
+    
+        let applied = false
+    
+        for (const row of rows) {
+          try {
+            const { id, ...data } = row
+            const existing = await localModel.findUnique({
+              where: { globalId: row.globalId }
+            })
+    
+            if (!existing) {
+              await localModel.create({
+                data: { ...data, globalId: row.globalId }
+              })
+              console.log(`✅ Created ${modelName} ${row.globalId}`)
+              applied = true
+            } else if ((existing.version ?? 0) < row.version) {
+              await localModel.update({
+                where: { globalId: row.globalId },
+                data
+              })
+              console.log(`🔄 Updated ${modelName} ${row.globalId}`)
+              applied = true
+            } else {
+              console.log(`⏩ Skipped ${modelName} ${row.globalId}: already up to date.`)
+            }
+          } catch (innerErr: any) {
+            console.warn(`⚠️ Skipped ${modelName} ${row.globalId} due to error:`, innerErr.message)
+            console.log('⚠️ Problematic row object:', JSON.stringify(row, null, 2))
+            continue
+          }
+        }
+    
         return applied
       } catch (err) {
-        console.error(`Fetch updates failed for ${modelName}:`, err)
-        throw err
+        console.error(`❌ Fetch updates failed for ${modelName}:`, err)
+        return false
       }
     }
+    
 
     /** Update the sync checkpoint for a model with fallback to local time */
     async updateLastSyncedAt(modelName: ModelName): Promise<void> {
