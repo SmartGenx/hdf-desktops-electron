@@ -263,50 +263,54 @@
      */
     async seedUsersAndRoles(): Promise<void> {
       try {
-        const prisma = await this.getPrismaClient()
+        const prisma = await this.getPrismaClient();
 
-        const roles = ['Admin', 'Coordinator', 'Pharmacist'] as const
+        const roles = ['Admin', 'Coordinator', 'Pharmacist'] as const;
         const users: Array<{ email: string; role: typeof roles[number]; name: string }> = [
           { email: 'admin@hdfye.org', role: 'Admin', name: 'المدير' },
           { email: 'coordinator@hdfye.org', role: 'Coordinator', name: 'المنسق' },
-          { email: 'pharmacist@hdfye.org', role: 'Pharmacist', name: 'الصيدلاني' }
-        ]
+          { email: 'pharmacist@hdfye.org', role: 'Pharmacist', name: 'الصيدلاني' },
+        ];
 
-        // Roles
         for (const roleName of roles) {
-          const role = await prisma.role.findFirst({ where: { name: roleName } })
-          if (!role) {
-            const globalId = `${process.env.LOCAL_DB_ID}-${roleName}`
-            await prisma.role.create({ data: { name: roleName, globalId } })
+          const existingRole = await prisma.role.findFirst({ where: { name: roleName } });
+          if (!existingRole) {
+            const globalId = `${process.env.LOCAL_DB_ID}-${roleName}`;
+            await prisma.role.create({ data: { name: roleName, globalId } });
           }
         }
 
-        // Users
         for (const { email, role, name } of users) {
-          const roleRow = await prisma.role.findFirst({ where: { name: role } })
-          if (!roleRow) continue // should never happen
+          const roleRow = await prisma.role.findFirst({ where: { name: role } });
+          if (!roleRow) continue;
 
-          const existing = await prisma.user.findFirst({ where: { email, deleted: false } })
-          if (!existing) {
-            const password = await bcrypt.hash(`${role}!@#123`, 10)
-            const timestamp = Date.now()
-            const uniqueId = uuidv4()
-            const globalId = `${process.env.LOCAL_DB_ID}-${role}-${uniqueId}-${timestamp}`
+          const password = await bcrypt.hash(`${role}!@#123`, 10);
+          const timestamp = Date.now();
+          const uniqueId = uuidv4();
+          const globalId = `${process.env.LOCAL_DB_ID}-${role}-${uniqueId}-${timestamp}`;
 
-            await prisma.user.create({
-              data: {
-                name,
-                email,
-                password,
-                roleGlobalId: roleRow.globalId,
-                globalId,
-                deleted: false
-              }
-            })
-          }
+          await prisma.user.upsert({
+            where: { email },
+            update: {
+              name,
+              password,
+              roleGlobalId: roleRow.globalId,
+              deleted: false,
+              lastModified: new Date(),
+            },
+            create: {
+              name,
+              email,
+              password,
+              roleGlobalId: roleRow.globalId,
+              globalId,
+              deleted: false,
+              lastModified: new Date(),
+            },
+          });
         }
       } catch (err) {
-        console.error('Failed to seed roles/users:', err)
+        console.error('Failed to seed roles/users:', err);
       }
     }
 
@@ -317,51 +321,85 @@
      * Returns `true` if at least one record was processed.
      */
     async synchronizeTable(modelName: ModelName): Promise<boolean> {
-      const online = await this.isOnline()
-      if (!online) return false
+    const online = await this.isOnline();
+    if (!online) return false;
 
-      try {
-        const syncStatus = await this.localPrisma.syncStatus.findUnique({ where: { modelName } })
-        const lastSyncedAt = syncStatus?.lastSyncedAt ?? new Date(0)
+    try {
+      const syncStatus = await this.localPrisma.syncStatus.findUnique({ where: { modelName } });
+      const lastSyncedAt = syncStatus?.lastSyncedAt ?? new Date(0);
 
-        const localRecords = (this.localPrisma as any)[modelName].findMany({
-          where: {
-            OR: [{ createdAt: { gt: lastSyncedAt } }, { lastModified: { gt: lastSyncedAt } }]
-          }
-        }) as Promise<Array<Record<string, any>>>
+      const localRecords = (this.localPrisma as any)[modelName].findMany({
+        where: {
+          OR: [
+            { createdAt: { gt: lastSyncedAt } },
+            { lastModified: { gt: lastSyncedAt } },
+          ],
+        },
+      }) as Promise<Array<Record<string, any>>>;
 
-        const records = await localRecords
-        let processed = false
+      const records = await localRecords;
+      if (records.length === 0) return false;
 
-        for (const record of records) {
-          try {
-            await this.cloudPrisma.$transaction(async (tx : any) => {
-              const cloudRecord = (tx as any)[modelName].findUnique({
-                where: { globalId: record.globalId }
-              })
-              const existing = await cloudRecord
+      const batchSize = 20;
+      let processed = false;
+      let count = 0;
 
-              const { id, ...dataForSync } = record
-              if (!existing) {
-                await (tx as any)[modelName].create({ data: { ...dataForSync, globalId: record.globalId } })
-                processed = true
-              } else if (existing.lastModified < record.lastModified) {
-                await (tx as any)[modelName].update({
-                  where: { globalId: record.globalId },
-                  data: { ...dataForSync, lastModified: new Date() }
-                })
-                processed = true
-              }
-            })
-          } catch (singleErr) {
-            console.error(`Failed to sync ${modelName} globalId=${record.globalId}:`, singleErr)
-          }
-        }
-        return processed
-      } catch (err) {
-        console.error(`Sync of ${modelName} failed:`, err)
-        throw err
+      console.log(`🔁 Starting sync for ${records.length} records in table "${modelName}"...`);
+
+      for (let i = 0; i < records.length; i += batchSize) {
+        const batch = records.slice(i, i + batchSize);
+
+        await Promise.all(
+          batch.map(async (record: Record<string, any>) => {
+            count++;
+            try {
+              await this.cloudPrisma.$transaction(async (tx: any) => {
+                const { id, ...dataForSync } = record;
+
+                if (modelName === 'user') {
+                  await tx.user.upsert({
+                    where: { globalId: record.globalId }, // ✅ يستخدم globalId بدل email
+                    update: {
+                      ...dataForSync,
+                      lastModified: new Date(),
+                    },
+                    create: {
+                      ...dataForSync,
+                      lastModified: new Date(),
+                    },
+                  });
+                } else {
+                  const existing = await tx[modelName].findUnique({
+                    where: { globalId: record.globalId },
+                  });
+
+                  if (!existing) {
+                    await tx[modelName].create({
+                      data: { ...dataForSync, globalId: record.globalId },
+                    });
+                  } else if (existing.lastModified < record.lastModified) {
+                    await tx[modelName].update({
+                      where: { globalId: existing.globalId },
+                      data: { ...dataForSync, lastModified: new Date() },
+                    });
+                  }
+                }
+
+                console.log(`✅ Synced ${modelName} ${count} of ${records.length} (globalId=${record.globalId})`);
+                processed = true;
+              }, { maxWait: 10000, timeout: 60000 });
+            } catch (err:any) {
+              console.error(`❌ Failed to sync ${modelName} globalId=${record.globalId}:`, err.message);
+            }
+          })
+        );
       }
+
+      return processed;
+    } catch (err) {
+      console.error(`❌ Sync of ${modelName} failed:`, err);
+      throw err;
+    }
     }
 
     /**
