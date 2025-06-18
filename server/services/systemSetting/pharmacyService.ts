@@ -9,6 +9,8 @@ interface PharmacyInput {
   governorateGlobalId: string;
   address?: string;
   phone?: string;
+  startDispenseDate: number;
+  endispenseDate: number;
 }
 
 export default class PharmacyService {
@@ -58,8 +60,8 @@ export default class PharmacyService {
           globalId,
           location: data.address || '',
           governorateGlobalId: data.governorateGlobalId,
-          startDispenseDate: 0, 
-          endispenseDate: 0    
+          startDispenseDate: data.startDispenseDate, 
+          endispenseDate: data.endispenseDate  
         }
       });
     } catch (error: any) {
