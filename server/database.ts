@@ -385,7 +385,7 @@
                   }
                 }
 
-                console.log(`✅ Synced ${modelName} ${count} of ${records.length} (globalId=${record.globalId})`);
+                // console.log(`✅ Synced ${modelName} ${count} of ${records.length} (globalId=${record.globalId})`);
                 processed = true;
               }, { maxWait: 10000, timeout: 60000 });
             } catch (err:any) {
@@ -409,7 +409,7 @@
     async fetchUpdatesFromServer(modelName: ModelName): Promise<boolean> {
       const online = await this.isOnline()
       if (!online) {
-        console.log(`⏭ Skipping fetch for ${modelName}: offline.`)
+        // console.log(`⏭ Skipping fetch for ${modelName}: offline.`)
         return false
       }
     
@@ -432,7 +432,7 @@
         })
     
         if (!rows.length) {
-          console.log(`📭 No updates for ${modelName}`)
+          // console.log(`📭 No updates for ${modelName}`)
           return false
         }
     
@@ -456,10 +456,10 @@
                 where: { globalId: row.globalId },
                 data
               })
-              console.log(`🔄 Updated ${modelName} ${row.globalId}`)
+              // console.log(`🔄 Updated ${modelName} ${row.globalId}`)
               applied = true
             } else {
-              console.log(`⏩ Skipped ${modelName} ${row.globalId}: already up to date.`)
+              // console.log(`⏩ Skipped ${modelName} ${row.globalId}: already up to date.`)
             }
           } catch (innerErr: any) {
             console.warn(`⚠️ Skipped ${modelName} ${row.globalId} due to error:`, innerErr.message)
@@ -513,7 +513,7 @@
         const prisma = await this.getPrismaClient()
         const profileDir = 'D://Profiles' // ensure this exists
 
-  const s3Files = await listFilesInS3Bucket('hdf-production') ?? [];
+  const s3Files = await listFilesInS3Bucket('hdf-dev') ?? [];
 
         await Promise.all(
           s3Files.map(async (file) => {
@@ -530,7 +530,7 @@
 
               if (attachmentExists || prescriptionExists) {
                 if (file.Key) {
-                  await downloadFileFromS3('hdf-production', file.Key, localPath)
+                  await downloadFileFromS3('hdf-dev', file.Key, localPath)
                 } else {
                   console.warn('Skipping file with undefined Key');
                 }
@@ -546,40 +546,73 @@
       }
     }
 
-    async synchronizeLocalToS3(): Promise<void> {
-      try {
-        const prisma = await this.getPrismaClient()
-        const profileDir = 'D://Profiles'
-        const files = await fs.readdir(profileDir)
+async synchronizeLocalToS3(): Promise<void> {
+  try {
+    console.log("&*&*&*&*&*&&&&&&&&&&*&*&*&*&*&*&*&*&*&*&*&*&*&&*")
+    const prisma = await this.getPrismaClient(); // 🟢 تأكد أنه متصل بـ cloud DB
+    const profileDir = 'D://Profiles'
+    const files = await fs.readdir(profileDir)
+    console.log("h")
+    console.log('📁 الملفات الموجودة في D://Profiles:', files);
 
-        await Promise.all(
-          files.map(async (file) => {
-            try {
-              const filePath = path.join(profileDir, file)
-              const fileBuffer = await fs.readFile(filePath)
-
-              const existsInS3 = await checkFileExistenceInS3('hdf-production', file)
-              if (existsInS3) return
-
-              const attachmentExists = await prisma.attachment.findFirst({
-                where: { attachmentFile: `D://Profiles//${file}` }
-              })
-              const prescriptionExists = await prisma.prescription.findFirst({
-                where: { attachedUrl: `D://Profiles//${file}` }
-              })
-              if (attachmentExists || prescriptionExists) {
-                await uploadFileToS3('hdf-production', file, fileBuffer, 'application/octet-stream')
-                console.log(`Uploaded ${file}`)
-              }
-            } catch (inner) {
-              console.error(`Upload failed ${file}:`, inner)
-            }
-          })
-        )
-      } catch (err) {
-        console.error('synchronizeLocalToS3 failed:', err)
-      }
+    if (files.length === 0) {
+      console.warn('⚠️ لا توجد ملفات في المجلد، تأكد أن المجلد صحيح ويحتوي على ملفات');
+      return;
     }
+    await Promise.all(
+      files.map(async (file) => {
+        try {
+
+          const filePath = path.join(profileDir, file);
+          
+          const fileBuffer = await fs.readFile(filePath);
+
+          
+
+
+          // const existsInS3 = await checkFileExistenceInS3('hdf-dev', `accredited/atch/${file}`)
+          //   || await checkFileExistenceInS3('hdf-dev', `accredited/pt/${file}`);
+          //   console.log("###############################################")
+          // if (existsInS3) return;
+
+          const attachmentRecord = await prisma.attachment.findFirst({
+            where: { attachmentFile: `D:\\Profiles/${file}` } // من الداتا بيز الكلاود
+          });
+          const prescriptionRecord = await prisma.prescription.findFirst({
+            where: { attachedUrl: `D:\\Profiles/${file}` }
+          });
+          if (attachmentRecord || prescriptionRecord) {
+
+            // 🟢 نحدد نوع المسار الجديد
+            let s3Key = '';
+            if (attachmentRecord) {
+              s3Key = `accredited/atch/${file}`;
+              await prisma.attachment.update({
+                where: { id: attachmentRecord.id },
+                data: { attachmentFile: s3Key }
+              });
+            }
+            if (prescriptionRecord) {
+              s3Key = `accredited/pt/${file}`;
+              await prisma.prescription.update({
+                where: { id: prescriptionRecord.id },
+                data: { attachedUrl: s3Key }
+              });
+            }
+
+            await uploadFileToS3('hdf-dev', s3Key, fileBuffer, 'application/octet-stream');
+            console.log(`✅ Uploaded and updated DB for: ${file}`);
+          }
+        } catch (inner) {
+          console.error(`❌ Upload failed for ${file}:`, inner);
+        }
+      })
+    );
+  } catch (err) {
+    console.error('❌ synchronizeLocalToS3 failed:', err);
+  }
+}
+
   async user() {
     return this.seedUsersAndRoles();
   }
